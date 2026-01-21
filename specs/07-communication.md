@@ -121,6 +121,27 @@ Communication spans direct messaging, group discussions, event chat, and notific
   - AC: Notify group leadership of reports
   - AC: Cross-group pattern visibility (privacy-conscious)
 
+### Anonymous Event Feedback
+
+> Based on founder interview: organizers may have blind spots and miss issues. Anonymous feedback can surface problems without enabling gossip. Frame as "feedback for the organizer" not "complaints about members."
+
+- [ ] Build anonymous event feedback [P2]
+  - AC: Post-event prompt: "How was your experience?"
+  - AC: Anonymous by default, optional attribution
+  - AC: Categories: welcoming, inclusive, comfortable, other
+  - AC: Free-text option with character limit
+
+- [ ] Create feedback dashboard for organizers [P2]
+  - AC: Aggregated sentiment over time
+  - AC: Flag concerning patterns (multiple "unwelcome" signals)
+  - AC: Suggestions for improvement based on feedback themes
+
+- [ ] Implement feedback guardrails [P2]
+  - AC: No naming specific members in anonymous feedback
+  - AC: Moderation filter for abusive content
+  - AC: Rate limiting to prevent spam
+  - AC: Group setting to enable/disable (opt-in per group culture)
+
 ### Graduated Enforcement
 
 | Level | Action | Duration |

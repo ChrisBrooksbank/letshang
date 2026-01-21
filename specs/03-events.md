@@ -206,6 +206,32 @@ Events can be standalone (created by any user) or group-hosted. Every event gets
 
 ---
 
+## Interest Polling
+
+> Based on founder interview: high-commitment events (like multi-day trips) failed due to silence. Interest polls let organizers gauge demand before committing, and lower the bar for attendees to signal interest without full commitment.
+
+- [ ] Build interest poll creator [P2]
+  - AC: "Would you attend if we did X?" style polls
+  - AC: Shareable link, works without account
+  - AC: Options: "Definitely", "Probably", "Maybe", "Unlikely"
+
+- [ ] Implement interest poll results [P2]
+  - AC: Show interest level breakdown
+  - AC: List respondents (if not anonymous)
+  - AC: Threshold indicator: "Enough interest to proceed"
+
+- [ ] Create poll-to-event conversion [P2]
+  - AC: Convert successful poll to event
+  - AC: Auto-notify interested respondents
+  - AC: Pre-populate event with poll context
+
+- [ ] Support anonymous interest signals [P2]
+  - AC: Option for anonymous responses
+  - AC: Still counts toward threshold
+  - AC: Reduces commitment anxiety
+
+---
+
 ## Event Communication
 
 - [ ] Implement event comments [P1] [depends: rsvp]
@@ -317,8 +343,25 @@ Events can be standalone (created by any user) or group-hosted. Every event gets
   - AC: "Low-pressure"
   - AC: "Beginner welcome"
 
+### Event Size Indicators
+
+> Based on founder interview: for anxious attendees, event size matters. Small events are an accessibility feature. Marking events as "small" in the title was a workaround - make it first-class.
+
+- [ ] Implement event size categories [P1]
+  - AC: Intimate (under 10 people)
+  - AC: Small (10-20 people)
+  - AC: Medium (20-50 people)
+  - AC: Large (50+ people)
+  - AC: Auto-calculated from capacity, or manually set
+
+- [ ] Display size indicators [P1]
+  - AC: Size badge visible on event cards
+  - AC: Size shown on event detail page
+  - AC: Position small events as welcoming, not lesser
+
 - [ ] Add format filters to discovery [P1]
   - AC: Filter events by format
+  - AC: Filter events by size category
   - AC: Tags visible on event cards
 
 ---
@@ -396,6 +439,8 @@ Events can be standalone (created by any user) or group-hosted. Every event gets
 
 ### Surveys
 
+> Based on founder interview: Meetup.com's simple surveys feature was valuable. Expand beyond post-event feedback to include pre-event planning and ongoing member engagement.
+
 - [ ] Build survey creator [P2]
   - AC: Post-event survey builder
   - AC: Auto-send after event
@@ -403,3 +448,19 @@ Events can be standalone (created by any user) or group-hosted. Every event gets
 - [ ] Create survey results dashboard [P2]
   - AC: Aggregated and individual responses
   - AC: Trend tracking across events
+
+- [ ] Implement pre-event surveys [P2]
+  - AC: Gather info before event (dietary needs, topics of interest, etc.)
+  - AC: Attach to RSVP flow or send separately
+  - AC: Responses visible to host for planning
+
+- [ ] Build topic/interest surveys [P2]
+  - AC: "What topics do you want to see?" polls
+  - AC: "Which speaker would you prefer?" votes
+  - AC: Use for content planning
+  - AC: Can be ongoing (not tied to specific event)
+
+- [ ] Add survey templates [P2]
+  - AC: Pre-built surveys for common use cases
+  - AC: "Post-event feedback", "Topic interests", "Speaker preferences"
+  - AC: Customizable starting points

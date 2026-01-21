@@ -165,6 +165,51 @@ Groups provide structure for recurring communities. Each group has an organizer,
 
 ---
 
+## Group Data Export
+
+> Based on founder interview: organizers worried about platform dependency. Provide easy export so organizers don't feel locked in.
+
+- [ ] Implement member list export [P2]
+  - AC: Download member list as CSV
+  - AC: Includes: name, email (if shared), join date, role
+  - AC: Respects member privacy settings (only export what members allow)
+  - AC: Available to organizers only
+
+- [ ] Build event history export [P2]
+  - AC: Export past events with attendance data
+  - AC: Includes: date, title, RSVP count, check-in count
+  - AC: CSV format for analysis
+  - AC: Date range filter
+
+- [ ] Create group backup export [P2]
+  - AC: Full group export: settings, members, events, discussions
+  - AC: JSON format for potential migration
+  - AC: Organizer-only access
+
+---
+
+## Group Surveys
+
+> Based on founder interview: Meetup.com's surveys were valuable. Group-level surveys for ongoing member engagement (not just post-event).
+
+- [ ] Build group-wide survey creator [P2]
+  - AC: Organizers can send surveys to all members
+  - AC: Multiple question types: multiple choice, rating, free text
+  - AC: Anonymous response option
+
+- [ ] Implement group survey templates [P2]
+  - AC: "What topics interest you?"
+  - AC: "What times work best for events?"
+  - AC: "How can we improve?"
+  - AC: Customizable starting points
+
+- [ ] Create survey response dashboard [P2]
+  - AC: Visualize responses (charts, word clouds)
+  - AC: Compare responses over time
+  - AC: Export responses as CSV
+
+---
+
 ## Technical Notes
 
 - Groups stored with RLS policies for visibility

@@ -48,11 +48,55 @@ Organizers are the lifeblood of the platform. This spec covers milestone celebra
   - AC: Discussion guides
   - AC: Searchable and tagged
 
+### Organizer Playbook Sharing
+
+> Based on founder interview: organizers naturally create documented processes (workshop guides, venue booking checklists, exercise menus). Platform should capture and share this knowledge.
+
+- [ ] Create playbook authoring interface [P2]
+  - AC: Organizers can create step-by-step guides
+  - AC: Supports sections: preparation, during event, follow-up
+  - AC: Attach templates, checklists, exercise lists
+  - AC: Link playbook to specific event types
+
+- [ ] Build playbook sharing and discovery [P2]
+  - AC: Organizers can share playbooks publicly or within organizer community
+  - AC: Playbooks searchable by event type, topic, group size
+  - AC: "Used by X organizers" social proof
+  - AC: Fork/adapt playbooks from other organizers
+
+- [ ] Implement playbook templates [P2]
+  - AC: Platform-provided starter playbooks
+  - AC: "Social anxiety workshop", "Book club", "Speaker event" etc.
+  - AC: Fill-in-the-blank simplicity for new organizers
+
 - [ ] Implement contextual tips [P2]
   - AC: Tips before first event
   - AC: Tips after a cancellation
   - AC: Tips when facing no-shows
   - AC: Non-intrusive delivery
+
+### Difficult Conversation Templates
+
+> Based on founder interview: organizers often avoid uncomfortable conversations (dominating behavior, being off-putting, hygiene). Provide scripts and frameworks to help.
+
+- [ ] Create difficult conversation script library [P2]
+  - AC: Pre-written scripts for common situations
+  - AC: Categories: behavior, participation, hygiene, boundaries
+  - AC: Professional, compassionate tone
+  - AC: Editable templates organizers can personalize
+
+- [ ] Build conversation frameworks [P2]
+  - AC: "How to address someone dominating discussion"
+  - AC: "How to set expectations for newcomers"
+  - AC: "How to handle complaints about another member"
+  - AC: Include opening lines, key points, suggested outcomes
+
+- [ ] Implement attendee social scripts [P2]
+  - AC: Scripts for attendees too (not just organizers)
+  - AC: "How to introduce yourself when nervous"
+  - AC: "How to exit a conversation gracefully"
+  - AC: "How to join an existing conversation"
+  - AC: Lower social skill barrier for anxious attendees
 
 - [ ] Build organizer community [P2]
   - AC: Forum/space for organizers

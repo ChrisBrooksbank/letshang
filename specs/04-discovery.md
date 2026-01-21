@@ -26,6 +26,7 @@ Discovery is how users find their next event. Multiple pathways: search, browse,
   - AC: Event type (in-person, online, hybrid)
   - AC: Date range picker
   - AC: Group type (public, private)
+  - AC: Event size (intimate, small, medium, large) - see [03-events](./03-events.md)
 
 ---
 

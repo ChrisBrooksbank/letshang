@@ -97,6 +97,21 @@ The account system balances friction-free access with meaningful identity. Guest
   - AC: User data anonymized, not fully deleted (preserves event history)
   - AC: Reactivation possible during grace period
 
+### Data Portability
+
+> Based on founder interview: platform dependency was a real concern. Maintained outside channels (Facebook, blog, website) partly as a hedge. Build trust by not locking people in.
+
+- [ ] Implement personal data export [P1]
+  - AC: Download all personal data (GDPR compliant)
+  - AC: Includes: profile, RSVPs, attendance history, connections
+  - AC: Export as JSON and/or human-readable format
+  - AC: Available from account settings
+
+- [ ] Build event history export [P2]
+  - AC: Export attended events with dates, locations
+  - AC: Include groups joined and roles held
+  - AC: Calendar-compatible format (ICS) option
+
 ---
 
 ## Interests
