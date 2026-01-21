@@ -165,11 +165,30 @@ If we need completely free (no limits):
 | Tool | Purpose |
 |------|---------|
 | **pnpm** | Package manager (fast, efficient) |
-| **TypeScript** | Type safety throughout |
-| **ESLint + Prettier** | Code quality |
-| **Vitest** | Unit testing |
+| **TypeScript** | Type safety (strict mode) |
+| **ESLint** | Linting with security rules |
+| **Prettier** | Code formatting |
+| **Vitest** | Unit testing with coverage |
 | **Playwright** | E2E testing |
-| **Husky** | Pre-commit hooks |
+| **Husky** | Pre-commit hooks (runs quality gates) |
+| **knip** | Dead code / unused export detection |
+| **vite-bundle-analyzer** | Bundle size monitoring |
+
+### Quality Gate Tools
+
+These tools enforce the 8 quality gates defined in `AGENTS.md`:
+
+| Gate | Tool | Threshold |
+|------|------|-----------|
+| Type Safety | `pnpm check` | 0 errors |
+| Linting | `pnpm lint` | 0 errors, 0 warnings |
+| Formatting | `pnpm format:check` | All files pass |
+| Unit Tests | `pnpm test` | 100% pass |
+| Coverage | `pnpm test:coverage` | 80% lines, 80% branches |
+| Build | `pnpm build` | Successful |
+| E2E Tests | `pnpm test:e2e` | 100% pass |
+| Bundle Size | `pnpm analyze` | < 100KB gzipped |
+| Dead Code | `pnpm knip` | 0 unused exports |
 
 ---
 
@@ -193,18 +212,24 @@ pnpm dev              # Start dev server
 pnpm build            # Production build
 pnpm preview          # Preview production build
 
-# Quality
-pnpm check            # Svelte diagnostics + TypeScript
-pnpm lint             # ESLint
-pnpm format           # Prettier
+# Quality Gates (ALL must pass before commit)
+pnpm check            # Gate 1: Svelte diagnostics + TypeScript strict
+pnpm lint             # Gate 2: ESLint (0 errors, 0 warnings)
+pnpm format           # Gate 3: Prettier (auto-fix)
+pnpm format:check     # Gate 3: Prettier (verify only)
+pnpm test             # Gate 4: Vitest unit tests
+pnpm test:coverage    # Gate 4: With coverage report (80% minimum)
+pnpm test:e2e         # Gate 6: Playwright E2E tests
+pnpm analyze          # Gate 7: Bundle size analysis
+pnpm knip             # Gate 8: Find unused code/exports
 
-# Testing
-pnpm test             # Vitest unit tests
-pnpm test:e2e         # Playwright E2E tests
+# Full validation (run before commit)
+pnpm check && pnpm lint && pnpm test:coverage && pnpm build && pnpm knip
 
 # Database
 pnpm db:types         # Generate TypeScript types from Supabase
 pnpm db:migrate       # Run migrations (via Supabase CLI)
+pnpm db:reset         # Reset local database (destructive!)
 ```
 
 ---
