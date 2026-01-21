@@ -104,6 +104,17 @@ Four distinct roles with escalating permissions:
 - Public average rating displayed on group page
 - Reviews help prospective members evaluate groups
 
+### Member Engagement & Re-engagement
+Activate sleeper members and re-engage lapsed attendees:
+- **Member engagement tiers**: Active (attended recently), Occasional, Sleeper (joined but never attended), Lapsed (was active, now inactive)
+- **Sleeper activation**: Identify members who joined but never attended an event
+- **Warm re-engagement**: Automated, friendly check-ins: "We haven't seen you yet! Here's a beginner-friendly event coming up"
+- **"Your first event" nudges**: Extra-low-pressure event suggestions for sleepers
+- **Lapsed member outreach**: "We miss you! Here's what's coming up"
+- **Engagement dashboard**: Organizers see member engagement breakdown
+- Track conversion: How many sleepers eventually attend?
+- Non-spammy frequency limits on re-engagement messages
+
 ### Tasks
 - [ ] Design group creation wizard
 - [ ] Build topic/category selection system
@@ -115,6 +126,11 @@ Four distinct roles with escalating permissions:
 - [ ] Build discussion board with threading
 - [ ] Implement review and rating system
 - [ ] Design group profile/landing page
+- [ ] Build member engagement tier tracking
+- [ ] Create sleeper member identification
+- [ ] Implement automated re-engagement messaging
+- [ ] Build engagement dashboard for organizers
+- [ ] Track sleeper-to-active conversion metrics
 
 ---
 
@@ -353,6 +369,57 @@ Automated reminder schedule to maximize attendance:
 - Include event details, map link, and any last-minute updates
 - "Add to calendar" prompt included in reminders
 
+### Day-of Confirmation & Graceful Bail-out
+Reduce no-shows while making it socially acceptable to cancel:
+- **Day-of confirmation ping**: "Still coming tonight? Tap to confirm / Can't make it"
+- One-tap graceful bail-out that notifies organizer and opens waitlist spots
+- Easy "I couldn't make it" feedback options: "Something came up", "Not feeling well", "Will try next time"
+- No guilt messaging - normalize last-minute changes while encouraging communication
+- Confirmation responses visible to organizers in real-time
+- Auto-promote waitlist when cancellations come in
+
+### Attendance Reliability System
+Help organizers predict actual attendance and plan accordingly:
+- **Reliability score**: Track each user's RSVP-to-attendance ratio over time (visible to organizers only)
+- **Attendance history**: Organizers can view a member's past attendance record when reviewing RSVPs
+- **Smart capacity planning**: "Based on historical patterns, expect ~70% actual attendance"
+- **Overbooking suggestions**: Platform recommends allowing extra RSVPs based on group's typical no-show rate
+- Reliability improves when users confirm attendance or cancel in advance
+- Reliability decreases for no-shows without communication
+- Privacy-conscious: members see their own reliability but not others'
+- Grace for legitimate reasons: illness, emergencies don't heavily penalize score
+
+### Event Format Tags
+Help attendees find events that match their comfort level:
+- **Format categories**: Speaker/presentation, Workshop, Activity-based, Discussion circle, Social mixer, Unstructured hangout
+- **Accessibility indicators**:
+  - "First-timer friendly" - welcoming to newcomers
+  - "Structured activity" - clear agenda, less unstructured mingling
+  - "Low-pressure" - no participation requirements
+  - "Beginner welcome" - no prior experience needed
+- Format tags displayed on event cards and detail pages
+- Filter discovery by format type
+- Helps socially anxious or neurodivergent attendees find comfortable events
+
+### First-Timer Support
+Features to help nervous first-timers actually show up:
+- **"Meet outside" buddy option**: Regulars volunteer to meet newcomers outside the venue
+- **Greeter designation**: "Host will greet newcomers at the door at 7pm"
+- **Visual identifier**: "Look for person holding a blue balloon" or similar
+- **First-timer welcome message**: Automatic friendly message before their first event
+- **New attendee highlights**: Organizers see who's attending for the first time
+- Prompt regulars to welcome new faces at events
+- Post-event follow-up for first-timers: "How was your first event?"
+
+### Anchor Events (Recurring Low-Effort Events)
+Support for consistent, low-maintenance recurring gatherings:
+- **"Same time, same place" mode**: Minimal setup for regular events (e.g., "Wednesday pub meet")
+- Events auto-create on schedule with previous settings
+- Attendees can set "always RSVP yes" for anchor events
+- Regulars notified of any changes to the usual pattern
+- Lower friction than creating new event each time
+- Build community through predictable, reliable gatherings
+
 ### Tasks
 - [ ] Design event creation form with all event types
 - [ ] Support standalone event creation (no group required)
@@ -406,6 +473,19 @@ Automated reminder schedule to maximize attendance:
 - [ ] Expand photo gallery for pre-event sharing
 - [ ] Build smart reminder scheduling system
 - [ ] Create reminder customization interface
+- [ ] Implement day-of confirmation ping system
+- [ ] Build graceful bail-out flow with feedback options
+- [ ] Create attendance reliability tracking system
+- [ ] Build reliability score display for organizers
+- [ ] Implement smart overbooking suggestions based on historical data
+- [ ] Design event format tag system
+- [ ] Build format/accessibility tag selection in event creation
+- [ ] Add format filters to event discovery
+- [ ] Implement first-timer support features (buddy system, greeter designation)
+- [ ] Build first-timer identification for organizers
+- [ ] Create first-timer welcome and follow-up messaging
+- [ ] Implement anchor event "same time, same place" mode
+- [ ] Build "always RSVP yes" setting for recurring events
 
 ---
 
@@ -614,6 +694,34 @@ Reach guests where they're most responsive:
 - Comply with SMS regulations (opt-out, consent)
 - Character-efficient message templates
 
+### Trust & Safety
+Protect community members, especially in social/dating-adjacent contexts:
+
+**Messaging Protections**:
+- **Connection-gated messaging**: Option to only receive DMs from people you've attended an event with
+- **Rate limiting**: Detect and prevent mass-messaging patterns (e.g., messaging many members quickly)
+- **Organizer-only mode**: Members can restrict DMs to organizers only
+- Alert organizers to reported behavior patterns in their group
+
+**Reporting & Moderation**:
+- **One-tap reporting**: Easy report button with categories (harassment, spam, inappropriate, safety concern)
+- **Report context**: Include relevant message history automatically
+- **Organizer alerts**: Notify group leadership of reports involving their members
+- **Cross-group visibility**: If someone is banned from multiple groups, surface this to other organizers (privacy-conscious)
+
+**Graduated Enforcement**:
+- **Warning**: Private message explaining the issue with guidance on appropriate behavior
+- **Temporary suspension**: Cooling-off period (1 week, 1 month) with automatic restoration
+- **Permanent ban**: Full removal from group with no rejoin option
+- **Compassionate templates**: Pre-written messages that are firm but not punitive
+- Document all enforcement actions for organizer reference
+
+**Member Safety Features**:
+- Block users (prevents all contact and hides you from them)
+- Hide attendance from specific members
+- Anonymous attendance option for sensitive event types
+- Emergency contact sharing (opt-in) for in-person events
+
 ### Tasks
 - [ ] Build direct messaging interface
 - [ ] Implement message threading and history
@@ -628,10 +736,19 @@ Reach guests where they're most responsive:
 - [ ] Implement SMS invitation sending
 - [ ] Build contact import from phone
 - [ ] Create SMS delivery tracking
+- [ ] Implement connection-gated messaging options
+- [ ] Build message rate limiting and mass-message detection
+- [ ] Create one-tap reporting flow with categories
+- [ ] Implement organizer alerts for reported behavior
+- [ ] Build graduated enforcement system (warning, temp ban, permanent ban)
+- [ ] Create compassionate moderation message templates
+- [ ] Implement cross-group ban visibility for organizers
+- [ ] Build anonymous attendance option
+- [ ] Add hide attendance from specific members feature
 
 ---
 
-## 7. Social Connections
+## 8. Social Connections
 
 Features that help members build relationships beyond individual events.
 
@@ -662,7 +779,101 @@ Features that help members build relationships beyond individual events.
 
 ---
 
-## 8. Organizer Analytics
+## 9. Speaker Directory & Sharing
+
+A marketplace connecting speakers with groups seeking presenters, enabling cross-group collaboration.
+
+### Speaker Profiles
+- Users can list themselves as available speakers
+- Speaker profile includes: topics, bio, past speaking experience, availability
+- Link to recordings or slides from previous talks
+- Indicate compensation expectations (free, expenses covered, paid)
+- Speaker rating/reviews from past events
+
+### Finding Speakers
+- **"Seeking Speakers" posts**: Organizers broadcast their need for speakers on specific topics
+- Search speaker directory by topic, location, availability
+- Filter by: compensation requirements, experience level, rating
+- "Recommended speakers" based on group's topic focus
+
+### Cross-Group Speaker Sharing
+- Speakers can request to present at groups they're not members of
+- Groups can invite speakers from other groups
+- Speaker gets exposure/marketing opportunity
+- Group gets quality content
+- Track speaker's cross-group presentation history
+- Mutual benefit: speakers build reputation, groups get diverse perspectives
+
+### Speaker Event Integration
+- Easy "Add speaker" flow when creating events
+- Speaker bio automatically added to event description
+- Speaker can upload their own materials (slides, handouts)
+- Post-event: prompt attendees to rate the speaker
+- Speaker can share event to their own network
+
+### Tasks
+- [ ] Design speaker profile creation flow
+- [ ] Build speaker directory with search and filters
+- [ ] Create "Seeking Speakers" post functionality
+- [ ] Implement cross-group speaker invitation system
+- [ ] Build speaker rating and review system
+- [ ] Create speaker-event integration in event creation
+- [ ] Implement speaker materials upload
+
+---
+
+## 10. Organizer Growth Journey
+
+Support organizers in developing their skills and building thriving communities.
+
+### Milestone Celebrations
+- **First event**: Congratulations and tips for success
+- **10th event**: Badge and "experienced organizer" status
+- **100 members**: Community builder recognition
+- **1 year anniversary**: Celebration of sustained commitment
+- Milestones visible on organizer profile (optional)
+- Share milestones to group members
+
+### Skill Development
+- **Guided tutorials**: How to book venues, find speakers, handle difficult situations
+- **Best practices library**: Event format templates, icebreaker ideas, discussion guides
+- **Organizer community**: Connect with other organizers for advice and support
+- Tips delivered contextually (e.g., before first event, after a cancellation)
+
+### Organizer Stories
+- Feature inspiring organizer journeys on the platform
+- "How I started" testimonials to encourage new organizers
+- Highlight personal growth: "From shy attendee to community leader"
+- Encourage regular attendees to try hosting with low-barrier first events
+
+### Attendee-to-Organizer Pipeline
+- **"Host your first event" prompts**: Encourage engaged attendees to try organizing
+- **Co-host opportunities**: Let aspiring organizers shadow experienced ones
+- **Event templates**: Pre-built formats that reduce planning burden
+- **Mentorship matching**: Connect new organizers with experienced ones
+- Track the journey: first RSVP → regular attendee → first event hosted → established organizer
+
+### Organizer Wellbeing
+- **Burnout prevention**: Reminders to take breaks, celebrate wins
+- **Delegation prompts**: "You've hosted 10 events this month - consider adding a co-organizer"
+- **Community appreciation**: Prompt members to thank their organizers
+- Recognize that organizing is emotional labor
+
+### Tasks
+- [ ] Design milestone celebration system
+- [ ] Build milestone badges and profile display
+- [ ] Create organizer tutorial content
+- [ ] Build best practices library
+- [ ] Implement organizer community/forum
+- [ ] Design "host your first event" prompts for attendees
+- [ ] Create event templates for new organizers
+- [ ] Build co-host/shadow organizer system
+- [ ] Implement organizer wellbeing features (burnout detection, delegation prompts)
+- [ ] Create member appreciation prompts for organizers
+
+---
+
+## 11. Organizer Analytics
 
 Real-time dashboards and reports to help organizers understand event performance.
 
@@ -671,12 +882,14 @@ Real-time dashboards and reports to help organizers understand event performance
 - **Check-in metrics**: Checked-in vs no-shows, check-in rate over time
 - **Attendance trends**: Compare attendance across events in series
 - **Source tracking**: How attendees discovered the event (search, recommendation, share, direct)
+- **Reliability insights**: Average reliability score of RSVPed attendees, predicted actual attendance
 
 ### Reports
 - Attendee list export (CSV) with registration question responses
 - Historical attendance data for past events
 - Group-level analytics (total events, total attendees, growth over time)
 - No-show rate tracking to improve future planning
+- Member engagement funnel: sleeper → first event → regular → core member
 
 ### Tasks
 - [ ] Build real-time event analytics dashboard
@@ -684,10 +897,12 @@ Real-time dashboards and reports to help organizers understand event performance
 - [ ] Create source tracking for event discovery
 - [ ] Build CSV export for attendee data
 - [ ] Implement group-level analytics rollup
+- [ ] Add reliability insights to event dashboard
+- [ ] Build member engagement funnel tracking
 
 ---
 
-## 9. PWA Features
+## 12. PWA Features
 
 Technical requirements for the Progressive Web App to deliver a native-like mobile experience.
 
