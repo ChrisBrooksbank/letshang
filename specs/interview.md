@@ -139,43 +139,163 @@ Based on this interview, the following were added:
 
 ---
 
-## Unanswered Questions to Revisit
+## Part 2: Follow-up Interview (January 2026)
 
-The following questions were asked but not fully explored. Consider revisiting in a future interview:
+This section captures answers to the questions from Part 1 that were revisited in a follow-up session.
 
-### On Community Dynamics
-1. Did the core dozen regulars know each other outside of events? Did the group spawn independent friendships?
-2. Did any regulars step up to help run things, or was it all on the founder?
-3. Were there ever tensions between different "types" of members (age gaps, different severity of anxiety)?
-4. Did you do anything explicit to signal inclusivity, or was it just the vibe you set?
+---
 
-### On Attendee Behavior
-5. For the "aspirational no-shows" and sleepers - did anyone ever tell you *why* they kept not showing up?
-6. Did you notice patterns in who became "regulars" vs who came once and vanished?
-7. Were there people who clearly wanted to connect but struggled? Anything you wished you could do to help them?
+### Community Dynamics & Helper Networks
 
-### On Organizer Experience
-8. What were the most time-consuming or draining parts of organizing?
-9. Did you have co-organizers? Did that help or create its own problems?
-10. Did you ever have to have awkward conversations with attendees about behavior (not banning, but smaller stuff - someone dominating conversation, being off-putting)?
+**Did the core regulars know each other outside events?**
+Yes - connections formed outside events, both among core and some non-core members. Mostly event-bound, but not entirely.
 
-### On Platform Pain Points
-11. What was most broken or frustrating about Meetup.com specifically from an organizer's perspective?
-12. Did you have to maintain anything outside the platform? (Facebook group, email list, WhatsApp, spreadsheets)
+**Did regulars step up to help?**
+Yes:
+- Girlfriend helped regularly
+- One long-term helper specifically for social anxiety workshops
+- Others helped ad-hoc when needed
+- Actively encouraged people to become assistant organizers - saw it as good for them AND the group
 
-### On the Multi-Day Trip
-13. What blocked the multi-day trip from happening? Cost? Logistics? People nervous about that level of intimacy?
-14. Did people express interest but not convert, or was there just silence?
+**Group culture was explicit:**
+- "All are welcome"
+- No gossiping about others
+- No judgment in group
 
-### On Facilitation
-15. Did you ever think about features that would help people connect *outside* of events? (Or did you intentionally keep it event-focused?)
-16. Did you ever play matchmaker? ("You two should talk, you're both into X")
+**On delegation:**
+- Had to "let go" despite worries about culture drift or politics
+- Wanted hosts with different qualities to step up - different vibes work for different people/events
 
-### On Growth & Scaling
-17. At what point did the group feel like it had "momentum" and grew itself?
-18. Did the group dynamics change as it scaled? Did it get harder to maintain intimacy?
-19. Did you segment into sub-groups or smaller events?
-20. Were there "regulars" vs "tourists" - and did you treat them differently?
+**Tensions between member types?**
+- Anxiety manifests differently - some appear confident/relaxed at events
+- No noted tensions on age gaps, etc.
+- Possible blind spots (founder is on the spectrum, undiagnosed ADHD) - invited messages but unsure if people reached out with concerns
+
+---
+
+### Attendee Behavior
+
+**Why aspirational no-shows didn't show:**
+- Anxiety on the day - struggled to walk in door
+- Founder offered to come out and walk in with them
+- 1:1 coffee was designed as lowest-stress possible entry point
+- Some were dismissive / didn't value organizer's time (unknown real reason behind this)
+- Competition: other SA groups in London
+
+**Discovery channels:** Meetup.com (primary), Facebook group, standalone blog/website
+
+**People who struggled to connect:**
+Definitely existed. Wished could help more but unsure what would have worked.
+
+**Patterns in who became regulars vs vanished:**
+- People unable to relax at all were less likely to return
+- Some wanted specific types of meetups - hundreds of groups in London to choose from
+- Unless they return, algorithm stops showing the group (discovery decay)
+- Did newsletters, but only to those who opted in
+
+---
+
+### Organizer Experience
+
+**Was it draining?**
+No - overall transformational. Even admin was learning, not burden. "It was a great time in my life."
+
+**Created documented processes:**
+- How to run a social anxiety workshop
+- How to book venues
+- Menu of exercises to pick from
+- Promotion guides
+
+**Imposter syndrome:**
+Sometimes felt like a "fake" because appeared confident/relaxed when others were introverted. Other times felt very stressed.
+
+**Growth edge:**
+Presenting own talk was a stretch - meaningful milestone.
+
+**Difficult behavior conversations:**
+Probably avoided some that should have happened. Can't remember specifics.
+
+**Co-organizer coordination:**
+Had co-organizers beyond close helpers. No major friction. Main challenge was letting go - worrying they wouldn't host in same culture. Had to trust them.
+
+---
+
+### Platform Pain Points (Meetup.com)
+
+**What was broken:**
+- Tracking actual attendance - especially with face blindness, couldn't accurately identify who came
+- Didn't want formal "school register" vibe
+
+**What worked:**
+- Surveys feature was good - used and liked it
+
+**Outside platform maintenance:**
+- Facebook group, blog, website
+- Purpose: alternative discovery channels + hedging against platform risk ("what if it goes away or becomes bad")
+
+---
+
+### Multi-Day Trip
+
+**What blocked it:**
+- Only 1 person RSVP'd to the planning meetup
+- Expected people to leap on it - possible naivety
+
+**Interest vs silence:**
+Mainly silence. Hard to learn from silence - don't know the real barrier.
+
+---
+
+### Facilitation
+
+**Connection outside events:**
+Intentionally event-focused (except regulars who became genuine friends).
+
+**Boundaries:**
+Personal rule: zero romantic involvement with members. Considered them vulnerable people, respected the power dynamic. Met wife through a different, non-SA group.
+
+**Matchmaking:**
+Yes, tried sometimes to connect people with shared interests.
+
+---
+
+### Growth & Scaling
+
+**When did it have momentum?**
+Momentum earned through consistency - many meetups, both founders' lives poured in. Meetup.com platform helped with discovery.
+
+**Dynamics change with scale:**
+Changed when appointed co-organizers - that was the scaling trigger.
+
+**Segmentation:**
+- Small events were important - some members really wanted smaller gatherings
+- Marked events as "small" in title, capped RSVPs
+- 1:1 coffees as smallest option
+
+**Regulars vs tourists:**
+Tried to make sure newcomers felt included without overpowering them with too much attention. Balanced welcome.
+
+---
+
+## New Feature Ideas from Part 2
+
+Based on this follow-up interview:
+
+1. **Organizer Playbook Sharing** - Let organizers create and share documented processes (workshop guides, venue booking tips, exercise menus)
+2. **Event Size Indicators** - "Intimate (under 10)", "Small (10-20)" with filters in discovery
+3. **Anonymous Feedback** - But tension with no-gossip culture; needs careful framing
+4. **Templates/Scripts for Difficult Conversations** - For hosts and potentially attendees
+5. **Easy Data Export** - Member lists, event history; reduce platform lock-in fear
+6. **Interest Polls** - Before high-commitment events to gauge interest without requiring commitment
+7. **Expanded Surveys** - Beyond post-event feedback; for interest gathering, member polling
+
+---
+
+## Previously Unanswered Questions (Now Answered)
+
+Questions 1-20 from Part 1 have been addressed above, with the following notes:
+- Q4 (explicit inclusivity signals) - answered implicitly through culture description
+- Patterns in who became regulars - partially answered (relaxation, type fit, algorithm decay)
 
 ---
 
