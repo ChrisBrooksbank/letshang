@@ -172,23 +172,25 @@ If we need completely free (no limits):
 | **Playwright** | E2E testing |
 | **Husky** | Pre-commit hooks (runs quality gates) |
 | **knip** | Dead code / unused export detection |
+| **depcheck** | Unused dependency detection |
 | **vite-bundle-analyzer** | Bundle size monitoring |
 
 ### Quality Gate Tools
 
-These tools enforce the 8 quality gates defined in `AGENTS.md`:
+These tools enforce the 9 quality gates defined in `AGENTS.md`:
 
 | Gate | Tool | Threshold |
 |------|------|-----------|
-| Type Safety | `pnpm check` | 0 errors |
-| Linting | `pnpm lint` | 0 errors, 0 warnings |
-| Formatting | `pnpm format:check` | All files pass |
-| Unit Tests | `pnpm test` | 100% pass |
-| Coverage | `pnpm test:coverage` | 80% lines, 80% branches |
-| Build | `pnpm build` | Successful |
-| E2E Tests | `pnpm test:e2e` | 100% pass |
-| Bundle Size | `pnpm analyze` | < 100KB gzipped |
-| Dead Code | `pnpm knip` | 0 unused exports |
+| 1. Type Safety | `pnpm check` | 0 errors |
+| 2. Linting | `pnpm lint` | 0 errors, 0 warnings |
+| 3. Formatting | `pnpm format:check` | All files pass |
+| 4. Unit Tests | `pnpm test` | 100% pass |
+| 5. Coverage | `pnpm test:coverage` | 80% lines, 80% branches |
+| 6. Build | `pnpm build` | Successful |
+| 7. E2E Tests | `pnpm test:e2e` | 100% pass |
+| 8. Bundle Size | `pnpm analyze` | < 100KB gzipped |
+| 9. Dead Code | `pnpm knip` | 0 unused exports |
+| 10. Unused Deps | `pnpm depcheck` | 0 unused dependencies |
 
 ---
 
@@ -222,9 +224,10 @@ pnpm test:coverage    # Gate 4: With coverage report (80% minimum)
 pnpm test:e2e         # Gate 6: Playwright E2E tests
 pnpm analyze          # Gate 7: Bundle size analysis
 pnpm knip             # Gate 8: Find unused code/exports
+pnpm depcheck         # Gate 9: Find unused dependencies
 
 # Full validation (run before commit)
-pnpm check && pnpm lint && pnpm test:coverage && pnpm build && pnpm knip
+pnpm check && pnpm lint && pnpm test:coverage && pnpm build && pnpm knip && pnpm depcheck
 
 # Database
 pnpm db:types         # Generate TypeScript types from Supabase

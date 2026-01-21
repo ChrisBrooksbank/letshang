@@ -85,9 +85,17 @@ pnpm knip             # Find unused files, exports, dependencies
 - **Threshold**: 0 unused exports in src/
 - Remove dead code, don't comment it out
 
+### Gate 9: Unused Dependencies
+```bash
+pnpm depcheck         # Find unused npm dependencies
+```
+- **Threshold**: 0 unused dependencies
+- Remove from package.json if not needed
+- If false positive, add to `.depcheckrc` ignores
+
 ### Full Validation Sequence
 ```bash
-pnpm check && pnpm lint && pnpm test:coverage && pnpm build && pnpm knip
+pnpm check && pnpm lint && pnpm test:coverage && pnpm build && pnpm knip && pnpm depcheck
 ```
 
 ---
@@ -216,14 +224,51 @@ src/
 
 A task is DONE when:
 - [ ] All acceptance criteria met
-- [ ] All 8 quality gates pass
-- [ ] New code has tests
+- [ ] All 9 quality gates pass
+- [ ] New code has tests (80%+ coverage)
 - [ ] No new lint warnings
 - [ ] No console.log statements
 - [ ] Types are explicit (no implicit any)
 - [ ] Error cases handled
 - [ ] Mobile responsive verified
 - [ ] IMPLEMENTATION_PLAN.md updated
+
+---
+
+## Tool Decisions
+
+### Why These Tools
+
+| Tool | Why Included |
+|------|--------------|
+| **knip** | Comprehensive: finds unused files, exports, AND dependencies |
+| **depcheck** | Belt-and-suspenders for dependencies; catches edge cases |
+| **Vitest** | Fast, Vite-native, excellent coverage reporting |
+| **Playwright** | Cross-browser E2E, best-in-class reliability |
+| **Prettier** | Industry standard formatting |
+| **ESLint** | Catches bugs, enforces patterns, security rules |
+
+### Why NOT These Tools
+
+| Tool | Why Excluded |
+|------|--------------|
+| **ts-prune** | Redundant - knip finds unused exports |
+| **purgecss** | Redundant - Tailwind JIT purges unused CSS automatically |
+| **beautify** | Redundant - Prettier is the standard |
+| **jscpd** | Nice-to-have - manual review catches duplication; adds complexity |
+
+### Tool Overlap Matrix
+
+```
+                    Unused    Unused    Unused    Code
+                    Exports   Files     Deps      Format
+knip                  ✓         ✓         ✓
+depcheck                                  ✓
+ts-prune              ✓
+Prettier                                            ✓
+```
+
+knip + depcheck covers all dead code detection needs.
 
 ---
 

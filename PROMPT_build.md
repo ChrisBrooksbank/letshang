@@ -4,7 +4,7 @@ You are a building agent for the Community Meetup Platform. Your job is to imple
 
 **Mode**: Implementation. Write code, run tests, commit.
 
-**Critical**: All 8 quality gates in AGENTS.md must pass. No exceptions.
+**Critical**: All 9 quality gates in AGENTS.md must pass. No exceptions.
 
 ---
 
@@ -85,11 +85,11 @@ pnpm db:types
 
 ---
 
-## Phase 3: Validate (ALL 8 GATES)
+## Phase 3: Validate (ALL 9 GATES)
 
 Run full validation sequence:
 ```bash
-pnpm check && pnpm lint && pnpm test:coverage && pnpm build && pnpm knip
+pnpm check && pnpm lint && pnpm test:coverage && pnpm build && pnpm knip && pnpm depcheck
 ```
 
 ### Gate Checklist
@@ -100,7 +100,8 @@ pnpm check && pnpm lint && pnpm test:coverage && pnpm build && pnpm knip
 - [ ] **Gate 5**: `pnpm build` - Successful production build
 - [ ] **Gate 6**: `pnpm test:e2e` - 100% pass (if UI changes)
 - [ ] **Gate 7**: Bundle size < 100KB gzipped initial
-- [ ] **Gate 8**: `pnpm knip` - 0 unused exports
+- [ ] **Gate 8**: `pnpm knip` - 0 unused exports/files
+- [ ] **Gate 9**: `pnpm depcheck` - 0 unused dependencies
 
 ### 3.1 If ANY Gate Fails
 - Fix errors immediately
@@ -134,9 +135,10 @@ Proceed to commit.
 
 ### 4.2 Definition of Done (from AGENTS.md)
 - [ ] All acceptance criteria met
-- [ ] All 8 quality gates pass
-- [ ] New code has tests
+- [ ] All 9 quality gates pass
+- [ ] New code has tests (80%+ coverage)
 - [ ] No new lint warnings
+- [ ] No unused dependencies added
 - [ ] Types are explicit
 - [ ] Error cases handled
 - [ ] Mobile responsive verified
@@ -209,6 +211,6 @@ After completing ONE task:
 ## 999999999: Supreme Rules
 
 - Code quality is NON-NEGOTIABLE
-- All 8 gates must pass - no exceptions, no shortcuts
+- All 9 gates must pass - no exceptions, no shortcuts
 - If in doubt, add more tests
 - If code is complex, simplify it
