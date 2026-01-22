@@ -69,10 +69,10 @@
   - AC: Types exported from `src/lib/types/database.ts` ✓
   - AC: Type generation documented in README ✓
 
-- [ ] Create auth helpers
-  - AC: Server-side auth check in `hooks.server.ts`
-  - AC: Client-side auth store in `src/lib/stores/auth.ts`
-  - AC: Protected route guards work
+- [x] Create auth helpers ✓
+  - AC: Server-side auth check in `hooks.server.ts` ✓
+  - AC: Client-side auth store in `src/lib/stores/auth.ts` ✓
+  - AC: Protected route guards work ✓
 
 - [ ] Create initial database schema
   - AC: `users` table with profile fields
