@@ -1,17 +1,23 @@
 {
-	"ignoreMatches": [
-		"@sveltejs/*",
-		"@testing-library/*",
-		"@tailwindcss/*",
-		"@vitest/*",
+	"ignores": [
+		"@sveltejs/adapter-auto",
+		"@sveltejs/kit",
+		"@sveltejs/vite-plugin-svelte",
+		"@testing-library/svelte",
+		"@tailwindcss/postcss",
+		"@vitest/coverage-v8",
 		"autoprefixer",
 		"globals",
 		"postcss",
-		"prettier-plugin-*",
-		"svelte*",
+		"prettier-plugin-svelte",
+		"svelte",
+		"svelte-check",
 		"tailwindcss",
 		"typescript",
-		"vite*"
+		"vite",
+		"vite-bundle-analyzer",
+		"vitest"
 	],
-	"ignoreDirs": [".svelte-kit", "build", "dist", "node_modules"]
+	"ignoreDirs": [".svelte-kit", "build", "dist", "node_modules"],
+	"skipMissing": true
 }
