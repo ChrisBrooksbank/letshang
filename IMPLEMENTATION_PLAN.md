@@ -59,7 +59,7 @@
 
 > Connect to Supabase for database, auth, and storage
 
-- [ ] Install and configure Supabase client
+- [x] Install and configure Supabase client ✓
   - AC: `@supabase/supabase-js` installed
   - AC: Environment variables documented in `.env.example`
   - AC: Supabase client singleton in `src/lib/server/supabase.ts`
