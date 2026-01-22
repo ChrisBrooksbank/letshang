@@ -193,12 +193,12 @@
 
 > Three-tier RSVP flow (spec: 03-events.md)
 
-- [ ] Create RSVP database schema
-  - AC: `event_rsvps` table
-  - AC: `rsvp_id`, `event_id`, `user_id`
-  - AC: `status` enum: going, interested, not_going
-  - AC: `created_at`, `updated_at` timestamps
-  - AC: RLS policies for RSVP visibility
+- [x] Create RSVP database schema ✓
+  - AC: `event_rsvps` table ✓
+  - AC: `rsvp_id`, `event_id`, `user_id` ✓
+  - AC: `status` enum: going, interested, not_going ✓
+  - AC: `created_at`, `updated_at` timestamps ✓
+  - AC: RLS policies for RSVP visibility ✓
 
 - [ ] Create RSVP flow [P0]
   - AC: "Going" - confirmed, counts toward capacity
