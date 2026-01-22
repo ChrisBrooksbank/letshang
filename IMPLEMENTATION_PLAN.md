@@ -102,10 +102,10 @@
   - AC: No horizontal scroll on any screen size ✓
   - AC: Base layout component created ✓
 
-- [ ] Optimize initial load [P0]
-  - AC: Lighthouse performance score > 90
-  - AC: First contentful paint < 1.5s
-  - AC: Bundle < 100KB gzipped
+- [x] Optimize initial load [P0] ✓
+  - AC: Lighthouse performance score > 90 ✓
+  - AC: First contentful paint < 1.5s ✓
+  - AC: Bundle < 100KB gzipped ✓
 
 ---
 
