@@ -96,11 +96,11 @@
   - AC: Static assets cached (HTML, CSS, JS, images) ✓
   - AC: Cache-first for static, network-first for API ✓
 
-- [ ] Design mobile-first base layouts [P0]
-  - AC: Touch-friendly targets (44px minimum)
-  - AC: Single-column mobile layout
-  - AC: No horizontal scroll on any screen size
-  - AC: Base layout component created
+- [x] Design mobile-first base layouts [P0] ✓
+  - AC: Touch-friendly targets (44px minimum) ✓
+  - AC: Single-column mobile layout ✓
+  - AC: No horizontal scroll on any screen size ✓
+  - AC: Base layout component created ✓
 
 - [ ] Optimize initial load [P0]
   - AC: Lighthouse performance score > 90
