@@ -172,20 +172,20 @@
   - AC: `venue_name`, `venue_address` for in-person ✓
   - AC: RLS policies for event visibility ✓
 
-- [ ] Design event creation form [P0]
-  - AC: Title (5-100 chars) with validation
-  - AC: Description (rich text, up to 5000 chars)
-  - AC: Date, time, duration picker
-  - AC: Required fields enforced: title, date/time, type
+- [x] Design event creation form [P0] ✓
+  - AC: Title (5-100 chars) with validation ✓
+  - AC: Description (rich text, up to 5000 chars) ✓
+  - AC: Date, time, duration picker ✓
+  - AC: Required fields enforced: title, date/time, type ✓
 
-- [ ] Support standalone events [P0]
-  - AC: Events created without a group
-  - AC: Creator becomes event host
-  - AC: Event page accessible via URL
+- [x] Support standalone events [P0] ✓
+  - AC: Events created without a group ✓
+  - AC: Creator becomes event host ✓
+  - AC: Event page accessible via URL ✓
 
-- [ ] Implement in-person events [P0]
-  - AC: Venue name and address fields
-  - AC: Address stored for later map integration
+- [x] Implement in-person events [P0] ✓
+  - AC: Venue name and address fields ✓
+  - AC: Address stored for later map integration ✓
 
 ---
 
