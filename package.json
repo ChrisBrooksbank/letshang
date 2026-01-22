@@ -20,6 +20,7 @@
 		"analyze": "vite-bundle-analyzer",
 		"knip": "knip",
 		"depcheck": "depcheck",
+		"db:types": "echo 'Generating Supabase types...' && echo 'Note: Requires valid Supabase credentials in .env' && echo 'Please install Supabase CLI globally: npm install -g supabase' && echo 'Then run: supabase gen types typescript --project-id YOUR_PROJECT_ID > src/lib/types/database.ts'",
 		"postinstall": "husky || true"
 	},
 	"devDependencies": {
