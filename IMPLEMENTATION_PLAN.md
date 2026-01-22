@@ -132,10 +132,10 @@
   - AC: Reset link valid for 1 hour (enforced by Supabase) ✓
   - AC: Password change invalidates old sessions ✓
 
-- [ ] Implement login form [P0]
-  - AC: Email/password login works
-  - AC: "Remember me" option
-  - AC: Error messages don't reveal if email exists
+- [x] Implement login form [P0] ✓
+  - AC: Email/password login works ✓
+  - AC: "Remember me" option ✓
+  - AC: Error messages don't reveal if email exists ✓
 
 ---
 

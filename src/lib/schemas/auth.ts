@@ -68,3 +68,15 @@ export const passwordResetSchema = z
  * TypeScript type for password reset form
  */
 export type PasswordResetSchema = z.infer<typeof passwordResetSchema>;
+
+/**
+ * Login form schema
+ * - Email validation (lowercase)
+ * - Password validation (minimum 8 characters)
+ * - Optional "remember me" checkbox
+ */
+export const loginSchema = z.object({
+	email: emailSchema,
+	password: z.string().min(1, 'Password is required'),
+	rememberMe: z.boolean().default(false)
+});
