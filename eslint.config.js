@@ -25,6 +25,11 @@ export default [
 				Response: 'readonly',
 				URL: 'readonly',
 				fetch: 'readonly',
+				FormData: 'readonly',
+				setInterval: 'readonly',
+				clearInterval: 'readonly',
+				setTimeout: 'readonly',
+				clearTimeout: 'readonly',
 				// SvelteKit App namespace
 				App: 'readonly'
 			}
@@ -73,6 +78,14 @@ export default [
 		}
 	},
 	prettier,
+	{
+		// Test files configuration
+		files: ['**/*.test.{js,ts}', '**/*.spec.{js,ts}'],
+		rules: {
+			'@typescript-eslint/no-explicit-any': 'off', // Allow any in test files for mocking
+			'no-undef': 'off' // Vitest provides globals
+		}
+	},
 	{
 		// Node.js scripts configuration
 		files: ['scripts/**/*.js'],

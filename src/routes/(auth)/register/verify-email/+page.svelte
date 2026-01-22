@@ -1,8 +1,59 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { enhance } from '$app/forms';
 
 	// Get email from query params
 	const email = $page.url.searchParams.get('email') ?? '';
+
+	// Track resend state
+	let isResending = false;
+	let resendSuccess = false;
+	let resendError = '';
+	let cooldownSeconds = 0;
+	let cooldownInterval: ReturnType<typeof setInterval> | null = null;
+
+	const COOLDOWN_TIME = 60; // 60 seconds cooldown between resends
+
+	function handleResendResult() {
+		return async ({
+			result,
+			update
+		}: {
+			result: { type: string; data?: { success?: boolean; error?: string } };
+			update: () => Promise<void>;
+		}) => {
+			isResending = false;
+
+			if (result.type === 'success' && result.data?.success) {
+				resendSuccess = true;
+				resendError = '';
+
+				// Start cooldown
+				cooldownSeconds = COOLDOWN_TIME;
+				cooldownInterval = setInterval(() => {
+					cooldownSeconds--;
+					if (cooldownSeconds <= 0 && cooldownInterval) {
+						clearInterval(cooldownInterval);
+						cooldownInterval = null;
+						resendSuccess = false;
+					}
+				}, 1000);
+			} else if (result.type === 'failure') {
+				resendError = result.data?.error || 'Failed to resend email';
+				resendSuccess = false;
+			}
+
+			await update();
+		};
+	}
+
+	// Clear interval on unmount
+	import { onDestroy } from 'svelte';
+	onDestroy(() => {
+		if (cooldownInterval) {
+			clearInterval(cooldownInterval);
+		}
+	});
 </script>
 
 <svelte:head>
@@ -66,12 +117,43 @@
 		<!-- Additional Info -->
 		<div class="text-sm text-gray-600 space-y-2">
 			<p>The verification link is valid for 24 hours.</p>
-			<p>
-				Didn't receive the email?
-				<button class="text-blue-600 hover:text-blue-700 font-medium underline">
-					Resend verification email
-				</button>
-			</p>
+
+			{#if resendSuccess}
+				<div class="bg-green-50 border border-green-200 rounded-lg p-3">
+					<p class="text-green-800">
+						Verification email resent! Check your inbox.
+						{#if cooldownSeconds > 0}
+							<span class="block mt-1 text-xs">
+								You can request another in {cooldownSeconds} seconds
+							</span>
+						{/if}
+					</p>
+				</div>
+			{:else if resendError}
+				<div class="bg-red-50 border border-red-200 rounded-lg p-3">
+					<p class="text-red-800">{resendError}</p>
+				</div>
+			{:else}
+				<div>
+					<p class="inline">Didn't receive the email?</p>
+					<form method="POST" action="?/resend" use:enhance={handleResendResult} class="inline">
+						<input type="hidden" name="email" value={email} />
+						<button
+							type="submit"
+							disabled={isResending || cooldownSeconds > 0}
+							class="text-blue-600 hover:text-blue-700 font-medium underline disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							{#if isResending}
+								Sending...
+							{:else if cooldownSeconds > 0}
+								Wait {cooldownSeconds}s
+							{:else}
+								Resend verification email
+							{/if}
+						</button>
+					</form>
+				</div>
+			{/if}
 		</div>
 
 		<!-- Back to Home -->

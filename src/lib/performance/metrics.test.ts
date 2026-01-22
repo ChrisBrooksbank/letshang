@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-/* eslint-disable no-undef */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
 	PERFORMANCE_THRESHOLDS,
