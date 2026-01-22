@@ -165,12 +165,12 @@
 
 > Standalone event creation (spec: 03-events.md)
 
-- [ ] Create events database schema
-  - AC: `events` table with required fields
-  - AC: `event_id`, `creator_id`, `title`, `description`
-  - AC: `start_time`, `end_time`, `event_type`
-  - AC: `venue_name`, `venue_address` for in-person
-  - AC: RLS policies for event visibility
+- [x] Create events database schema ✓
+  - AC: `events` table with required fields ✓
+  - AC: `event_id`, `creator_id`, `title`, `description` ✓
+  - AC: `start_time`, `end_time`, `event_type` ✓
+  - AC: `venue_name`, `venue_address` for in-person ✓
+  - AC: RLS policies for event visibility ✓
 
 - [ ] Design event creation form [P0]
   - AC: Title (5-100 chars) with validation
