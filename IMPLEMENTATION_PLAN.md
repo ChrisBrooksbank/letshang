@@ -6,52 +6,52 @@
 
 **Codebase**: Greenfield - no application code exists yet (`src/` is empty)
 **Specs**: Complete - 12 feature specs with clear acceptance criteria
-**Infrastructure**: Ralph loop files ready (AGENTS.md, PROMPT_*.md, loop.sh)
+**Infrastructure**: Ralph loop files ready (AGENTS.md, PROMPT\_\*.md, loop.sh)
 
 ---
 
 ## Phase 0: Foundation (P0)
 
-### Iteration 0: Project Scaffolding
+### Iteration 0: Project Scaffolding ✓
 
 > Set up the SvelteKit project with all tooling configured per tech-stack.md
 
-- [ ] Initialize SvelteKit project with TypeScript strict mode
-  - AC: `pnpm create svelte@latest` with TypeScript option
-  - AC: `tsconfig.json` has `"strict": true`
-  - AC: Project structure matches `specs/tech-stack.md`
+- [x] Initialize SvelteKit project with TypeScript strict mode ✓
+  - AC: `pnpm create svelte@latest` with TypeScript option ✓
+  - AC: `tsconfig.json` has `"strict": true` ✓
+  - AC: Project structure matches `specs/tech-stack.md` ✓
 
-- [ ] Configure Tailwind CSS
-  - AC: Tailwind installed and configured
-  - AC: `@apply` works in `.svelte` files
-  - AC: Base styles applied
+- [x] Configure Tailwind CSS ✓
+  - AC: Tailwind installed and configured ✓
+  - AC: `@apply` works in `.svelte` files ✓
+  - AC: Base styles applied ✓
 
-- [ ] Set up ESLint + Prettier
-  - AC: ESLint with TypeScript and Svelte plugins
-  - AC: Security rules enabled (no-eval, etc.)
-  - AC: Prettier integrated with ESLint
-  - AC: `pnpm lint` and `pnpm format` work
+- [x] Set up ESLint + Prettier ✓
+  - AC: ESLint with TypeScript and Svelte plugins ✓
+  - AC: Security rules enabled (no-eval, etc.) ✓
+  - AC: Prettier integrated with ESLint ✓
+  - AC: `pnpm lint` and `pnpm format` work ✓
 
-- [ ] Configure Vitest for unit testing
-  - AC: Vitest installed with coverage
-  - AC: `pnpm test` and `pnpm test:coverage` work
-  - AC: Coverage thresholds set (80% lines, 80% branches)
+- [x] Configure Vitest for unit testing ✓
+  - AC: Vitest installed with coverage ✓
+  - AC: `pnpm test` and `pnpm test:coverage` work ✓
+  - AC: Coverage thresholds set (80% lines, 80% branches) ✓
 
-- [ ] Configure Playwright for E2E testing
-  - AC: Playwright installed
-  - AC: `pnpm test:e2e` works
-  - AC: Basic smoke test passes
+- [x] Configure Playwright for E2E testing ✓
+  - AC: Playwright installed ✓
+  - AC: `pnpm test:e2e` works ✓
+  - AC: Basic smoke test passes ✓
 
-- [ ] Set up quality gate tooling
-  - AC: knip configured for dead code detection
-  - AC: depcheck configured for unused deps
-  - AC: vite-bundle-analyzer for bundle size
-  - AC: Husky pre-commit hooks run gates
+- [x] Set up quality gate tooling ✓
+  - AC: knip configured for dead code detection ✓
+  - AC: depcheck configured for unused deps ✓
+  - AC: vite-bundle-analyzer for bundle size ✓
+  - AC: Husky pre-commit hooks run gates ✓
 
-- [ ] Create project file structure
-  - AC: `src/lib/components/`, `src/lib/server/`, `src/lib/stores/` exist
-  - AC: `src/lib/utils/`, `src/lib/schemas/`, `src/lib/types/` exist
-  - AC: `src/routes/(app)/`, `src/routes/(auth)/`, `src/routes/api/` exist
+- [x] Create project file structure ✓
+  - AC: `src/lib/components/`, `src/lib/server/`, `src/lib/stores/` exist ✓
+  - AC: `src/lib/utils/`, `src/lib/schemas/`, `src/lib/types/` exist ✓
+  - AC: `src/routes/(app)/`, `src/routes/(auth)/`, `src/routes/api/` exist ✓
 
 ---
 
@@ -617,12 +617,14 @@
 The following P2 features should be prioritized after core functionality is complete:
 
 **User Accounts (P2)**
+
 - Facebook login
 - Event history export
 - Interest-based recommendations
 - Guest-to-account conversion
 
 **Groups (P2)**
+
 - Discussion boards
 - Reviews and ratings
 - Member engagement tiers
@@ -630,6 +632,7 @@ The following P2 features should be prioritized after core functionality is comp
 - Group surveys
 
 **Events (P2)**
+
 - Recurring events
 - Theme customization (40+ themes)
 - Date polling
@@ -641,20 +644,24 @@ The following P2 features should be prioritized after core functionality is comp
 - Surveys
 
 **Discovery (P2)**
+
 - Personalized recommendations
 - "Similar groups" feature
 - Calendar subscription
 - Friend activity badges
 
 **Activity Feed (P2)**
+
 - Full activity feed implementation
 
 **Communication (P2)**
+
 - Direct messaging
 - SMS invitations
 - Anonymous event feedback
 
 **Social Connections (P2)**
+
 - Full social graph implementation
 
 ---

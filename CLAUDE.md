@@ -68,6 +68,7 @@ This project uses the Ralph Wiggum methodology for AI-driven development:
 2. **Building mode** (`PROMPT_build.md`): Implement one task per iteration, validate all gates, commit
 
 Key files:
+
 - `AGENTS.md` - Operational guide with quality gates and code patterns
 - `IMPLEMENTATION_PLAN.md` - AI-generated task list
 - `specs/` - Feature specifications with acceptance criteria
@@ -75,6 +76,7 @@ Key files:
 ## Quality Gates
 
 9 gates must pass before any commit (see `AGENTS.md` for details):
+
 1. Type safety (0 errors)
 2. Linting (0 errors, 0 warnings)
 3. Formatting (Prettier)
@@ -88,6 +90,7 @@ Key files:
 ## Specifications
 
 All requirements are in `specs/`:
+
 - `specs/readme.md` - Index with implementation phases (P0/P1/P2 priorities)
 - `specs/01-*.md` through `specs/12-*.md` - Feature specs
 - `specs/tech-stack.md` - Technical decisions

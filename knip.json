@@ -1,0 +1,7 @@
+{
+	"entry": ["src/routes/**/*.{ts,svelte}", "src/lib/index.ts"],
+	"project": ["src/**/*.{ts,svelte}"],
+	"ignore": [".svelte-kit/**", "build/**", "dist/**"],
+	"ignoreDependencies": ["@testing-library/svelte", "globals", "vite-bundle-analyzer"],
+	"ignoreExportsUsedInFile": true
+}

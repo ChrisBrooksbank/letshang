@@ -10,12 +10,12 @@ Organizers are the lifeblood of the platform. This spec covers milestone celebra
 
 ## Milestone Celebrations
 
-| Milestone | Recognition |
-|-----------|-------------|
-| First event | Congratulations + tips |
-| 10th event | "Experienced Organizer" badge |
-| 100 members | "Community Builder" badge |
-| 1 year anniversary | Anniversary celebration |
+| Milestone          | Recognition                   |
+| ------------------ | ----------------------------- |
+| First event        | Congratulations + tips        |
+| 10th event         | "Experienced Organizer" badge |
+| 100 members        | "Community Builder" badge     |
+| 1 year anniversary | Anniversary celebration       |
 
 - [ ] Design milestone celebration system [P2] [depends: events, groups]
   - AC: Detect milestone achievements

@@ -18,6 +18,7 @@ The founder ran a social anxiety support group in London for approximately four 
 **The biggest frustration was no-shows** - often half of RSVPs wouldn't show up. This was particularly challenging for a social anxiety group where last-minute nerves were common, but the problem wasn't limited to that demographic.
 
 **Tactics tried:**
+
 - Collecting deposits (worked when applicable, but rare)
 - Collecting phone numbers to text people near event time
 - Giving out personal number and asking people to text if they couldn't make it
@@ -29,19 +30,19 @@ The founder ran a social anxiety support group in London for approximately four 
 
 ### Event Formats That Worked
 
-| Format | Stress Level | Why It Worked |
-|--------|--------------|---------------|
-| **Workshops with structured tasks** | Low-Medium | Clear what to do, shared vulnerability, ice breakers, eye contact exercises, games |
-| **Speaker events** | Low | Passive participation OK, natural before/after chat windows |
-| **Anchor events (Wednesday pub)** | Low | Predictable, same time/place, builds habit |
-| **1-2-1 intro coffees** | Low | Personal onboarding for nervous newcomers |
-| **Activity events (cinema, bowling)** | Low-Medium | Shared focus reduces social pressure |
-| **Day trips** | Medium | Extended time together builds bonds |
+| Format                                | Stress Level | Why It Worked                                                                      |
+| ------------------------------------- | ------------ | ---------------------------------------------------------------------------------- |
+| **Workshops with structured tasks**   | Low-Medium   | Clear what to do, shared vulnerability, ice breakers, eye contact exercises, games |
+| **Speaker events**                    | Low          | Passive participation OK, natural before/after chat windows                        |
+| **Anchor events (Wednesday pub)**     | Low          | Predictable, same time/place, builds habit                                         |
+| **1-2-1 intro coffees**               | Low          | Personal onboarding for nervous newcomers                                          |
+| **Activity events (cinema, bowling)** | Low-Medium   | Shared focus reduces social pressure                                               |
+| **Day trips**                         | Medium       | Extended time together builds bonds                                                |
 
-| Format | Stress Level | Why It Struggled |
-|--------|--------------|------------------|
-| **Speed dating** | High | Too stressful for anxious people, even hosts found it draining |
-| **Unstructured mixers** | High | No scaffolding for conversation |
+| Format                  | Stress Level | Why It Struggled                                               |
+| ----------------------- | ------------ | -------------------------------------------------------------- |
+| **Speed dating**        | High         | Too stressful for anxious people, even hosts found it draining |
+| **Unstructured mixers** | High         | No scaffolding for conversation                                |
 
 **Key insight**: Structured activities are an accessibility feature. Events with built-in structure are more welcoming for socially anxious or neurodivergent attendees.
 
@@ -50,6 +51,7 @@ The founder ran a social anxiety support group in London for approximately four 
 ### Finding Speakers
 
 Speakers were easy to find through a symbiotic ecosystem:
+
 - Attend other speaking groups
 - Invite speakers from those groups to your group
 - Speakers weren't paid but could market themselves/their services
@@ -60,6 +62,7 @@ Speakers were easy to find through a symbiotic ecosystem:
 ### Community Composition
 
 Out of ~2,000 members:
+
 - **Core regulars**: ~12-24 people (the actual community)
 - **Semi-regulars**: Showed up occasionally
 - **Sleepers**: Joined but never attended
@@ -88,6 +91,7 @@ The last category was particularly poignant - people who wanted to come but coul
 - People thanked them for changing their lives, introducing them to partners
 
 **Outcomes from the group:**
+
 - Several genuine friendships that persist today
 - People at founder's wedding
 - At least one marriage between members
@@ -109,6 +113,7 @@ The last category was particularly poignant - people who wanted to come but coul
 ### Discovery & Decision Making (As an Attendee)
 
 What influenced attendance decisions:
+
 - Interest in topic (including "wacky" topics like lucid dreaming)
 - Structured activities (helped with social anxiety)
 - Who else was attending (interesting/attractive people)
@@ -152,21 +157,25 @@ Yes - connections formed outside events, both among core and some non-core membe
 
 **Did regulars step up to help?**
 Yes:
+
 - Girlfriend helped regularly
 - One long-term helper specifically for social anxiety workshops
 - Others helped ad-hoc when needed
 - Actively encouraged people to become assistant organizers - saw it as good for them AND the group
 
 **Group culture was explicit:**
+
 - "All are welcome"
 - No gossiping about others
 - No judgment in group
 
 **On delegation:**
+
 - Had to "let go" despite worries about culture drift or politics
 - Wanted hosts with different qualities to step up - different vibes work for different people/events
 
 **Tensions between member types?**
+
 - Anxiety manifests differently - some appear confident/relaxed at events
 - No noted tensions on age gaps, etc.
 - Possible blind spots (founder is on the spectrum, undiagnosed ADHD) - invited messages but unsure if people reached out with concerns
@@ -176,6 +185,7 @@ Yes:
 ### Attendee Behavior
 
 **Why aspirational no-shows didn't show:**
+
 - Anxiety on the day - struggled to walk in door
 - Founder offered to come out and walk in with them
 - 1:1 coffee was designed as lowest-stress possible entry point
@@ -188,6 +198,7 @@ Yes:
 Definitely existed. Wished could help more but unsure what would have worked.
 
 **Patterns in who became regulars vs vanished:**
+
 - People unable to relax at all were less likely to return
 - Some wanted specific types of meetups - hundreds of groups in London to choose from
 - Unless they return, algorithm stops showing the group (discovery decay)
@@ -201,6 +212,7 @@ Definitely existed. Wished could help more but unsure what would have worked.
 No - overall transformational. Even admin was learning, not burden. "It was a great time in my life."
 
 **Created documented processes:**
+
 - How to run a social anxiety workshop
 - How to book venues
 - Menu of exercises to pick from
@@ -223,13 +235,16 @@ Had co-organizers beyond close helpers. No major friction. Main challenge was le
 ### Platform Pain Points (Meetup.com)
 
 **What was broken:**
+
 - Tracking actual attendance - especially with face blindness, couldn't accurately identify who came
 - Didn't want formal "school register" vibe
 
 **What worked:**
+
 - Surveys feature was good - used and liked it
 
 **Outside platform maintenance:**
+
 - Facebook group, blog, website
 - Purpose: alternative discovery channels + hedging against platform risk ("what if it goes away or becomes bad")
 
@@ -238,6 +253,7 @@ Had co-organizers beyond close helpers. No major friction. Main challenge was le
 ### Multi-Day Trip
 
 **What blocked it:**
+
 - Only 1 person RSVP'd to the planning meetup
 - Expected people to leap on it - possible naivety
 
@@ -268,6 +284,7 @@ Momentum earned through consistency - many meetups, both founders' lives poured 
 Changed when appointed co-organizers - that was the scaling trigger.
 
 **Segmentation:**
+
 - Small events were important - some members really wanted smaller gatherings
 - Marked events as "small" in title, capped RSVPs
 - 1:1 coffees as smallest option
@@ -294,6 +311,7 @@ Based on this follow-up interview:
 ## Previously Unanswered Questions (Now Answered)
 
 Questions 1-20 from Part 1 have been addressed above, with the following notes:
+
 - Q4 (explicit inclusivity signals) - answered implicitly through culture description
 - Patterns in who became regulars - partially answered (relaxation, type fit, algorithm decay)
 

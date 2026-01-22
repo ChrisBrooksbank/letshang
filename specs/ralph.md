@@ -18,10 +18,10 @@ while :; do cat PROMPT.md | claude ; done
 
 ## Two Versions of Ralph
 
-| Version | Author | Philosophy | Best For |
-|---------|--------|------------|----------|
-| **Huntley Ralph** | Geoffrey Huntley | Chaotic, creative exploration through unbridled persistence | Research, creative problem-solving |
-| **Official Ralph** | Anthropic Plugin | Bounded by token limits and safety hooks | Enterprise workflows, fixing broken builds |
+| Version            | Author           | Philosophy                                                  | Best For                                   |
+| ------------------ | ---------------- | ----------------------------------------------------------- | ------------------------------------------ |
+| **Huntley Ralph**  | Geoffrey Huntley | Chaotic, creative exploration through unbridled persistence | Research, creative problem-solving         |
+| **Official Ralph** | Anthropic Plugin | Bounded by token limits and safety hooks                    | Enterprise workflows, fixing broken builds |
 
 This document focuses on **Huntley's original version**.
 
@@ -30,18 +30,22 @@ This document focuses on **Huntley's original version**.
 ## The Three-Phase Workflow
 
 ### Phase 1: Requirements Definition
+
 Human and LLM collaborate to:
+
 - Discuss project ideas
 - Identify Jobs to Be Done (JTBD)
 - Break JTBD into topics of concern
 - Generate specification files for each topic
 
 ### Phase 2: Planning Mode
+
 - Perform gap analysis comparing specs against existing code
 - Generate a prioritized implementation plan
 - **No code writing** - planning only
 
 ### Phase 3: Building Mode
+
 - Implement from the plan
 - Run tests (backpressure validation)
 - Commit changes
@@ -70,11 +74,13 @@ project-root/
 ## Loop Script Implementation
 
 ### Minimal Loop
+
 ```bash
 while :; do cat PROMPT.md | claude ; done
 ```
 
 ### Enhanced Loop with Modes
+
 ```bash
 #!/bin/bash
 # ./loop.sh           - Build mode, unlimited iterations
@@ -84,12 +90,14 @@ while :; do cat PROMPT.md | claude ; done
 ```
 
 Key features:
+
 - Mode selection determines which prompt file loads
 - Iteration counting enforces limits
 - Git operations push after each task completion
 - Fresh context window per iteration
 
 ### CLI Flags Used
+
 - `-p` - Headless mode (reads from stdin)
 - `--dangerously-skip-permissions` - Auto-approves all tool calls
 - `--output-format=stream-json` - Structured logging
@@ -103,29 +111,33 @@ Key features:
 Both planning and building prompts follow a **numbered phase system**:
 
 ### Phase 0: Orientation
+
 - Study specifications with parallel subagents
 - Review implementation plan if present
 - Study shared utilities and components
 - Reference existing source code
 
 ### Phases 1-4: Core Work
+
 - Main instructions specific to mode (planning vs. building)
 - Explicit task selection and prioritization
 - Validation and testing procedures
 - Commit and update operations
 
 ### 9s Sequence: Guardrails
+
 Higher numbers indicate more critical constraints:
 
-| Number | Purpose |
-|--------|---------|
-| `99999` | Important rules |
-| `999999` | Very important rules |
-| `9999999` | Critical constraints |
-| ... | Increasingly critical |
-| `999999999999` | Absolute constraints |
+| Number         | Purpose               |
+| -------------- | --------------------- |
+| `99999`        | Important rules       |
+| `999999`       | Very important rules  |
+| `9999999`      | Critical constraints  |
+| ...            | Increasingly critical |
+| `999999999999` | Absolute constraints  |
 
 Example rules:
+
 - "Don't assume not implemented"
 - "Capture the why"
 - "Tests required before commit"
@@ -138,17 +150,21 @@ Keep to approximately **60 lines** covering:
 
 ```markdown
 ## Build & Run
+
 [Project-specific build rules]
 
 ## Validation
+
 - Tests: [command]
 - Typecheck: [command]
 - Lint: [command]
 
 ## Operational Notes
+
 [Learnings about running the project]
 
 ### Codebase Patterns
+
 [Key patterns Ralph should follow]
 ```
 
@@ -159,24 +175,27 @@ This file serves as the **single source of truth** for operational commands that
 ## Key Principles
 
 ### Context Efficiency
+
 - ~176K usable tokens with 40-60% in the "smart zone"
 - One task per loop achieves near-optimal context utilization
 - Subagents fan out work to avoid polluting main context
 
 ### Deterministic Setup
-- Every iteration loads identical base files (PROMPT.md, AGENTS.md, specs/*)
+
+- Every iteration loads identical base files (PROMPT.md, AGENTS.md, specs/\*)
 - Consistent starting state ensures reproducibility
 - Implementation plan persists on disk between iterations
 
 ### Backpressure Mechanisms
 
-| Type | Examples |
-|------|----------|
-| **Programmatic** | Build failures, test failures, type checking |
-| **Operational** | Commands specified in AGENTS.md |
-| **Subjective** | LLM-as-judge testing for tone, aesthetics, UX quality |
+| Type             | Examples                                              |
+| ---------------- | ----------------------------------------------------- |
+| **Programmatic** | Build failures, test failures, type checking          |
+| **Operational**  | Commands specified in AGENTS.md                       |
+| **Subjective**   | LLM-as-judge testing for tone, aesthetics, UX quality |
 
 ### Plan Disposability
+
 - Plans regenerate cheaply when wrong
 - Regeneration costs one planning loop
 - Better than going in circles in building mode
@@ -185,10 +204,10 @@ This file serves as the **single source of truth** for operational commands that
 
 ## Subagent Allocation
 
-| Mode | Investigation | Code Search/Read | Tests |
-|------|--------------|------------------|-------|
-| Planning | - | Up to 500 | - |
-| Building | Up to 500 | - | 1 (bottleneck) |
+| Mode     | Investigation | Code Search/Read | Tests          |
+| -------- | ------------- | ---------------- | -------------- |
+| Planning | -             | Up to 500        | -              |
+| Building | Up to 500     | -                | 1 (bottleneck) |
 
 - Use **Opus** for complex reasoning
 - Use **Sonnet** for parallel work
@@ -198,12 +217,14 @@ This file serves as the **single source of truth** for operational commands that
 ## Security Considerations
 
 Running with `--dangerously-skip-permissions` requires sandboxing:
+
 - Docker containers (local development)
 - Fly Sprites/E2B (remote/production)
 - Minimum viable access to credentials
 - Network restrictions where possible
 
 **Escape hatches:**
+
 - `Ctrl+C` stops the loop
 - `git reset --hard` reverts changes
 
@@ -212,18 +233,23 @@ Running with `--dangerously-skip-permissions` requires sandboxing:
 ## Enhancement Options
 
 ### Acceptance-Driven Backpressure
+
 Derive test requirements from acceptance criteria during planning. Tests document what success means before implementation begins.
 
 ### Scoped Work Branches
+
 ```bash
 ./loop.sh plan-work "user authentication"
 ```
+
 Generate branch-specific plans to avoid runtime filtering.
 
 ### Non-Deterministic Backpressure
+
 Create `llm-review.ts` fixture for binary pass/fail judgments on subjective criteria (tone, brand consistency, visual hierarchy). Loop until acceptance.
 
 ### SLC Release Planning
+
 Reference audience JTBD during planning to recommend Simple/Lovable/Complete releases.
 
 ---
@@ -232,30 +258,32 @@ Reference audience JTBD during planning to recommend Simple/Lovable/Complete rel
 
 ### What We Have
 
-| File | Status | Notes |
-|------|--------|-------|
-| `specs/readme.md` | Well-structured spec | Comprehensive feature specifications with task lists |
-| `specs/interview.md` | Context/research | Founder insights for product decisions |
-| `specs/community-platforms-landscape.md` | Research | Competitive landscape |
+| File                                     | Status               | Notes                                                |
+| ---------------------------------------- | -------------------- | ---------------------------------------------------- |
+| `specs/readme.md`                        | Well-structured spec | Comprehensive feature specifications with task lists |
+| `specs/interview.md`                     | Context/research     | Founder insights for product decisions               |
+| `specs/community-platforms-landscape.md` | Research             | Competitive landscape                                |
 
 ### What Ralph Needs (Not Yet Created)
 
-| File | Purpose | Priority |
-|------|---------|----------|
-| `AGENTS.md` | Operational commands, validation, patterns | **High** |
-| `PROMPT_plan.md` | Planning mode instructions | **High** |
-| `PROMPT_build.md` | Building mode instructions | **High** |
-| `loop.sh` | Orchestration script | **High** |
-| `IMPLEMENTATION_PLAN.md` | Task list (auto-generated) | Medium (generated by Ralph) |
+| File                     | Purpose                                    | Priority                    |
+| ------------------------ | ------------------------------------------ | --------------------------- |
+| `AGENTS.md`              | Operational commands, validation, patterns | **High**                    |
+| `PROMPT_plan.md`         | Planning mode instructions                 | **High**                    |
+| `PROMPT_build.md`        | Building mode instructions                 | **High**                    |
+| `loop.sh`                | Orchestration script                       | **High**                    |
+| `IMPLEMENTATION_PLAN.md` | Task list (auto-generated)                 | Medium (generated by Ralph) |
 
 ### Gap Analysis
 
 **Strengths of current specs:**
+
 - `readme.md` already follows good spec structure with clear sections
 - Task lists provide natural implementation targets
 - Interview and landscape docs provide context Ralph can reference
 
 **Gaps to fill:**
+
 1. No operational guide (AGENTS.md) - need to define build/test/lint commands
 2. No prompt files yet - need to create PROMPT_plan.md and PROMPT_build.md
 3. No loop script - need to create loop.sh with mode handling

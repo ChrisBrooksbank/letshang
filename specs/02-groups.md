@@ -40,12 +40,12 @@ Groups provide structure for recurring communities. Each group has an organizer,
 
 ## Leadership Roles
 
-| Role | Permissions |
-|------|-------------|
-| **Organizer** | Full control - settings, billing, delete, assign all roles |
-| **Co-organizer** | All except delete group or remove organizer |
-| **Assistant Organizer** | Manage members + event organizer permissions |
-| **Event Organizer** | Create/edit events, manage attendance, check-in |
+| Role                    | Permissions                                                |
+| ----------------------- | ---------------------------------------------------------- |
+| **Organizer**           | Full control - settings, billing, delete, assign all roles |
+| **Co-organizer**        | All except delete group or remove organizer                |
+| **Assistant Organizer** | Manage members + event organizer permissions               |
+| **Event Organizer**     | Create/edit events, manage attendance, check-in            |
 
 - [ ] Create role management interface [P1] [depends: group-creation]
   - AC: Organizer can assign/remove roles
@@ -122,12 +122,12 @@ Groups provide structure for recurring communities. Each group has an organizer,
 
 ### Engagement Tiers
 
-| Tier | Definition |
-|------|------------|
-| **Active** | Attended event in last 30 days |
-| **Occasional** | Attended in last 90 days |
-| **Sleeper** | Joined but never attended |
-| **Lapsed** | Was active, inactive 90+ days |
+| Tier           | Definition                     |
+| -------------- | ------------------------------ |
+| **Active**     | Attended event in last 30 days |
+| **Occasional** | Attended in last 90 days       |
+| **Sleeper**    | Joined but never attended      |
+| **Lapsed**     | Was active, inactive 90+ days  |
 
 - [ ] Build member engagement tier tracking [P2] [depends: events.checkin]
   - AC: System calculates tier based on attendance history

@@ -1,0 +1,17 @@
+{
+	"ignoreMatches": [
+		"@sveltejs/*",
+		"@testing-library/*",
+		"@tailwindcss/*",
+		"@vitest/*",
+		"autoprefixer",
+		"globals",
+		"postcss",
+		"prettier-plugin-*",
+		"svelte*",
+		"tailwindcss",
+		"typescript",
+		"vite*"
+	],
+	"ignoreDirs": [".svelte-kit", "build", "dist", "node_modules"]
+}

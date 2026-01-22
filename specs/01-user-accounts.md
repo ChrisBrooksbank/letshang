@@ -165,6 +165,7 @@ The account system balances friction-free access with meaningful identity. Guest
 ### Guest Limitations
 
 Guests cannot:
+
 - Host events
 - Join groups
 - Send direct messages

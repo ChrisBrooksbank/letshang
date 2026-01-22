@@ -35,15 +35,15 @@ Communication spans direct messaging, group discussions, event chat, and notific
 
 ### Notification Channels
 
-| Type | Push | Email | In-App |
-|------|------|-------|--------|
-| New event in joined group | Yes | Yes | Yes |
-| RSVP confirmation | No | Yes | Yes |
-| Event reminder (24h, 1h) | Yes | Yes | Yes |
-| Waitlist promotion | Yes | Yes | Yes |
-| New message | Yes | Optional | Yes |
-| Group announcement | Yes | Yes | Yes |
-| Event update/cancellation | Yes | Yes | Yes |
+| Type                      | Push | Email    | In-App |
+| ------------------------- | ---- | -------- | ------ |
+| New event in joined group | Yes  | Yes      | Yes    |
+| RSVP confirmation         | No   | Yes      | Yes    |
+| Event reminder (24h, 1h)  | Yes  | Yes      | Yes    |
+| Waitlist promotion        | Yes  | Yes      | Yes    |
+| New message               | Yes  | Optional | Yes    |
+| Group announcement        | Yes  | Yes      | Yes    |
+| Event update/cancellation | Yes  | Yes      | Yes    |
 
 - [ ] Implement notification preference settings [P1]
   - AC: Per-type channel toggles
@@ -144,11 +144,11 @@ Communication spans direct messaging, group discussions, event chat, and notific
 
 ### Graduated Enforcement
 
-| Level | Action | Duration |
-|-------|--------|----------|
-| Warning | Private message with guidance | N/A |
-| Temp suspension | Account restricted | 1 week - 1 month |
-| Permanent ban | Full removal | Indefinite |
+| Level           | Action                        | Duration         |
+| --------------- | ----------------------------- | ---------------- |
+| Warning         | Private message with guidance | N/A              |
+| Temp suspension | Account restricted            | 1 week - 1 month |
+| Permanent ban   | Full removal                  | Indefinite       |
 
 - [ ] Build enforcement system [P1]
   - AC: Warning, temp ban, permanent ban levels

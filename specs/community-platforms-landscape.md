@@ -17,16 +17,17 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 1. Meetup.com
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2002 |
-| **Users** | 60 million |
-| **Scale** | 300,000+ groups in 10,000+ cities |
+| Attribute         | Details                                |
+| ----------------- | -------------------------------------- |
+| **Founded**       | 2002                                   |
+| **Users**         | 60 million                             |
+| **Scale**         | 300,000+ groups in 10,000+ cities      |
 | **Current Owner** | Bending Spoons (acquired January 2024) |
 
 **Description:** The original in-person event platform, created after 9/11 inspired founder Scott Heiferman to help people connect locally. The idea came from Heiferman meeting his neighbors for the first time after the attacks, influenced by the book "Bowling Alone" about the deterioration of community in American culture.
 
 **Best Features:**
+
 - Strong local event discovery with location-based search
 - RSVPs and waitlists for events
 - Established brand recognition for in-person gatherings
@@ -36,6 +37,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - Discussions feature replaced outdated Message Boards
 
 **Weaknesses:**
+
 - Expensive for organizers ($55+/month for Pro)
 - Limited online community features between events
 - Analytics only available on desktop
@@ -46,16 +48,17 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 2. Facebook Groups
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2010 (Groups feature) |
-| **Monthly Users** | 1.8 billion |
-| **Groups** | 70+ million active |
-| **Parent** | Meta |
+| Attribute         | Details               |
+| ----------------- | --------------------- |
+| **Founded**       | 2010 (Groups feature) |
+| **Monthly Users** | 1.8 billion           |
+| **Groups**        | 70+ million active    |
+| **Parent**        | Meta                  |
 
 **Description:** The largest community platform by sheer numbers, leveraging Facebook's 3+ billion user base for interest-based communities.
 
 **Best Features:**
+
 - Massive reach and discoverability
 - Free for organizers and members
 - Integrated events, polls, and live video
@@ -65,6 +68,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - Average user belongs to 8.5 different groups
 
 **Weaknesses:**
+
 - Algorithm controls visibility of posts
 - Tied to Facebook's broader reputation issues
 - Limited customization and branding
@@ -76,16 +80,17 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 3. Discord
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2015 |
-| **Monthly Users** | 259 million |
-| **Servers** | 30+ million |
+| Attribute           | Details                                    |
+| ------------------- | ------------------------------------------ |
+| **Founded**         | 2015                                       |
+| **Monthly Users**   | 259 million                                |
+| **Servers**         | 30+ million                                |
 | **Max Server Size** | 25 million members (September 2025 update) |
 
 **Description:** Originally for gamers, now a versatile real-time chat platform for all types of communities with text, voice, and video channels.
 
 **Best Features:**
+
 - Free with robust features
 - Real-time voice/video channels
 - Highly customizable with bots (extensive bot ecosystem)
@@ -95,6 +100,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - 18 servers exceed 800,000 members
 
 **Weaknesses:**
+
 - Steep learning curve for non-technical users
 - No built-in event ticketing or payments
 - Discoverability is limited
@@ -106,15 +112,16 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 4. Eventbrite
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2006 |
-| **Monthly Users** | 92 million average |
-| **Focus** | Event ticketing and discovery |
+| Attribute         | Details                       |
+| ----------------- | ----------------------------- |
+| **Founded**       | 2006                          |
+| **Monthly Users** | 92 million average            |
+| **Focus**         | Event ticketing and discovery |
 
 **Description:** Event ticketing and discovery platform focused on professional events, concerts, and workshops. Underwent significant 2025 rebrand.
 
 **Best Features:**
+
 - Powerful ticketing and payment processing
 - Strong SEO and event discovery
 - Professional analytics and attendee management
@@ -125,6 +132,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - Partnership with Listener.com for podcast analytics
 
 **Weaknesses:**
+
 - Not designed for ongoing community engagement
 - Fees can be high for paid events
 - Limited group/membership features
@@ -134,17 +142,18 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 5. Telegram
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2013 |
-| **Monthly Users** | 1 billion+ (crossed March 2025) |
-| **Channels/Groups** | 2.6+ million catalogued |
-| **Daily Messages** | 12-15 billion |
-| **Premium Users** | 12+ million paying |
+| Attribute           | Details                         |
+| ------------------- | ------------------------------- |
+| **Founded**         | 2013                            |
+| **Monthly Users**   | 1 billion+ (crossed March 2025) |
+| **Channels/Groups** | 2.6+ million catalogued         |
+| **Daily Messages**  | 12-15 billion                   |
+| **Premium Users**   | 12+ million paying              |
 
 **Description:** Messaging app with powerful group and channel features, popular for news, crypto, and international communities.
 
 **Best Features:**
+
 - Free with no ads (basic)
 - Groups up to 200,000 members
 - 10+ million active bots for automation
@@ -154,6 +163,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - 2-2.5 million new users daily
 
 **Weaknesses:**
+
 - No native event management
 - Moderation challenges in large groups
 - Associated with some controversial communities
@@ -165,17 +175,18 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 6. Reddit
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2005 |
-| **Daily Users** | 116 million unique |
-| **Weekly Users** | 444 million |
-| **Subreddits** | 2.8 million (138,000+ active) |
-| **Q3 2025 Revenue** | $585 million |
+| Attribute           | Details                       |
+| ------------------- | ----------------------------- |
+| **Founded**         | 2005                          |
+| **Daily Users**     | 116 million unique            |
+| **Weekly Users**    | 444 million                   |
+| **Subreddits**      | 2.8 million (138,000+ active) |
+| **Q3 2025 Revenue** | $585 million                  |
 
 **Description:** "The front page of the internet" - forum-based communities (subreddits) organized by topic with powerful content curation through upvotes/downvotes.
 
 **Best Features:**
+
 - Free and anonymous participation
 - Powerful upvote/downvote content curation
 - Strong SEO (shows up in Google searches)
@@ -185,6 +196,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - 35% increase in active communities 2023-2025
 
 **Weaknesses:**
+
 - No event scheduling features
 - Limited for local/in-person meetups
 - Moderation can be inconsistent
@@ -196,15 +208,16 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 7. Slack
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2013 |
-| **Market Position** | 75% of remote teams use it |
+| Attribute               | Details                                                         |
+| ----------------------- | --------------------------------------------------------------- |
+| **Founded**             | 2013                                                            |
+| **Market Position**     | 75% of remote teams use it                                      |
 | **Notable Communities** | PySlackers (38,600+), iOS Developers (30,000+), MLOps (27,900+) |
 
 **Description:** Professional messaging platform now used for niche professional and tech communities beyond workplaces.
 
 **Best Features:**
+
 - Real-time messaging with threads
 - Excellent search functionality
 - AI-powered message search (2025)
@@ -214,6 +227,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - 90-day message history on free tier (up from 30)
 
 **Weaknesses:**
+
 - Free tier limited to 90-day message history
 - Designed for work, not community building
 - No public discoverability
@@ -225,15 +239,16 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 8. Circle.so
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2020 |
-| **Communities** | 18,000+ |
-| **Focus** | Creator economy, courses, memberships |
+| Attribute       | Details                               |
+| --------------- | ------------------------------------- |
+| **Founded**     | 2020                                  |
+| **Communities** | 18,000+                               |
+| **Focus**       | Creator economy, courses, memberships |
 
 **Description:** Modern all-in-one platform for creators to build branded communities with courses, memberships, and events.
 
 **Best Features:**
+
 - Courses, events, and community in one platform
 - AI agents for member engagement (2025)
 - Gamification with points and leaderboards
@@ -243,6 +258,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - 30-day money-back guarantee
 
 **Weaknesses:**
+
 - Starts at $89/month (Professional plan)
 - Transaction fees on all plans (0.5-4%)
 - Learning curve for setup
@@ -254,15 +270,16 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 9. Mighty Networks
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2017 |
-| **Creator Earnings** | $500M+ in 2025 |
-| **Notable Client** | Tony Robbins Arena (30,000+ members) |
+| Attribute            | Details                              |
+| -------------------- | ------------------------------------ |
+| **Founded**          | 2017                                 |
+| **Creator Earnings** | $500M+ in 2025                       |
+| **Notable Client**   | Tony Robbins Arena (30,000+ members) |
 
 **Description:** Community platform combining courses, memberships, and events under your own brand with native mobile apps.
 
 **Best Features:**
+
 - White-label iOS and Android apps
 - Courses + community + events combined
 - 84% of content created by members (not hosts)
@@ -272,6 +289,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - Migrated communities see 81-100% first-year retention
 
 **Weaknesses:**
+
 - Starts at $41/month + transaction fees (2-3%)
 - Limited quiz/certificate features for courses
 - Stripe only (no PayPal)
@@ -282,15 +300,16 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 10. Geneva / Bumble BFF
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2020 (Geneva) |
-| **Acquired** | 2025 by Bumble |
-| **Current Name** | Bumble BFF |
+| Attribute        | Details        |
+| ---------------- | -------------- |
+| **Founded**      | 2020 (Geneva)  |
+| **Acquired**     | 2025 by Bumble |
+| **Current Name** | Bumble BFF     |
 
 **Description:** Was an all-in-one community app with "Homes" and "Rooms"; now rebranded as Bumble BFF focusing on friend-finding with group features.
 
 **Best Features:**
+
 - Completely free
 - Photo-verified community (safer)
 - Group chat, video calls, and in-app calendar
@@ -299,6 +318,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - Bios, custom Interest Tags, and Photo Prompts
 
 **Weaknesses:**
+
 - Recent acquisition significantly changed focus
 - Less suited for large communities now
 - Mobile-only experience
@@ -310,17 +330,18 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 11. Partiful
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2020 |
-| **Monthly Active Users** | 500,000+ (Q1 2025, up 400% YoY) |
-| **Total Users** | 2M+ (added 2M in 2025 alone) |
-| **Countries** | 100+ |
-| **Recognition** | TIME100 Most Influential Companies 2025 |
+| Attribute                | Details                                 |
+| ------------------------ | --------------------------------------- |
+| **Founded**              | 2020                                    |
+| **Monthly Active Users** | 500,000+ (Q1 2025, up 400% YoY)         |
+| **Total Users**          | 2M+ (added 2M in 2025 alone)            |
+| **Countries**            | 100+                                    |
+| **Recognition**          | TIME100 Most Influential Companies 2025 |
 
 **Description:** Gen Z's favorite party planning app. Simple, playful event invitations with a focus on casual social gatherings. Founded by Joy Tao and Shreya Murthy (ex-Palantir) in Brooklyn.
 
 **Best Features:**
+
 - Completely free (no premium tier)
 - Beautiful, animated invitation templates
 - Text Blasts for real-time updates to guests
@@ -332,6 +353,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - Google Play "Best App" 2024
 
 **Weaknesses:**
+
 - Designed for casual events, not formal/professional
 - Limited analytics for organizers
 - No ticketing for paid events
@@ -343,16 +365,17 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 12. Luma (lu.ma)
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2017 |
-| **HQ** | New York City |
-| **Funding** | $3M (Venrock, Calvin, Maven Ventures) |
-| **Competitors** | 217 active |
+| Attribute       | Details                               |
+| --------------- | ------------------------------------- |
+| **Founded**     | 2017                                  |
+| **HQ**          | New York City                         |
+| **Funding**     | $3M (Venrock, Calvin, Maven Ventures) |
+| **Competitors** | 217 active                            |
 
 **Description:** Sleek, modern event platform beloved by tech startups, creators, and community builders. Known for beautiful design and seamless virtual/hybrid event support.
 
 **Best Features:**
+
 - Gorgeous, minimal event page design
 - Zoom integration for virtual events
 - Community calendars (followers can subscribe)
@@ -363,6 +386,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - Robust API
 
 **Weaknesses:**
+
 - Less suited for large-scale conferences
 - Occasional notification glitches reported
 - Smaller ecosystem than Eventbrite
@@ -374,17 +398,18 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 13. Posh
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | ~2020 (NYU dorm room) |
-| **Users** | 2M+ registered, 5M+ ecosystem |
-| **Events** | 5,000/month |
-| **Lifetime Bookings** | $95 million |
-| **Funding** | $22M Series A (2024, Goodwater Capital) |
+| Attribute             | Details                                 |
+| --------------------- | --------------------------------------- |
+| **Founded**           | ~2020 (NYU dorm room)                   |
+| **Users**             | 2M+ registered, 5M+ ecosystem           |
+| **Events**            | 5,000/month                             |
+| **Lifetime Bookings** | $95 million                             |
+| **Funding**           | $22M Series A (2024, Goodwater Capital) |
 
 **Description:** "TikTok for events" - a discovery-first platform for nightlife, social events, and intimate gatherings up to a few hundred people.
 
 **Best Features:**
+
 - Vertical scroll event discovery (like TikTok)
 - Beautiful audiovisual event pages with music
 - "Kickback" affiliate program (guests earn commission sharing)
@@ -394,6 +419,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - CRM and tracking links for organizers
 
 **Weaknesses:**
+
 - Focused on nightlife/social (less suited for professional events)
 - Younger demographic skew
 - U.S.-centric
@@ -404,16 +430,17 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 14. Evite
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 1998 |
+| Attribute           | Details                          |
+| ------------------- | -------------------------------- |
+| **Founded**         | 1998                             |
 | **Market Position** | Co-leader in digital invitations |
-| **Free Tier** | Up to 750 guests per invitation |
-| **Pro Pricing** | $249.99/year |
+| **Free Tier**       | Up to 750 guests per invitation  |
+| **Pro Pricing**     | $249.99/year                     |
 
 **Description:** One of the oldest digital invitation platforms, focused on personal events like birthdays, baby showers, and holiday parties.
 
 **Best Features:**
+
 - Thousands of free templates
 - Up to 750 guests free per invitation
 - No app required for guests to RSVP
@@ -423,6 +450,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - Pro tier supports 2,500 guests per event
 
 **Weaknesses:**
+
 - Excessive ads in free version
 - Dated design compared to newer competitors
 - Limited customization on free tier
@@ -433,15 +461,16 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 15. Paperless Post
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2009 |
-| **Market Position** | Premium digital invitations leader |
+| Attribute             | Details                                             |
+| --------------------- | --------------------------------------------------- |
+| **Founded**           | 2009                                                |
+| **Market Position**   | Premium digital invitations leader                  |
 | **Designer Partners** | Oscar de la Renta, Rifle Paper Co., Kelly Wearstler |
 
 **Description:** High-end digital invitation platform known for elegant, designer-quality cards. Popular for weddings, corporate events, and formal occasions.
 
 **Best Features:**
+
 - Designer collaborations with luxury brands
 - Elegant envelope/stamp animations
 - AI-powered "Magic Art" customization
@@ -452,6 +481,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - First 50 guests free on basic designs
 
 **Weaknesses:**
+
 - Coin-based pricing can be confusing
 - Premium designs cost 2+ coins per recipient (~$0.18+ each)
 - No ongoing community features
@@ -463,18 +493,19 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 16. WhatsApp Communities/Groups
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2009 (Groups); 2022 (Communities) |
-| **Monthly Users** | 3+ billion |
-| **Daily Users** | 2.3 billion |
-| **Groups** | 1+ billion |
-| **Daily Messages** | 150+ billion |
-| **Market Share** | 47% of global messaging |
+| Attribute          | Details                           |
+| ------------------ | --------------------------------- |
+| **Founded**        | 2009 (Groups); 2022 (Communities) |
+| **Monthly Users**  | 3+ billion                        |
+| **Daily Users**    | 2.3 billion                       |
+| **Groups**         | 1+ billion                        |
+| **Daily Messages** | 150+ billion                      |
+| **Market Share**   | 47% of global messaging           |
 
 **Description:** The world's dominant messaging app with powerful group chat and the newer Communities feature for organizing multiple related groups.
 
 **Best Features:**
+
 - Massive existing user base globally
 - Groups up to 1,024 members
 - Communities can organize 21 groups (21,500+ people total)
@@ -485,6 +516,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - Leads in 65 of 100 most populous countries
 
 **Weaknesses:**
+
 - No event management/ticketing
 - No public discovery (invite-only)
 - Limited moderation tools vs Discord
@@ -497,15 +529,16 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### 17. Splash
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2012 |
+| Attribute    | Details                    |
+| ------------ | -------------------------- |
+| **Founded**  | 2012                       |
 | **Category** | Enterprise event marketing |
-| **Target** | Corporate/brand events |
+| **Target**   | Corporate/brand events     |
 
 **Description:** Enterprise-grade event marketing platform for companies hosting branded in-person, virtual, and hybrid events.
 
 **Best Features:**
+
 - Beautiful branded event pages
 - Native streaming solution
 - Quick setup (hours, not days)
@@ -515,6 +548,7 @@ A comprehensive analysis of platforms for building communities, organizing event
 - Supports in-person, virtual, and hybrid
 
 **Weaknesses:**
+
 - Enterprise pricing (not for casual users)
 - Overkill for small events
 - Less community focus
@@ -524,12 +558,12 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### Notable Mention: IRL (Defunct)
 
-| Attribute | Details |
-|-----------|---------|
-| **Founded** | 2017 |
-| **Shutdown** | June 26, 2023 |
+| Attribute          | Details                                      |
+| ------------------ | -------------------------------------------- |
+| **Founded**        | 2017                                         |
+| **Shutdown**       | June 26, 2023                                |
 | **Peak Valuation** | Unicorn ($170M Series C from SoftBank, 2021) |
-| **Total Raised** | $200M+ |
+| **Total Raised**   | $200M+                                       |
 
 **What happened:** Shut down after revealing 95% of its claimed 20 million users were automated bots. Internal investigation uncovered the fraud after employees questioned CEO Abraham Shafi's growth claims.
 
@@ -541,64 +575,64 @@ A comprehensive analysis of platforms for building communities, organizing event
 
 ### Overall Comparison
 
-| Platform | Best For | Cost | Event Focus | Community | Discovery |
-|----------|----------|------|-------------|-----------|-----------|
-| Meetup | Local meetups | $$ | ★★★★★ | ★★☆☆☆ | ★★★★★ |
-| Facebook Groups | Mass reach | Free | ★★★☆☆ | ★★★★☆ | ★★★★☆ |
-| Discord | Real-time chat | Free | ★★☆☆☆ | ★★★★★ | ★★☆☆☆ |
-| Eventbrite | Ticketed events | $-$$ | ★★★★★ | ★☆☆☆☆ | ★★★★★ |
-| Telegram | News/global reach | Free | ★☆☆☆☆ | ★★★★☆ | ★★☆☆☆ |
-| Reddit | Topic discussions | Free | ★☆☆☆☆ | ★★★☆☆ | ★★★★☆ |
-| Slack | Professional groups | Free-$$$ | ★☆☆☆☆ | ★★★☆☆ | ★☆☆☆☆ |
-| Circle | Creator businesses | $$$ | ★★★☆☆ | ★★★★★ | ★☆☆☆☆ |
-| Mighty Networks | Courses + community | $$ | ★★★☆☆ | ★★★★★ | ★☆☆☆☆ |
-| Partiful | Casual parties | Free | ★★★★☆ | ★☆☆☆☆ | ★☆☆☆☆ |
-| Luma | Tech/creator events | Free-$$ | ★★★★★ | ★★★☆☆ | ★★★☆☆ |
-| Posh | Nightlife/social | Free | ★★★★☆ | ★★☆☆☆ | ★★★★☆ |
-| Evite | Personal invites | Free-$ | ★★★☆☆ | ★☆☆☆☆ | ☆☆☆☆☆ |
-| Paperless Post | Formal invites | $-$$ | ★★★☆☆ | ★☆☆☆☆ | ☆☆☆☆☆ |
-| WhatsApp | Messaging groups | Free | ★☆☆☆☆ | ★★★☆☆ | ☆☆☆☆☆ |
-| Splash | Enterprise events | $$$$ | ★★★★★ | ★★☆☆☆ | ★★☆☆☆ |
+| Platform        | Best For            | Cost     | Event Focus | Community | Discovery |
+| --------------- | ------------------- | -------- | ----------- | --------- | --------- |
+| Meetup          | Local meetups       | $$       | ★★★★★       | ★★☆☆☆     | ★★★★★     |
+| Facebook Groups | Mass reach          | Free     | ★★★☆☆       | ★★★★☆     | ★★★★☆     |
+| Discord         | Real-time chat      | Free     | ★★☆☆☆       | ★★★★★     | ★★☆☆☆     |
+| Eventbrite      | Ticketed events     | $-$$     | ★★★★★       | ★☆☆☆☆     | ★★★★★     |
+| Telegram        | News/global reach   | Free     | ★☆☆☆☆       | ★★★★☆     | ★★☆☆☆     |
+| Reddit          | Topic discussions   | Free     | ★☆☆☆☆       | ★★★☆☆     | ★★★★☆     |
+| Slack           | Professional groups | Free-$$$ | ★☆☆☆☆       | ★★★☆☆     | ★☆☆☆☆     |
+| Circle          | Creator businesses  | $$$      | ★★★☆☆       | ★★★★★     | ★☆☆☆☆     |
+| Mighty Networks | Courses + community | $$       | ★★★☆☆       | ★★★★★     | ★☆☆☆☆     |
+| Partiful        | Casual parties      | Free     | ★★★★☆       | ★☆☆☆☆     | ★☆☆☆☆     |
+| Luma            | Tech/creator events | Free-$$  | ★★★★★       | ★★★☆☆     | ★★★☆☆     |
+| Posh            | Nightlife/social    | Free     | ★★★★☆       | ★★☆☆☆     | ★★★★☆     |
+| Evite           | Personal invites    | Free-$   | ★★★☆☆       | ★☆☆☆☆     | ☆☆☆☆☆     |
+| Paperless Post  | Formal invites      | $-$$     | ★★★☆☆       | ★☆☆☆☆     | ☆☆☆☆☆     |
+| WhatsApp        | Messaging groups    | Free     | ★☆☆☆☆       | ★★★☆☆     | ☆☆☆☆☆     |
+| Splash          | Enterprise events   | $$$$     | ★★★★★       | ★★☆☆☆     | ★★☆☆☆     |
 
 ### By Use Case
 
-| Use Case | Top Picks |
-|----------|-----------|
-| Local in-person meetups | Meetup, Luma, Posh |
-| Casual parties & gatherings | Partiful, Evite, Posh |
-| Professional/corporate events | Eventbrite, Splash, Luma |
-| Creator monetization | Circle, Mighty Networks |
-| Real-time community engagement | Discord, Slack, Telegram |
-| Mass reach (free) | Facebook Groups, Reddit, WhatsApp |
-| Formal invitations | Paperless Post, Evite |
-| Nightlife & social events | Posh, Partiful |
-| Tech/startup community | Luma, Discord, Slack |
+| Use Case                       | Top Picks                         |
+| ------------------------------ | --------------------------------- |
+| Local in-person meetups        | Meetup, Luma, Posh                |
+| Casual parties & gatherings    | Partiful, Evite, Posh             |
+| Professional/corporate events  | Eventbrite, Splash, Luma          |
+| Creator monetization           | Circle, Mighty Networks           |
+| Real-time community engagement | Discord, Slack, Telegram          |
+| Mass reach (free)              | Facebook Groups, Reddit, WhatsApp |
+| Formal invitations             | Paperless Post, Evite             |
+| Nightlife & social events      | Posh, Partiful                    |
+| Tech/startup community         | Luma, Discord, Slack              |
 
 ### Pricing Comparison
 
-| Platform | Free Tier | Paid Starting Price | Transaction Fees |
-|----------|-----------|---------------------|------------------|
-| Meetup | Meetup Starter (limited) | $55/month (Pro) | None |
-| Facebook Groups | Full features | N/A | None |
-| Discord | Full features | $9.99/month (Nitro, optional) | None |
-| Eventbrite | Free events only | Variable | 3.7% + $1.79 |
-| Telegram | Full features | $4.99/month (Premium, optional) | None |
-| Reddit | Full features | N/A | None |
-| Slack | 90-day history | $8.75/user/month | None |
-| Circle | None | $89/month | 0.5-4% |
-| Mighty Networks | None | $41/month | 2-3% |
-| Partiful | Full features | N/A | None |
-| Luma | Free events (5% on paid) | $69/month (Plus) | 0-5% |
-| Posh | Full features | N/A | Variable |
-| Evite | 750 guests | $249.99/year (Pro) | None |
-| Paperless Post | 50 guests (basic) | ~$0.18/recipient | None |
-| WhatsApp | Full features | N/A | None |
+| Platform        | Free Tier                | Paid Starting Price             | Transaction Fees |
+| --------------- | ------------------------ | ------------------------------- | ---------------- |
+| Meetup          | Meetup Starter (limited) | $55/month (Pro)                 | None             |
+| Facebook Groups | Full features            | N/A                             | None             |
+| Discord         | Full features            | $9.99/month (Nitro, optional)   | None             |
+| Eventbrite      | Free events only         | Variable                        | 3.7% + $1.79     |
+| Telegram        | Full features            | $4.99/month (Premium, optional) | None             |
+| Reddit          | Full features            | N/A                             | None             |
+| Slack           | 90-day history           | $8.75/user/month                | None             |
+| Circle          | None                     | $89/month                       | 0.5-4%           |
+| Mighty Networks | None                     | $41/month                       | 2-3%             |
+| Partiful        | Full features            | N/A                             | None             |
+| Luma            | Free events (5% on paid) | $69/month (Plus)                | 0-5%             |
+| Posh            | Full features            | N/A                             | Variable         |
+| Evite           | 750 guests               | $249.99/year (Pro)              | None             |
+| Paperless Post  | 50 guests (basic)        | ~$0.18/recipient                | None             |
+| WhatsApp        | Full features            | N/A                             | None             |
 
 ---
 
 ## Analysis: Choosing the Right Platform
 
-*A conversational guide to navigating the community platform landscape*
+_A conversational guide to navigating the community platform landscape_
 
 ### The Old Guard: Meetup's Complicated Legacy
 
@@ -618,7 +652,7 @@ Here's a number that should make every other platform nervous: 1.8 billion month
 
 The conventional wisdom is that Facebook is dying, that young people have fled to TikTok and Discord. And yet—72% of active Facebook users engage with Marketplace and interest-based Groups. The platform has quietly become essential infrastructure for local communities, parent groups, neighborhood watch, buy-nothing networks, and countless niche interests.
 
-The engagement numbers are remarkable. Private groups generate 40% higher engagement than public ones. Community groups drive 50% more engagement than branded pages. The average user belongs to 8.5 groups. Facebook may not be cool, but it's *useful* in ways that matter to ordinary people organizing ordinary life.
+The engagement numbers are remarkable. Private groups generate 40% higher engagement than public ones. Community groups drive 50% more engagement than branded pages. The average user belongs to 8.5 groups. Facebook may not be cool, but it's _useful_ in ways that matter to ordinary people organizing ordinary life.
 
 The downsides are well-documented: algorithmic opacity, Meta's reputation baggage, limited customization, and the nagging sense that you're building on rented land. But if reach matters more than brand control, nothing else comes close.
 
@@ -792,7 +826,7 @@ The community platform market in 2025 is more fragmented than ever, and that fra
 - **For casual social events:** Partiful has captured the young professional market.
 - **For design-forward tech events:** Luma is the clear choice.
 
-No platform does everything well. The question isn't "which platform is best?" but "which platform best serves *this* community's specific needs?" The answer varies, and probably should.
+No platform does everything well. The question isn't "which platform is best?" but "which platform best serves _this_ community's specific needs?" The answer varies, and probably should.
 
 ---
 
@@ -801,85 +835,102 @@ No platform does everything well. The question isn't "which platform is best?" b
 ### Platform-Specific Sources
 
 **Meetup:**
+
 - [Meetup 2025 Progress Report](https://52.91.255.27/blog/2025-meetup-progress-report/)
 - [Meetup Wikipedia](https://en.wikipedia.org/wiki/Meetup)
 - [Meetup 2026 Roadmap](https://52.91.255.27/blog/2026-meetup-roadmap/)
 
 **Facebook Groups:**
+
 - [Facebook Groups Statistics - KhrisDigital](https://khrisdigital.com/facebook-groups-statistics/)
 - [Facebook Statistics - Buffer](https://buffer.com/resources/facebook-statistics/)
 - [Facebook Statistics - Hootsuite](https://blog.hootsuite.com/facebook-statistics/)
 
 **Discord:**
+
 - [Discord Statistics 2025 - The Social Shepherd](https://thesocialshepherd.com/blog/discord-statistics)
 - [Discord Server Size Update - GameRant](https://gamerant.com/discord-update-increase-server-size-september-2025/)
 - [Discord Statistics - SQ Magazine](https://sqmagazine.co.uk/discord-statistics/)
 
 **Eventbrite:**
+
 - [Eventbrite 2025 Innovations - BusinessWire](https://www.businesswire.com/news/home/20251118599275/en/Eventbrite-Announces-Listener.com-Partnership-and-Highlights-a-Year-of-Innovations-Designed-to-Help-Organizers-Reach-New-Audiences)
 - [Eventbrite Review 2025 - Promotix](https://blog.promotix.com/eventbrite-review)
 - [Eventbrite 2025 Rebrand - Blankboard](https://www.blankboard.studio/originals/blog/eventbrite-rebrand-2025-strategy)
 
 **Telegram:**
+
 - [Telegram Statistics - DemandSage](https://www.demandsage.com/telegram-statistics/)
 - [Telegram Statistics - SocialPlug](https://www.socialplug.io/blog/telegram-statistics)
 - [Telegram Statistics - SQ Magazine](https://sqmagazine.co.uk/telegram-statistics/)
 
 **Reddit:**
+
 - [Reddit Statistics - The Social Shepherd](https://thesocialshepherd.com/blog/reddit-statistics)
 - [Reddit Statistics - Social Champ](https://www.socialchamp.com/blog/reddit-stats/)
 - [Reddit Statistics - Cropink](https://cropink.com/reddit-statistics)
 
 **Slack:**
+
 - [Slack Communities](https://slack.com/community)
 - [Data Science Slack Communities - DataTalks.Club](https://datatalks.club/blog/slack-communities.html)
 - [Slack Groups for Entrepreneurs - Ometrics](https://www.ometrics.com/blog/slack-groups-for-entrepreneurs/)
 
 **Circle:**
+
 - [Circle Pricing](https://circle.so/pricing)
 - [Circle.so Pricing Analysis - FunnelScene](https://funnelscene.com/circle-so-pricing/)
 - [Circle Platform Features](https://circle.so/platform)
 
 **Mighty Networks:**
+
 - [Mighty Networks Review 2025 - Oceanpreneur](https://www.theoceanpreneur.com/entrepreneurship/mighty-networks-review-2025-insights-from-6-years-of-hosting-an-adventure-travel-membership-community/)
 - [Mighty Networks Pricing - Innoloft](https://innoloft.com/en-us/blog/mighty-networks-pricing)
 - [Mighty Networks Features](https://www.mightynetworks.com/product/community)
 
 **Geneva/Bumble BFF:**
+
 - [Bumble BFF Revamp - TechCrunch](https://techcrunch.com/2025/09/18/bumble-bffs-revamped-app-is-here-focusing-on-friend-groups-and-community-building/)
 - [Geneva Alternatives - Mighty Networks](https://www.mightynetworks.com/resources/geneva-chat-alternatives)
 
 **Partiful:**
+
 - [Partiful TIME100 2025](https://time.com/collections/time100-companies-2025/7289589/partiful/)
 - [Partiful vs Apple - CNBC](https://www.cnbc.com/2025/04/19/meet-partiful-the-gen-z-party-planning-staple-thats-taking-on-apple.html)
 - [Partiful Wikipedia](https://en.wikipedia.org/wiki/Partiful)
 
 **Luma:**
+
 - [Luma Features & Pricing - SaaSworthy](https://www.saasworthy.com/product/lu-ma)
 - [Luma Review - Efficient.app](https://efficient.app/apps/luma)
 - [Luma Tips - Party.pro](https://party.pro/luma/)
 
 **Posh:**
+
 - [Posh $22M Raise - TechCrunch](https://techcrunch.com/2024/07/23/event-startup-posh-raises-22m-in-to-focus-on-personalisation-and-event-diversification/)
 - [Posh Seed Round - TechCrunch](https://techcrunch.com/2023/04/27/event-management-ticketing-platform-posh-raises-5-million-seed-round/)
 - [Posh Reviews - G2](https://www.g2.com/products/posh-posh/reviews)
 
 **Evite & Paperless Post:**
+
 - [Evite vs Paperless Post 2025 - Party.pro](https://party.pro/evite-vs-paperless-post/)
 - [Paperless Post Pricing](https://www.paperlesspost.com/pricing)
 - [Evite Pricing - Capterra](https://www.capterra.com/p/164166/Evite/)
 
 **WhatsApp:**
+
 - [WhatsApp Statistics - DemandSage](https://www.demandsage.com/whatsapp-statistics/)
 - [WhatsApp Communities Guide - WA-CRM](https://www.wa-crm.com/post/what-are-whatsapp-communities-and-how-to-use-them)
 - [WhatsApp Statistics - Infobip](https://www.infobip.com/blog/whatsapp-statistics)
 
 **IRL:**
+
 - [IRL Founder Fraud - CNBC](https://www.cnbc.com/2025/08/27/founder-irl-social-media-fraud.html)
 - [IRL Shutdown - TechCrunch](https://techcrunch.com/2023/06/26/irl-shut-down-fake-users/)
 - [IRL Failure Analysis - SunsetHQ](https://www.sunsethq.com/blog/why-did-irl-fail)
 
 ### General Comparison Sources
+
 - [Meetup Alternatives - Sprout24](https://sprout24.com/meetup-alternative/)
 - [Best Community Platforms 2025 - Circle](https://circle.so/blog/best-community-platforms)
 - [Meetup Pro Alternatives - G2](https://www.g2.com/products/meetup-pro/competitors/alternatives)
@@ -887,4 +938,4 @@ No platform does everything well. The question isn't "which platform is best?" b
 
 ---
 
-*Document last updated: January 2025*
+_Document last updated: January 2025_

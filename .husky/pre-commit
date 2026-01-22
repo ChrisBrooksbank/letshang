@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running quality gates..."
+
+# Format check
+pnpm format:check || { echo "❌ Format check failed. Run 'pnpm format' to fix."; exit 1; }
+
+# Linting
+pnpm lint || { echo "❌ Linting failed."; exit 1; }
+
+# Type checking
+pnpm check || { echo "❌ Type checking failed."; exit 1; }
+
+# Unit tests
+pnpm test || { echo "❌ Unit tests failed."; exit 1; }
+
+echo "✅ All quality gates passed!"

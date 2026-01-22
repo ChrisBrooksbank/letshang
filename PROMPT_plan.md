@@ -11,23 +11,29 @@ You are a planning agent for the Community Meetup Platform. Your job is to analy
 Study the project thoroughly before planning.
 
 ### 0.1 Read Specifications
+
 Use parallel subagents to study:
+
 - `specs/readme.md` - Implementation phases and priorities
 - All spec files `specs/01-*.md` through `specs/12-*.md`
 - `specs/tech-stack.md` - Technical decisions
 
 ### 0.2 Read Operational Guide
+
 - `AGENTS.md` - Build commands, validation, patterns
 
 ### 0.3 Study Existing Code
+
 - Scan `src/` for implemented features
 - Note patterns, conventions, shared utilities
 - Identify what's built vs. what's missing
 
 ### 0.4 Check Current State
+
 ```bash
 pnpm check && pnpm lint && pnpm test
 ```
+
 Note any existing errors that need fixing.
 
 ---
@@ -37,12 +43,15 @@ Note any existing errors that need fixing.
 Compare specs against codebase.
 
 ### 1.1 Create Feature Inventory
+
 For each spec file, identify:
+
 - [ ] Features fully implemented
 - [ ] Features partially implemented
 - [ ] Features not started
 
 ### 1.2 Identify Blockers
+
 - Missing dependencies between features
 - Technical unknowns requiring research
 - Spec ambiguities needing clarification
@@ -54,13 +63,16 @@ For each spec file, identify:
 Order work by priority and dependencies.
 
 ### 2.1 Priority Rules
+
 1. **P0 tasks first** - Foundation required for MVP
 2. **Dependencies before dependents** - Respect `[depends: X]` markers
 3. **Failing tests/builds** - Fix broken state before new work
 4. **Small wins** - Quick completions build momentum
 
 ### 2.2 Batch into Iterations
+
 Group tasks into iterations of ~3-5 related items. Each iteration should:
+
 - Be completable in one build loop
 - Have clear acceptance criteria
 - End with passing validation
@@ -77,21 +89,27 @@ Output to `IMPLEMENTATION_PLAN.md`:
 Generated: [timestamp]
 
 ## Current State
+
 [Summary of what exists, what's broken, what's missing]
 
 ## Iteration 1: [Theme]
+
 Priority: P0
+
 - [ ] Task 1 (from spec X, line Y)
   - AC: [acceptance criteria]
 - [ ] Task 2
   - AC: [acceptance criteria]
 
 ## Iteration 2: [Theme]
+
 Priority: P0
+
 - [ ] Task 3 [depends: Task 1]
-...
+      ...
 
 ## Blocked / Needs Clarification
+
 - [Item requiring human input]
 ```
 
@@ -100,6 +118,7 @@ Priority: P0
 ## Phase 4: Validate Plan
 
 Before completing:
+
 - [ ] All P0 tasks are scheduled before P1
 - [ ] Dependencies are correctly ordered
 - [ ] Each iteration is self-contained

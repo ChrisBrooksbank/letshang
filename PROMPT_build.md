@@ -11,24 +11,30 @@ You are a building agent for the Community Meetup Platform. Your job is to imple
 ## Phase 0: Orientation
 
 ### 0.1 Read Operational Guide
+
 - `AGENTS.md` - **Study the Quality Gates section carefully**
 - Note the 8 gates and their thresholds
 - Review Code Quality Rules
 
 ### 0.2 Check Current State
+
 ```bash
 pnpm check && pnpm lint && pnpm test
 ```
+
 **If ANY gate fails at start**: Fix it FIRST before new work.
 
 ### 0.3 Read Implementation Plan
+
 - `IMPLEMENTATION_PLAN.md` - Find the next uncompleted task
 
 ### 0.4 Read Relevant Spec
+
 - Study the spec file for the task you're implementing
 - Note acceptance criteria (AC:) - these define "done"
 
 ### 0.5 Study Related Code
+
 - Use subagents to search for similar patterns in codebase
 - Find shared utilities in `src/lib/`
 - Look for code to REUSE, not duplicate
@@ -38,13 +44,17 @@ pnpm check && pnpm lint && pnpm test
 ## Phase 1: Select Task
 
 ### 1.1 Find Next Task
+
 From `IMPLEMENTATION_PLAN.md`, select the **first unchecked task** in the **first incomplete iteration**.
 
 ### 1.2 Verify Dependencies
+
 Confirm all `[depends: X]` tasks are completed. If not, select a task with satisfied dependencies.
 
 ### 1.3 Announce Task
+
 State clearly:
+
 - What you're implementing
 - Which spec file and acceptance criteria
 - What files you expect to create/modify
@@ -54,7 +64,9 @@ State clearly:
 ## Phase 2: Implement
 
 ### 2.1 Write Code
+
 Follow ALL rules from `AGENTS.md`:
+
 - TypeScript strict mode - no `any` without justification
 - No magic numbers/strings - use named constants
 - No code duplication - extract to `src/lib/utils/` if repeated 3+ times
@@ -63,6 +75,7 @@ Follow ALL rules from `AGENTS.md`:
 - Mobile-first responsive design
 
 ### 2.2 Write Tests FIRST (TDD preferred)
+
 - Unit tests for ALL exported functions (Vitest)
 - Tests MUST cover:
   - Happy path for each acceptance criterion
@@ -72,13 +85,16 @@ Follow ALL rules from `AGENTS.md`:
 - **Target: 80%+ coverage on new code**
 
 ### 2.3 Ensure Accessibility
+
 - Keyboard navigation works
 - ARIA labels on interactive elements
 - Color contrast ≥ 4.5:1
 - Focus indicators visible
 
 ### 2.4 Update Types
+
 If database schema changed:
+
 ```bash
 pnpm db:types
 ```
@@ -88,11 +104,13 @@ pnpm db:types
 ## Phase 3: Validate (ALL 9 GATES)
 
 Run full validation sequence:
+
 ```bash
 pnpm check && pnpm lint && pnpm test:coverage && pnpm build && pnpm knip && pnpm depcheck
 ```
 
 ### Gate Checklist
+
 - [ ] **Gate 1**: `pnpm check` - 0 TypeScript errors
 - [ ] **Gate 2**: `pnpm lint` - 0 errors, 0 warnings
 - [ ] **Gate 3**: `pnpm format:check` - All files formatted
@@ -104,6 +122,7 @@ pnpm check && pnpm lint && pnpm test:coverage && pnpm build && pnpm knip && pnpm
 - [ ] **Gate 9**: `pnpm depcheck` - 0 unused dependencies
 
 ### 3.1 If ANY Gate Fails
+
 - Fix errors immediately
 - Do NOT proceed until ALL gates pass
 - Common fixes:
@@ -114,11 +133,13 @@ pnpm check && pnpm lint && pnpm test:coverage && pnpm build && pnpm knip && pnpm
   - Unused export? Remove it or use it
 
 ### 3.2 If Stuck After 3 Attempts
+
 - Document the specific blocker
 - Mark task as BLOCKED in implementation plan
 - Move to next task
 
 ### 3.3 If All Gates Pass
+
 Proceed to commit.
 
 ---
@@ -126,6 +147,7 @@ Proceed to commit.
 ## Phase 4: Final Checks Before Commit
 
 ### 4.1 Self-Review Checklist
+
 - [ ] No `console.log` statements (use proper logging)
 - [ ] No commented-out code
 - [ ] No TODO comments without ticket reference
@@ -134,6 +156,7 @@ Proceed to commit.
 - [ ] No sensitive data exposed
 
 ### 4.2 Definition of Done (from AGENTS.md)
+
 - [ ] All acceptance criteria met
 - [ ] All 9 quality gates pass
 - [ ] New code has tests (80%+ coverage)
@@ -148,6 +171,7 @@ Proceed to commit.
 ## Phase 5: Commit & Update
 
 ### 5.1 Commit Changes
+
 ```bash
 git add -A
 git commit -m "feat: [description]
@@ -158,12 +182,15 @@ git commit -m "feat: [description]
 ```
 
 ### 5.2 Update Implementation Plan
+
 Mark the task as complete in `IMPLEMENTATION_PLAN.md`:
+
 ```markdown
 - [x] Task description ✓
 ```
 
 ### 5.3 Push Changes
+
 ```bash
 git push
 ```
@@ -173,6 +200,7 @@ git push
 ## Phase 6: Loop Exit
 
 After completing ONE task:
+
 - Stop and exit
 - The loop script will restart with fresh context
 - Next iteration picks up the next task
