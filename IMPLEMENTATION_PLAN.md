@@ -126,11 +126,11 @@
   - AC: Clicking link verifies and logs in ✓
   - AC: Resend verification option available ✓
 
-- [ ] Build password reset flow [P0]
-  - AC: Reset email sent to valid addresses only
-  - AC: No email enumeration (same message for exists/doesn't)
-  - AC: Reset link valid for 1 hour
-  - AC: Password change invalidates old sessions
+- [x] Build password reset flow [P0] ✓
+  - AC: Reset email sent to valid addresses only ✓
+  - AC: No email enumeration (same message for exists/doesn't) ✓
+  - AC: Reset link valid for 1 hour (enforced by Supabase) ✓
+  - AC: Password change invalidates old sessions ✓
 
 - [ ] Implement login form [P0]
   - AC: Email/password login works
