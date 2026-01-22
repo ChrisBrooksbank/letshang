@@ -74,6 +74,22 @@ export default [
 	},
 	prettier,
 	{
+		// Node.js scripts configuration
+		files: ['scripts/**/*.js'],
+		languageOptions: {
+			globals: {
+				console: 'readonly',
+				process: 'readonly',
+				Buffer: 'readonly',
+				__dirname: 'readonly',
+				__filename: 'readonly'
+			}
+		},
+		rules: {
+			'no-console': 'off' // Allow console in scripts
+		}
+	},
+	{
 		ignores: [
 			'.svelte-kit/**',
 			'build/**',
