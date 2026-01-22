@@ -2,10 +2,11 @@ import type { LayoutServerLoad } from './$types';
 
 /**
  * Root layout server load function.
- * Makes the session available to all pages via $page.data.session
+ * Makes the session and user available to all pages via $page.data
  */
 export const load: LayoutServerLoad = async ({ locals }) => {
 	return {
-		session: locals.session
+		session: locals.session,
+		user: locals.user
 	};
 };
