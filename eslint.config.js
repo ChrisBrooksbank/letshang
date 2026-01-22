@@ -19,7 +19,14 @@ export default [
 			},
 			globals: {
 				console: 'readonly',
-				process: 'readonly'
+				process: 'readonly',
+				// Browser globals for tests
+				Request: 'readonly',
+				Response: 'readonly',
+				URL: 'readonly',
+				fetch: 'readonly',
+				// SvelteKit App namespace
+				App: 'readonly'
 			}
 		},
 		plugins: {

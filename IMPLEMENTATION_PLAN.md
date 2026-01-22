@@ -60,14 +60,14 @@
 > Connect to Supabase for database, auth, and storage
 
 - [x] Install and configure Supabase client ✓
-  - AC: `@supabase/supabase-js` installed
-  - AC: Environment variables documented in `.env.example`
-  - AC: Supabase client singleton in `src/lib/server/supabase.ts`
+  - AC: `@supabase/supabase-js` installed ✓
+  - AC: Environment variables documented in `.env.example` ✓
+  - AC: Supabase client singleton in `src/lib/server/supabase.ts` ✓
 
-- [ ] Set up Supabase type generation
-  - AC: `pnpm db:types` generates types from schema
-  - AC: Types exported from `src/lib/types/database.ts`
-  - AC: Type generation documented in README
+- [x] Set up Supabase type generation ✓
+  - AC: `pnpm db:types` generates types from schema ✓
+  - AC: Types exported from `src/lib/types/database.ts` ✓
+  - AC: Type generation documented in README ✓
 
 - [ ] Create auth helpers
   - AC: Server-side auth check in `hooks.server.ts`
