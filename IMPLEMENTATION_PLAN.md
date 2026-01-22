@@ -85,11 +85,11 @@
 
 > Configure PWA manifest and service worker (spec: 12-pwa-features.md)
 
-- [ ] Configure PWA manifest [P0]
-  - AC: App name "LetsHang", theme color set
-  - AC: Icons 192px and 512px
-  - AC: Standalone display mode
-  - AC: Manifest linked in `app.html`
+- [x] Configure PWA manifest [P0] ✓
+  - AC: App name "LetsHang", theme color set ✓
+  - AC: Icons 192px and 512px ✓
+  - AC: Standalone display mode ✓
+  - AC: Manifest linked in `app.html` ✓
 
 - [ ] Implement service worker [P0]
   - AC: Vite PWA plugin configured
