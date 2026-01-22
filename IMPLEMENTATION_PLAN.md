@@ -113,12 +113,12 @@
 
 > Email/password auth flow (spec: 01-user-accounts.md)
 
-- [ ] Build email/password registration form [P0]
-  - AC: Form validates email format
-  - AC: Password strength (8+ chars) validated
-  - AC: Duplicate email shows clear error
-  - AC: Zod schema for validation
-  - AC: Superforms integration
+- [x] Build email/password registration form [P0] ✓
+  - AC: Form validates email format ✓
+  - AC: Password strength (8+ chars) validated ✓
+  - AC: Duplicate email shows clear error ✓
+  - AC: Zod schema for validation ✓
+  - AC: Superforms integration ✓
 
 - [ ] Implement email verification system [P0]
   - AC: Verification email sent within 30 seconds
