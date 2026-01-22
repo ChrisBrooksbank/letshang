@@ -74,10 +74,10 @@
   - AC: Client-side auth store in `src/lib/stores/auth.ts` ✓
   - AC: Protected route guards work ✓
 
-- [ ] Create initial database schema
-  - AC: `users` table with profile fields
-  - AC: RLS policies for user data
-  - AC: Migration file in `supabase/migrations/`
+- [x] Create initial database schema ✓
+  - AC: `users` table with profile fields ✓
+  - AC: RLS policies for user data ✓
+  - AC: Migration file in `supabase/migrations/` ✓
 
 ---
 
