@@ -139,25 +139,25 @@
 
 ---
 
-### Iteration 4: Session Management
+### Iteration 4: Session Management ✓
 
 > JWT sessions and auth state (spec: 01-user-accounts.md)
 
-- [ ] Implement JWT-based sessions [P0]
-  - AC: Access token expires in 15 minutes
-  - AC: Refresh token rotation on each use
-  - AC: Sessions persist across browser close
-  - AC: Logout clears all tokens
+- [x] Implement JWT-based sessions [P0] ✓
+  - AC: Access token expires in 15 minutes ✓
+  - AC: Refresh token rotation on each use ✓
+  - AC: Sessions persist across browser close ✓
+  - AC: Logout clears all tokens ✓
 
-- [ ] Create auth state management
-  - AC: Svelte store tracks auth state
-  - AC: Auto-refresh tokens before expiry
-  - AC: Redirect to login when session expires
+- [x] Create auth state management ✓
+  - AC: Svelte store tracks auth state ✓
+  - AC: Auto-refresh tokens before expiry ✓
+  - AC: Redirect to login when session expires ✓
 
-- [ ] Build protected route wrapper
-  - AC: Unauthenticated users redirected to login
-  - AC: Return URL preserved for post-login redirect
-  - AC: Loading state while checking auth
+- [x] Build protected route wrapper ✓
+  - AC: Unauthenticated users redirected to login ✓
+  - AC: Return URL preserved for post-login redirect ✓
+  - AC: Loading state while checking auth ✓
 
 ---
 
