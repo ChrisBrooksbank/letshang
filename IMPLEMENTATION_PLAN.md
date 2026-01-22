@@ -91,10 +91,10 @@
   - AC: Standalone display mode ✓
   - AC: Manifest linked in `app.html` ✓
 
-- [ ] Implement service worker [P0]
-  - AC: Vite PWA plugin configured
-  - AC: Static assets cached (HTML, CSS, JS, images)
-  - AC: Cache-first for static, network-first for API
+- [x] Implement service worker [P0] ✓
+  - AC: Vite PWA plugin configured ✓
+  - AC: Static assets cached (HTML, CSS, JS, images) ✓
+  - AC: Cache-first for static, network-first for API ✓
 
 - [ ] Design mobile-first base layouts [P0]
   - AC: Touch-friendly targets (44px minimum)
