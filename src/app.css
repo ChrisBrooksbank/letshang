@@ -1,3 +1,111 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Mobile-first base styles */
+@layer base {
+	/* Prevent horizontal scroll globally */
+	html,
+	body {
+		overflow-x: hidden;
+		max-width: 100vw;
+		margin: 0;
+		padding: 0;
+	}
+
+	/* Box sizing for all elements */
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
+	/* Ensure images and media don't overflow */
+	img,
+	video,
+	iframe {
+		max-width: 100%;
+		height: auto;
+	}
+
+	/* Touch-friendly defaults */
+	button,
+	a,
+	input[type='button'],
+	input[type='submit'] {
+		min-height: 44px;
+		min-width: 44px;
+		touch-action: manipulation; /* Disable double-tap zoom */
+	}
+
+	/* Prevent text from being too small on mobile */
+	body {
+		font-size: 16px; /* Prevents iOS zoom on input focus */
+		line-height: 1.5;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	/* Ensure inputs are touch-friendly */
+	input,
+	select,
+	textarea {
+		font-size: 16px; /* Prevents iOS zoom */
+		min-height: 44px;
+	}
+
+	/* Better mobile tap highlighting */
+	* {
+		-webkit-tap-highlight-color: rgba(99, 102, 241, 0.1);
+	}
+}
+
+/* Mobile-first utility classes */
+@layer components {
+	/* Touch-friendly button/link base */
+	.touch-target {
+		min-height: 44px;
+		min-width: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.5rem 1rem;
+	}
+
+	/* Single-column mobile container */
+	.mobile-container {
+		width: 100%;
+		max-width: 100vw;
+		padding-left: 1rem;
+		padding-right: 1rem;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	/* Responsive container with breakpoints */
+	@media (min-width: 768px) {
+		.mobile-container {
+			padding-left: 2rem;
+			padding-right: 2rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.mobile-container {
+			max-width: 1200px;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.mobile-container {
+			max-width: 1400px;
+		}
+	}
+
+	/* No scroll utility */
+	.no-scroll {
+		overflow: hidden;
+		position: fixed;
+		width: 100%;
+	}
+}
