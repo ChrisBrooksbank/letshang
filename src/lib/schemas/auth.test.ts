@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { registrationSchema } from './auth';
+import { registrationSchema, passwordResetRequestSchema, passwordResetSchema } from './auth';
 
 describe('registrationSchema', () => {
 	describe('email validation', () => {
@@ -126,6 +126,133 @@ describe('registrationSchema', () => {
 				expect(result.data).toEqual({
 					email: 'user@example.com',
 					password: 'password123'
+				});
+			}
+		});
+	});
+});
+
+describe('passwordResetRequestSchema', () => {
+	describe('email validation', () => {
+		it('should accept valid email addresses', () => {
+			const validEmails = [
+				'user@example.com',
+				'test.user@example.com',
+				'user+tag@example.co.uk',
+				'user123@test-domain.com'
+			];
+
+			validEmails.forEach((email) => {
+				const result = passwordResetRequestSchema.safeParse({ email });
+				expect(result.success).toBe(true);
+			});
+		});
+
+		it('should accept uppercase email addresses', () => {
+			// Note: Email normalization is now handled in the server action
+			const result = passwordResetRequestSchema.safeParse({
+				email: 'USER@EXAMPLE.COM'
+			});
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.email).toBe('USER@EXAMPLE.COM');
+			}
+		});
+
+		it('should reject invalid email formats', () => {
+			const invalidEmails = ['notanemail', '@example.com', 'user@', 'user@example', ''];
+
+			invalidEmails.forEach((email) => {
+				const result = passwordResetRequestSchema.safeParse({ email });
+				expect(result.success).toBe(false);
+				if (!result.success) {
+					expect(result.error.issues[0].message).toContain('valid email');
+				}
+			});
+		});
+
+		it('should require email field', () => {
+			const result = passwordResetRequestSchema.safeParse({});
+			expect(result.success).toBe(false);
+		});
+	});
+});
+
+describe('passwordResetSchema', () => {
+	describe('password validation', () => {
+		it('should accept matching passwords with 8+ characters', () => {
+			const result = passwordResetSchema.safeParse({
+				password: 'password123',
+				confirmPassword: 'password123'
+			});
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject passwords shorter than 8 characters', () => {
+			const result = passwordResetSchema.safeParse({
+				password: 'short',
+				confirmPassword: 'short'
+			});
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				expect(result.error.issues[0].message).toContain('at least 8 characters');
+			}
+		});
+
+		it('should reject non-matching passwords', () => {
+			const result = passwordResetSchema.safeParse({
+				password: 'password123',
+				confirmPassword: 'different123'
+			});
+			expect(result.success).toBe(false);
+			if (!result.success) {
+				const matchError = result.error.issues.find(
+					(issue) => issue.message === 'Passwords do not match'
+				);
+				expect(matchError).toBeDefined();
+			}
+		});
+
+		it('should reject when confirmPassword is missing', () => {
+			const result = passwordResetSchema.safeParse({
+				password: 'password123'
+			});
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject when password is missing', () => {
+			const result = passwordResetSchema.safeParse({
+				confirmPassword: 'password123'
+			});
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept very long matching passwords', () => {
+			const longPassword = 'a'.repeat(100);
+			const result = passwordResetSchema.safeParse({
+				password: longPassword,
+				confirmPassword: longPassword
+			});
+			expect(result.success).toBe(true);
+		});
+	});
+
+	describe('complete form validation', () => {
+		it('should require both fields', () => {
+			const result = passwordResetSchema.safeParse({});
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept valid complete form data', () => {
+			const result = passwordResetSchema.safeParse({
+				password: 'newpassword123',
+				confirmPassword: 'newpassword123'
+			});
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data).toEqual({
+					password: 'newpassword123',
+					confirmPassword: 'newpassword123'
 				});
 			}
 		});
