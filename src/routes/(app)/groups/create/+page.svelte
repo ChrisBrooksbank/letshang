@@ -6,26 +6,33 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const { form, errors, enhance, delayed } = superForm(data.form, {
-		resetForm: false
+	// Initialize superForm with reactive data reference
+	const superformResult = $derived.by(() => {
+		return superForm(data.form, {
+			resetForm: false
+		});
 	});
+
+	const form = $derived(superformResult.form);
+	const errors = $derived(superformResult.errors);
+	const enhance = $derived(superformResult.enhance);
+	const delayed = $derived(superformResult.delayed);
 
 	// Wizard state
 	let currentStep = $state(1);
 	const totalSteps = 3;
 
-	// Group topics by category for organized display
-	const groupedTopics = data.topics.reduce(
-		(acc: Record<string, Array<{ id: string; name: string }>>, topic) => {
+	// Group topics by category for organized display - use $derived.by for reactive computation
+	const groupedTopics = $derived.by(() => {
+		return data.topics.reduce((acc: Record<string, Array<{ id: string; name: string }>>, topic) => {
 			const category = topic.category || 'Other';
 			if (!acc[category]) {
 				acc[category] = [];
 			}
 			acc[category].push({ id: topic.id, name: topic.name });
 			return acc;
-		},
-		{}
-	);
+		}, {});
+	});
 
 	// Track selected topics - initialize with empty array and type assertion
 	let selectedTopics: string[] = $state(Array.isArray($form.topic_ids) ? $form.topic_ids : []);
