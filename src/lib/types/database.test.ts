@@ -2,81 +2,76 @@ import { describe, it, expect } from 'vitest';
 import type { Database, Tables, TablesInsert, TablesUpdate } from './database';
 
 describe('Database Types', () => {
-	it('should export Database type', () => {
+	it('should export Database type with table definitions', () => {
 		// Type assertion to ensure Database type is properly structured
-		const database: Database = {
-			public: {
-				Tables: {},
-				Views: {},
-				Functions: {},
-				Enums: {}
-			}
-		};
-
-		expect(database).toBeDefined();
-		expect(database.public).toBeDefined();
-		expect(database.public.Tables).toBeDefined();
-		expect(database.public.Views).toBeDefined();
-		expect(database.public.Functions).toBeDefined();
-		expect(database.public.Enums).toBeDefined();
-	});
-
-	it('should have proper Database structure', () => {
-		// Verify the Database type has the expected shape
-		const testDb: Database = {
-			public: {
-				Tables: {},
-				Views: {},
-				Functions: {},
-				Enums: {}
-			}
-		};
-
-		// Ensure it's an object with public schema
-		expect(typeof testDb).toBe('object');
-		expect(typeof testDb.public).toBe('object');
-	});
-
-	it('should export helper types', () => {
-		// This test verifies that the helper types (Tables, TablesInsert, TablesUpdate)
-		// are properly exported and can be used for type inference.
-		// Since we don't have actual tables yet, we just verify the types exist.
-
-		// Type-only test - if this compiles, the types are working
-		// Using underscore prefix to indicate intentionally unused types
-		type _TestTables = Tables<never>;
-		type _TestInsert = TablesInsert<never>;
-		type _TestUpdate = TablesUpdate<never>;
+		// The Database type should have table definitions for users, events, etc.
+		type _TestDatabase = Database;
 
 		// Runtime verification that the module exports what we expect
 		expect(true).toBe(true);
 	});
 
-	it('should maintain type structure for future schema', () => {
-		// This test documents the expected structure for when actual tables are added
-		// When real tables exist (e.g., 'users'), the Database type should look like:
-		//
-		// Database = {
-		//   public: {
-		//     Tables: {
-		//       users: {
-		//         Row: { id: string; email: string; ... }
-		//         Insert: { id?: string; email: string; ... }
-		//         Update: { id?: string; email?: string; ... }
-		//       }
-		//     }
-		//   }
-		// }
+	it('should have proper Database structure', () => {
+		// Verify the Database type has the expected shape
+		// This is a type-only test - if it compiles, the structure is correct
+		type _PublicSchema = Database['public'];
+		type _Tables = Database['public']['Tables'];
+		type _Enums = Database['public']['Enums'];
 
-		const emptyDatabase: Database = {
-			public: {
-				Tables: {},
-				Views: {},
-				Functions: {},
-				Enums: {}
-			}
-		};
+		// Runtime verification
+		expect(true).toBe(true);
+	});
 
-		expect(Object.keys(emptyDatabase.public.Tables)).toHaveLength(0);
+	it('should export helper types for table access', () => {
+		// This test verifies that the helper types (Tables, TablesInsert, TablesUpdate)
+		// are properly exported and can be used for type inference with actual tables
+
+		// Type-only test - if this compiles, the types are working
+		// Using underscore prefix to indicate intentionally unused types
+		type _UserRow = Tables<'users'>;
+		type _UserInsert = TablesInsert<'users'>;
+		type _UserUpdate = TablesUpdate<'users'>;
+
+		type _EventRow = Tables<'events'>;
+		type _GroupRow = Tables<'groups'>;
+
+		// Runtime verification that the module exports what we expect
+		expect(true).toBe(true);
+	});
+
+	it('should have all expected tables defined', () => {
+		// This test documents the expected tables in the schema
+		// The Database type should have definitions for:
+		// - users: User profile data
+		// - events: Event information
+		// - event_rsvps: RSVP responses
+		// - topics: Curated interest categories
+		// - groups: Community groups
+		// - group_topics: Group-topic associations
+		// - group_members: Group membership and roles
+
+		// Type-only test - these type assignments will fail if tables are missing
+		type _Users = Database['public']['Tables']['users'];
+		type _Events = Database['public']['Tables']['events'];
+		type _EventRsvps = Database['public']['Tables']['event_rsvps'];
+		type _Topics = Database['public']['Tables']['topics'];
+		type _Groups = Database['public']['Tables']['groups'];
+		type _GroupTopics = Database['public']['Tables']['group_topics'];
+		type _GroupMembers = Database['public']['Tables']['group_members'];
+
+		// Runtime verification
+		expect(true).toBe(true);
+	});
+
+	it('should have all expected enums defined', () => {
+		// This test documents the expected enums in the schema
+		type _ProfileVisibility = Database['public']['Enums']['profile_visibility'];
+		type _EventType = Database['public']['Enums']['event_type'];
+		type _RsvpStatus = Database['public']['Enums']['rsvp_status'];
+		type _GroupType = Database['public']['Enums']['group_type'];
+		type _GroupMemberRole = Database['public']['Enums']['group_member_role'];
+
+		// Runtime verification
+		expect(true).toBe(true);
 	});
 });
