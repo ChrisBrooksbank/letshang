@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms';
 	import GoogleOAuthButton from '$lib/components/GoogleOAuthButton.svelte';
+	import AppleOAuthButton from '$lib/components/AppleOAuthButton.svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -20,9 +21,10 @@
 		<p class="text-gray-600">Join LetsHang to discover events and connect with people</p>
 	</div>
 
-	<!-- Google OAuth Button -->
-	<div class="mb-6">
+	<!-- OAuth Buttons -->
+	<div class="mb-6 space-y-3">
 		<GoogleOAuthButton supabase={data.supabase} mode="signup" />
+		<AppleOAuthButton supabase={data.supabase} mode="signup" />
 
 		<!-- Divider -->
 		<div class="relative my-6">
