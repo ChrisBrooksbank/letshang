@@ -312,10 +312,15 @@
   - Server-side: Full permission checks, prevent self-modification, prevent last organizer removal
   - Coverage: 100% on role permissions logic (27 tests)
 
-- [ ] Implement role-based permissions [P1]
-  - AC: UI hides actions user can't perform
-  - AC: API enforces permissions server-side
-  - AC: Role changes take effect immediately
+- [x] Implement role-based permissions [P1] ✓
+  - AC: UI hides actions user can't perform ✓
+  - AC: API enforces permissions server-side ✓
+  - AC: Role changes take effect immediately ✓
+  - Implementation: Multi-layered permission enforcement
+  - UI: Conditional button rendering using canModifyMember(), role-filtered dropdowns
+  - Server: Permission checks in updateRole/removeMember actions using helper functions
+  - Database: RLS policies + triggers for defense-in-depth
+  - Coverage: Comprehensive tests in group-members.test.ts (27 permission tests)
 
 - [ ] Build member list with search [P1]
   - AC: Shows member name, photo, join date
