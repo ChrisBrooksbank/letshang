@@ -224,10 +224,10 @@
 
 > User profiles and settings (spec: 01-user-accounts.md)
 
-- [ ] Create profile editing interface [P1]
-  - AC: Display name editable (2-50 chars)
-  - AC: Bio/about section (500 chars)
-  - AC: Changes save on blur or explicit save
+- [x] Create profile editing interface [P1] ✓
+  - AC: Display name editable (2-50 chars) ✓
+  - AC: Bio/about section (500 chars) ✓
+  - AC: Changes save on blur or explicit save ✓
 
 - [ ] Implement profile photo upload [P1]
   - AC: Accepts JPG, PNG, WebP up to 5MB
