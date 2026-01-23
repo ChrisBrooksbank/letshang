@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { superForm } from 'sveltekit-superforms';
+	import GoogleOAuthButton from '$lib/components/GoogleOAuthButton.svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -17,6 +18,21 @@
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold mb-2">Sign in to LetsHang</h1>
 		<p class="text-gray-600">Welcome back! Sign in to your account</p>
+	</div>
+
+	<!-- Google OAuth Button -->
+	<div class="mb-6">
+		<GoogleOAuthButton supabase={data.supabase} mode="signin" />
+
+		<!-- Divider -->
+		<div class="relative my-6">
+			<div class="absolute inset-0 flex items-center">
+				<div class="w-full border-t border-gray-300"></div>
+			</div>
+			<div class="relative flex justify-center text-sm">
+				<span class="px-2 bg-white text-gray-500">Or continue with email</span>
+			</div>
+		</div>
 	</div>
 
 	<form method="POST" use:enhance class="space-y-6">
