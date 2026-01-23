@@ -291,10 +291,10 @@
   - AC: Private - requires approval ✓
   - AC: Type changeable by organizer (edit page to be implemented in future iteration)
 
-- [ ] Design group profile/landing page [P1]
-  - AC: Shows name, description, cover, topics
-  - AC: Member count and upcoming events
-  - AC: Join button (or request for private)
+- [x] Design group profile/landing page [P1] ✓
+  - AC: Shows name, description, cover, topics ✓
+  - AC: Member count and upcoming events ✓
+  - AC: Join button (or request for private) ✓
 
 ---
 
