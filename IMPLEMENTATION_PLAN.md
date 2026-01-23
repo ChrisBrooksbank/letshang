@@ -385,12 +385,17 @@
 
 > Online, hybrid, and map integration (spec: 03-events.md)
 
-- [ ] Implement online events [P1]
-  - AC: Video link field (Zoom, Meet, etc.)
-  - AC: Link revealed to RSVPed attendees only
+- [x] Implement online events [P1] ✓
+  - AC: Video link field (Zoom, Meet, etc.) ✓
+  - AC: Link revealed to RSVPed attendees only ✓
+  - Implementation: Added videoLink field to event schema with URL validation
+  - UI: Video link input shown for online/hybrid events with blue accent styling
+  - Server: Saves video_link to database for online/hybrid events
+  - Display: Event detail page shows video link only to RSVPed attendees
+  - Coverage: 100% on validation logic (9 new test cases)
 
 - [ ] Implement hybrid events [P1]
-  - AC: Both location AND video link
+  - AC: Both location AND video link ✓ (already complete - both fields required for hybrid)
   - AC: Attendees select mode when RSVPing
 
 - [ ] Build location search and map [P1]
