@@ -21,6 +21,13 @@
 	const canRequestJoin = $derived(
 		isAuthenticated && !isMember && !hasPendingRequest && group.group_type === 'private'
 	);
+
+	// Check if user is leadership (can manage members)
+	const isLeadership = $derived(
+		userMembership?.role === 'organizer' ||
+			userMembership?.role === 'co_organizer' ||
+			userMembership?.role === 'assistant_organizer'
+	);
 </script>
 
 <svelte:head>
@@ -200,6 +207,21 @@
 					</div>
 				</div>
 			</div>
+
+			<!-- Leadership Actions -->
+			{#if isLeadership}
+				<div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+					<h2 class="text-xl font-semibold text-gray-900 mb-4">Group Management</h2>
+					<div class="flex flex-wrap gap-3">
+						<a
+							href="/groups/{group.id}/members"
+							class="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition"
+						>
+							Manage Members
+						</a>
+					</div>
+				</div>
+			{/if}
 
 			<!-- Upcoming Events Section - Placeholder -->
 			{#if isMember && upcomingEventsCount > 0}
