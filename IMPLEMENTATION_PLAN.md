@@ -359,10 +359,14 @@
 
 > Link events to groups (spec: 03-events.md)
 
-- [ ] Support group events [P1]
-  - AC: Events linked to a group
-  - AC: Group selector in event creation
-  - AC: Events visible to group members
+- [x] Support group events [P1] ✓
+  - AC: Events linked to a group ✓
+  - AC: Group selector in event creation ✓
+  - AC: Events visible to group members ✓
+  - Implementation: Added optional groupId field to event creation schema and UI
+  - Route: /events/create with group dropdown (shown if user has active memberships)
+  - Server: Fetches user's active groups, saves group_id on event creation
+  - Coverage: 100% on event creation code, 11 tests for group events
 
 - [ ] Update event visibility options [P1]
   - AC: Public - visible in discovery
