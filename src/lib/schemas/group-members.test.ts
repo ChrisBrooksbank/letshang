@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	updateMemberRoleSchema,
 	removeMemberSchema,
+	banMemberSchema,
 	canAssignRole,
 	canModifyMember,
 	getAssignableRoles,
@@ -267,6 +268,133 @@ describe('group-members schemas', () => {
 				expect(typeof ROLE_DESCRIPTIONS[role]).toBe('string');
 				expect(ROLE_DESCRIPTIONS[role].length).toBeGreaterThan(0);
 			});
+		});
+	});
+
+	describe('banMemberSchema', () => {
+		it('should accept valid ban data with reason', () => {
+			const input = {
+				memberId: '123e4567-e89b-12d3-a456-426614174000',
+				reason: 'Violation of community guidelines'
+			};
+
+			const result = banMemberSchema.safeParse(input);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.memberId).toBe(input.memberId);
+				expect(result.data.reason).toBe(input.reason);
+			}
+		});
+
+		it('should reject ban without reason', () => {
+			const input = {
+				memberId: '123e4567-e89b-12d3-a456-426614174000'
+			};
+
+			const result = banMemberSchema.safeParse(input);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject empty reason', () => {
+			const input = {
+				memberId: '123e4567-e89b-12d3-a456-426614174000',
+				reason: ''
+			};
+
+			const result = banMemberSchema.safeParse(input);
+			expect(result.success).toBe(false);
+		});
+
+		it('should reject reason longer than 500 characters', () => {
+			const input = {
+				memberId: '123e4567-e89b-12d3-a456-426614174000',
+				reason: 'a'.repeat(501)
+			};
+
+			const result = banMemberSchema.safeParse(input);
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept reason at max length (500 chars)', () => {
+			const input = {
+				memberId: '123e4567-e89b-12d3-a456-426614174000',
+				reason: 'a'.repeat(500)
+			};
+
+			const result = banMemberSchema.safeParse(input);
+			expect(result.success).toBe(true);
+		});
+
+		it('should reject invalid member UUID', () => {
+			const input = {
+				memberId: 'not-a-uuid',
+				reason: 'Some reason'
+			};
+
+			const result = banMemberSchema.safeParse(input);
+			expect(result.success).toBe(false);
+		});
+	});
+
+	describe('removeMemberSchema with optional reason', () => {
+		it('should accept member removal with reason', () => {
+			const input = {
+				memberId: '123e4567-e89b-12d3-a456-426614174000',
+				reason: 'Inactive member cleanup'
+			};
+
+			const result = removeMemberSchema.safeParse(input);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.memberId).toBe(input.memberId);
+				expect(result.data.reason).toBe(input.reason);
+			}
+		});
+
+		it('should accept member removal without reason', () => {
+			const input = {
+				memberId: '123e4567-e89b-12d3-a456-426614174000'
+			};
+
+			const result = removeMemberSchema.safeParse(input);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.memberId).toBe(input.memberId);
+				expect(result.data.reason).toBeUndefined();
+			}
+		});
+
+		it('should transform empty reason to undefined', () => {
+			const input = {
+				memberId: '123e4567-e89b-12d3-a456-426614174000',
+				reason: ''
+			};
+
+			const result = removeMemberSchema.safeParse(input);
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data.reason).toBeUndefined();
+			}
+		});
+
+		it('should reject reason longer than 500 characters', () => {
+			const input = {
+				memberId: '123e4567-e89b-12d3-a456-426614174000',
+				reason: 'a'.repeat(501)
+			};
+
+			const result = removeMemberSchema.safeParse(input);
+			expect(result.success).toBe(false);
+		});
+
+		it('should accept reason at max length (500 chars)', () => {
+			const input = {
+				memberId: '123e4567-e89b-12d3-a456-426614174000',
+				reason: 'a'.repeat(500)
+			};
+
+			const result = removeMemberSchema.safeParse(input);
+			expect(result.success).toBe(true);
 		});
 	});
 });

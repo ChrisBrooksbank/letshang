@@ -4,11 +4,34 @@ import { supabase } from '$lib/server/supabase';
 import {
 	updateMemberRoleSchema,
 	removeMemberSchema,
+	banMemberSchema,
 	canAssignRole,
 	canModifyMember,
 	type GroupMemberRole
 } from '$lib/schemas/group-members';
 import { joinRequestResponseSchema } from '$lib/schemas/groups';
+
+/**
+ * Helper function to log member management actions
+ */
+async function logMemberAction(
+	groupId: string,
+	targetUserId: string,
+	performedByUserId: string,
+	actionType: 'removed' | 'banned' | 'unbanned' | 'role_changed',
+	reason?: string,
+	metadata?: Record<string, unknown>
+) {
+	await supabase.from('group_member_actions_log').insert({
+		group_id: groupId,
+		target_user_id: targetUserId,
+		performed_by_user_id: performedByUserId,
+		action_type: actionType,
+		reason: reason || null,
+		metadata: metadata || null
+	});
+	// Note: We don't fail the operation if logging fails
+}
 
 type MemberWithUser = {
 	id: string;
@@ -151,12 +174,43 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		}
 	}
 
+	// Fetch banned members
+	const { data: bannedData, error: bannedError } = await supabase
+		.from('group_members')
+		.select(
+			`
+			id,
+			role,
+			status,
+			joined_at,
+			user:users!group_members_user_id_fkey(
+				id,
+				display_name,
+				profile_photo_url
+			)
+		`
+		)
+		.eq('group_id', groupId)
+		.eq('status', 'banned')
+		.order('joined_at', { ascending: true });
+
+	const bannedMembers: MemberWithUser[] = bannedError
+		? []
+		: (bannedData || []).map((member) => ({
+				id: member.id,
+				role: member.role,
+				status: member.status,
+				joined_at: member.joined_at,
+				user: Array.isArray(member.user) ? member.user[0] || null : member.user || null
+			}));
+
 	return {
 		group,
 		members: typedMembers,
 		currentUserRole,
 		organizerCount,
-		pendingRequests
+		pendingRequests,
+		bannedMembers
 	};
 };
 
@@ -287,8 +341,9 @@ export const actions: Actions = {
 		// Parse and validate form data
 		const formData = await request.formData();
 		const memberId = formData.get('memberId');
+		const reason = formData.get('reason')?.toString();
 
-		const validation = removeMemberSchema.safeParse({ memberId });
+		const validation = removeMemberSchema.safeParse({ memberId, reason });
 
 		if (!validation.success) {
 			return fail(400, {
@@ -296,7 +351,7 @@ export const actions: Actions = {
 			});
 		}
 
-		const { memberId: validMemberId } = validation.data;
+		const { memberId: validMemberId, reason: validReason } = validation.data;
 
 		// Check current user's role
 		const { data: currentUserMembership, error: membershipError } = await supabase
@@ -373,9 +428,113 @@ export const actions: Actions = {
 			return fail(500, { message: 'Failed to remove member' });
 		}
 
+		// Log the removal action
+		await logMemberAction(groupId, targetMember.user_id, session.user.id, 'removed', validReason);
+
 		return {
 			success: true,
 			message: 'Member removed successfully'
+		};
+	},
+
+	banMember: async ({ params, locals, request }) => {
+		const session = locals.session;
+
+		if (!session?.user) {
+			throw redirect(303, `/login?redirect=/groups/${params.id}/members`);
+		}
+
+		const groupId = params.id;
+		if (!groupId) {
+			return fail(400, { message: 'Group ID is required' });
+		}
+
+		// Parse and validate form data
+		const formData = await request.formData();
+		const memberId = formData.get('memberId');
+		const reason = formData.get('reason')?.toString();
+
+		const validation = banMemberSchema.safeParse({ memberId, reason });
+
+		if (!validation.success) {
+			return fail(400, {
+				message: validation.error.issues[0]?.message || 'Invalid input'
+			});
+		}
+
+		const { memberId: validMemberId, reason: validReason } = validation.data;
+
+		// Check current user's role
+		const { data: currentUserMembership, error: membershipError } = await supabase
+			.from('group_members')
+			.select('role')
+			.eq('group_id', groupId)
+			.eq('user_id', session.user.id)
+			.eq('status', 'active')
+			.single();
+
+		if (membershipError || !currentUserMembership) {
+			return fail(403, { message: 'You are not a member of this group' });
+		}
+
+		const currentUserRole = currentUserMembership.role as GroupMemberRole;
+
+		// Only leadership can ban members
+		const leadershipRoles: GroupMemberRole[] = ['organizer', 'co_organizer', 'assistant_organizer'];
+		if (!leadershipRoles.includes(currentUserRole)) {
+			return fail(403, { message: 'Only group leadership can ban members' });
+		}
+
+		// Get target member's details
+		const { data: targetMember, error: targetError } = await supabase
+			.from('group_members')
+			.select('role, user_id, status')
+			.eq('id', validMemberId)
+			.eq('group_id', groupId)
+			.single();
+
+		if (targetError || !targetMember) {
+			return fail(404, { message: 'Member not found' });
+		}
+
+		const targetRole = targetMember.role as GroupMemberRole;
+
+		// Prevent banning yourself
+		if (targetMember.user_id === session.user.id) {
+			return fail(400, { message: 'You cannot ban yourself from the group' });
+		}
+
+		// Check if current user can modify this member
+		if (!canModifyMember(currentUserRole, targetRole)) {
+			return fail(403, {
+				message: 'You can only ban members with roles lower than yours'
+			});
+		}
+
+		// Prevent banning organizers (they must be demoted first)
+		if (targetRole === 'organizer') {
+			return fail(400, {
+				message: 'Cannot ban an organizer. Demote them first.'
+			});
+		}
+
+		// Ban the member by updating their status
+		const { error: updateError } = await supabase
+			.from('group_members')
+			.update({ status: 'banned' })
+			.eq('id', validMemberId)
+			.eq('group_id', groupId);
+
+		if (updateError) {
+			return fail(500, { message: 'Failed to ban member' });
+		}
+
+		// Log the ban action
+		await logMemberAction(groupId, targetMember.user_id, session.user.id, 'banned', validReason);
+
+		return {
+			success: true,
+			message: 'Member banned successfully'
 		};
 	},
 

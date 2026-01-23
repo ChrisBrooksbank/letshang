@@ -17,10 +17,13 @@
 	const currentUserRole = $derived(data.currentUserRole as GroupMemberRole);
 	const organizerCount = $derived(data.organizerCount);
 	const pendingRequests = $derived(data.pendingRequests || []);
+	const bannedMembers = $derived(data.bannedMembers || []);
 
-	// Track which member is being edited
+	// Track which member is being edited/actioned
 	let editingMemberId = $state<string | null>(null);
 	let confirmRemoveMemberId = $state<string | null>(null);
+	let banMemberId = $state<string | null>(null);
+	let banReason = $state('');
 
 	// Search and filter state
 	let searchQuery = $state('');
@@ -388,6 +391,21 @@
 														Remove
 													</button>
 												{/if}
+
+												<!-- Ban Member Button -->
+												<button
+													onclick={() => {
+														banMemberId = member.id;
+														banReason = '';
+													}}
+													class="px-3 py-1 text-sm text-orange-600 hover:text-orange-800 font-medium"
+													disabled={memberRole === 'organizer'}
+													title={memberRole === 'organizer'
+														? 'Cannot ban an organizer'
+														: 'Ban member from rejoining'}
+												>
+													Ban
+												</button>
 											</div>
 										{:else if isLastOrganizer(memberRole)}
 											<span class="text-xs text-gray-400">Last organizer</span>
@@ -414,6 +432,51 @@
 				{/if}
 			</div>
 
+			<!-- Banned Members List -->
+			{#if bannedMembers.length > 0}
+				<div class="mt-6 bg-white rounded-lg shadow-sm overflow-hidden">
+					<div class="bg-red-50 border-b border-red-200 px-6 py-4">
+						<h2 class="text-lg font-semibold text-red-900">
+							Banned Members ({bannedMembers.length})
+						</h2>
+						<p class="text-sm text-red-700 mt-1">These members cannot rejoin the group</p>
+					</div>
+
+					<div class="divide-y divide-gray-200">
+						{#each bannedMembers as member}
+							<div class="p-6">
+								<div class="flex items-center justify-between">
+									<div class="flex items-center gap-4">
+										{#if member.user?.profile_photo_url}
+											<img
+												src={member.user.profile_photo_url}
+												alt={member.user.display_name || 'User'}
+												class="w-10 h-10 rounded-full object-cover"
+											/>
+										{:else}
+											<div
+												class="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white font-semibold"
+											>
+												{(member.user?.display_name || 'U').charAt(0).toUpperCase()}
+											</div>
+										{/if}
+
+										<div>
+											<p class="font-medium text-gray-900">
+												{member.user?.display_name || 'Anonymous'}
+											</p>
+											<p class="text-sm text-gray-500">
+												Banned on {formatDate(member.joined_at)}
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
+						{/each}
+					</div>
+				</div>
+			{/if}
+
 			<!-- Role Hierarchy Info -->
 			<div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
 				<h2 class="text-lg font-semibold text-blue-900 mb-4">Role Permissions</h2>
@@ -439,4 +502,83 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Ban Member Modal -->
+	{#if banMemberId}
+		{@const memberToBan = members.find((m) => m.id === banMemberId)}
+		<div
+			class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="ban-modal-title"
+			tabindex="-1"
+			onclick={(e) => {
+				if (e.target === e.currentTarget) {
+					banMemberId = null;
+					banReason = '';
+				}
+			}}
+			onkeydown={(e) => {
+				if (e.key === 'Escape') {
+					banMemberId = null;
+					banReason = '';
+				}
+			}}
+		>
+			<div class="bg-white rounded-lg shadow-xl max-w-lg w-full p-6">
+				<h2 id="ban-modal-title" class="text-xl font-bold text-gray-900 mb-4">Ban Member</h2>
+
+				<div class="mb-4">
+					<p class="text-gray-700">
+						You are about to ban
+						<strong>{memberToBan?.user?.display_name || 'this member'}</strong> from the group. They will
+						not be able to rejoin.
+					</p>
+				</div>
+
+				<form method="POST" action="?/banMember" use:enhance class="space-y-4">
+					<input type="hidden" name="memberId" value={banMemberId} />
+
+					<div>
+						<label for="banReason" class="block text-sm font-medium text-gray-700 mb-2">
+							Reason for ban <span class="text-red-600">*</span>
+						</label>
+						<textarea
+							id="banReason"
+							name="reason"
+							bind:value={banReason}
+							rows="3"
+							required
+							maxlength="500"
+							placeholder="Explain why this member is being banned..."
+							class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500"
+						></textarea>
+						<p class="text-xs text-gray-500 mt-1">
+							{banReason.length}/500 characters
+						</p>
+					</div>
+
+					<div class="flex gap-3 justify-end">
+						<button
+							type="button"
+							onclick={() => {
+								banMemberId = null;
+								banReason = '';
+							}}
+							class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200"
+						>
+							Cancel
+						</button>
+						<button
+							type="submit"
+							disabled={!banReason.trim()}
+							class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							Ban Member
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	{/if}
 </BaseLayout>

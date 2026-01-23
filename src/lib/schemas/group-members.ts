@@ -66,11 +66,30 @@ export const updateMemberRoleSchema = z.object({
  * Schema for removing a member from a group
  */
 export const removeMemberSchema = z.object({
-	memberId: z.string().uuid('Invalid member ID')
+	memberId: z.string().uuid('Invalid member ID'),
+	reason: z
+		.string()
+		.max(500, 'Reason must be 500 characters or less')
+		.optional()
+		.transform((val) => (val === '' ? undefined : val))
 });
 
 // Export type for potential future use (commented to avoid unused export warnings)
 // export type RemoveMemberInput = z.infer<typeof removeMemberSchema>;
+
+/**
+ * Schema for banning a member from a group
+ */
+export const banMemberSchema = z.object({
+	memberId: z.string().uuid('Invalid member ID'),
+	reason: z
+		.string()
+		.min(1, 'Ban reason is required')
+		.max(500, 'Reason must be 500 characters or less')
+});
+
+// Export type for potential future use (commented to avoid unused export warnings)
+// export type BanMemberInput = z.infer<typeof banMemberSchema>;
 
 /**
  * Check if a user can assign a specific role based on their own role

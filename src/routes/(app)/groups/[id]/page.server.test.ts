@@ -14,6 +14,11 @@ import { supabase } from '$lib/server/supabase';
 
 const mockSupabase = supabase as any;
 
+// Test UUIDs
+const TEST_GROUP_ID = '550e8400-e29b-41d4-a716-446655440000';
+const TEST_USER_ID_2 = '550e8400-e29b-41d4-a716-446655440002';
+const TEST_ORGANIZER_ID = '550e8400-e29b-41d4-a716-446655440003';
+
 describe('Group Detail Page Server', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -22,15 +27,15 @@ describe('Group Detail Page Server', () => {
 	describe('load function', () => {
 		it('should fetch and return group data with all related information', async () => {
 			const mockGroup = {
-				id: 'group-1',
+				id: TEST_GROUP_ID,
 				name: 'Test Group',
 				description: 'Test description',
 				cover_image_url: 'https://example.com/cover.jpg',
 				group_type: 'public',
 				location: 'San Francisco, CA',
-				organizer_id: 'user-1',
+				organizer_id: TEST_ORGANIZER_ID,
 				organizer: {
-					id: 'user-1',
+					id: TEST_ORGANIZER_ID,
 					display_name: 'Test Organizer',
 					avatar_url: 'https://example.com/avatar.jpg'
 				},
@@ -85,8 +90,8 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: 'user-2' } } };
-			const params = { id: 'group-1' };
+			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: TEST_GROUP_ID };
 
 			const result: any = await load({ params, locals } as any);
 
@@ -128,16 +133,16 @@ describe('Group Detail Page Server', () => {
 
 		it('should detect user membership when user is a member', async () => {
 			const mockGroup = {
-				id: 'group-1',
+				id: TEST_GROUP_ID,
 				name: 'Test Group',
 				group_type: 'public',
-				organizer: { id: 'user-1', display_name: 'Organizer' }
+				organizer: { id: TEST_ORGANIZER_ID, display_name: 'Organizer' }
 			};
 
 			const mockMembership = {
 				id: 'member-1',
-				group_id: 'group-1',
-				user_id: 'user-2',
+				group_id: TEST_GROUP_ID,
+				user_id: TEST_USER_ID_2,
 				role: 'member',
 				status: 'active'
 			};
@@ -196,8 +201,8 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: 'user-2' } } };
-			const params = { id: 'group-1' };
+			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: TEST_GROUP_ID };
 
 			const result: any = await load({ params, locals } as any);
 
@@ -207,10 +212,10 @@ describe('Group Detail Page Server', () => {
 
 		it('should work for unauthenticated users', async () => {
 			const mockGroup = {
-				id: 'group-1',
+				id: TEST_GROUP_ID,
 				name: 'Public Group',
 				group_type: 'public',
-				organizer: { id: 'user-1', display_name: 'Organizer' }
+				organizer: { id: TEST_ORGANIZER_ID, display_name: 'Organizer' }
 			};
 
 			mockSupabase.from.mockImplementation((table: string) => {
@@ -252,7 +257,7 @@ describe('Group Detail Page Server', () => {
 			});
 
 			const locals = { session: null };
-			const params = { id: 'group-1' };
+			const params = { id: TEST_GROUP_ID };
 
 			const result: any = await load({ params, locals } as any);
 
@@ -264,7 +269,7 @@ describe('Group Detail Page Server', () => {
 	describe('actions.join', () => {
 		it('should allow user to join a public group immediately', async () => {
 			const mockGroup = {
-				id: 'group-1',
+				id: TEST_GROUP_ID,
 				group_type: 'public'
 			};
 
@@ -286,13 +291,11 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: 'user-2' } } };
-			const params = { id: 'group-1' };
+			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: TEST_GROUP_ID };
+			const formData = new FormData();
 			const request = {
-				formData: async () => ({
-					get: (): string | null => null,
-					toString: () => '[object FormData]'
-				})
+				formData: async () => formData
 			};
 
 			const result: any = await actions.join({ params, locals, request } as any);
@@ -303,7 +306,7 @@ describe('Group Detail Page Server', () => {
 
 		it('should create pending request for private group', async () => {
 			const mockGroup = {
-				id: 'group-1',
+				id: TEST_GROUP_ID,
 				group_type: 'private'
 			};
 
@@ -330,12 +333,12 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: 'user-2' } } };
-			const params = { id: 'group-1' };
+			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: TEST_GROUP_ID };
+			const formData = new FormData();
+			formData.append('message', '');
 			const request = {
-				formData: async () => ({
-					get: (key: string): string | null => (key === 'message' ? '' : null)
-				})
+				formData: async () => formData
 			};
 
 			const result: any = await actions.join({ params, locals, request } as any);
@@ -347,7 +350,7 @@ describe('Group Detail Page Server', () => {
 
 		it('should include message when joining private group', async () => {
 			const mockGroup = {
-				id: 'group-1',
+				id: TEST_GROUP_ID,
 				group_type: 'private'
 			};
 
@@ -374,13 +377,12 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: 'user-2' } } };
-			const params = { id: 'group-1' };
+			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: TEST_GROUP_ID };
+			const formData = new FormData();
+			formData.append('message', 'I am really interested in joining this group!');
 			const request = {
-				formData: async () => ({
-					get: (key: string): string | null =>
-						key === 'message' ? 'I am really interested in joining this group!' : null
-				})
+				formData: async () => formData
 			};
 
 			const result: any = await actions.join({ params, locals, request } as any);
@@ -394,7 +396,7 @@ describe('Group Detail Page Server', () => {
 
 		it('should not include message for public groups', async () => {
 			const mockGroup = {
-				id: 'group-1',
+				id: TEST_GROUP_ID,
 				group_type: 'public'
 			};
 
@@ -421,13 +423,12 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: 'user-2' } } };
-			const params = { id: 'group-1' };
+			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: TEST_GROUP_ID };
+			const formData = new FormData();
+			formData.append('message', 'I want to join but this is a public group');
 			const request = {
-				formData: async () => ({
-					get: (key: string): string | null =>
-						key === 'message' ? 'I want to join but this is a public group' : null
-				})
+				formData: async () => formData
 			};
 
 			const result: any = await actions.join({ params, locals, request } as any);
@@ -440,28 +441,27 @@ describe('Group Detail Page Server', () => {
 		it('should reject message longer than 500 characters', async () => {
 			const longMessage = 'a'.repeat(501);
 
-			const locals = { session: { user: { id: 'user-2' } } };
-			const params = { id: 'group-1' };
+			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: TEST_GROUP_ID };
+			const formData = new FormData();
+			formData.append('message', longMessage);
 			const request = {
-				formData: async () => ({
-					get: (key: string): string | null => (key === 'message' ? longMessage : null)
-				})
+				formData: async () => formData
 			};
 
 			const result: any = await actions.join({ params, locals, request } as any);
 
-			expect(result.success).toBe(false);
-			expect(result.message).toContain('500 characters');
+			expect(result.status).toBe(400);
+			expect(result.data.success).toBe(false);
+			expect(result.data.message).toContain('500 characters');
 		});
 
 		it('should redirect to login if user is not authenticated', async () => {
 			const locals = { session: null };
-			const params = { id: 'group-1' };
+			const params = { id: TEST_GROUP_ID };
+			const formData = new FormData();
 			const request = {
-				formData: async () => ({
-					get: (): string | null => null,
-					toString: () => '[object FormData]'
-				})
+				formData: async () => formData
 			};
 
 			await expect(actions.join({ params, locals, request } as any)).rejects.toThrow();
@@ -469,7 +469,7 @@ describe('Group Detail Page Server', () => {
 
 		it('should handle duplicate membership gracefully', async () => {
 			const mockGroup = {
-				id: 'group-1',
+				id: TEST_GROUP_ID,
 				group_type: 'public'
 			};
 
@@ -491,19 +491,18 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: 'user-2' } } };
-			const params = { id: 'group-1' };
+			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: TEST_GROUP_ID };
+			const formData = new FormData();
 			const request = {
-				formData: async () => ({
-					get: (): string | null => null,
-					toString: () => '[object FormData]'
-				})
+				formData: async () => formData
 			};
 
 			const result: any = await actions.join({ params, locals, request } as any);
 
-			expect(result.success).toBe(false);
-			expect(result.message).toContain('already a member');
+			expect(result.status).toBe(409);
+			expect(result.data.success).toBe(false);
+			expect(result.data.message).toContain('already a member');
 		});
 
 		it('should return error when group is not found', async () => {
@@ -515,24 +514,23 @@ describe('Group Detail Page Server', () => {
 				})
 			});
 
-			const locals = { session: { user: { id: 'user-2' } } };
-			const params = { id: 'non-existent' };
+			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: '550e8400-e29b-41d4-a716-999999999999' };
+			const formData = new FormData();
 			const request = {
-				formData: async () => ({
-					get: (): string | null => null,
-					toString: () => '[object FormData]'
-				})
+				formData: async () => formData
 			};
 
 			const result: any = await actions.join({ params, locals, request } as any);
 
-			expect(result.success).toBe(false);
-			expect(result.message).toContain('Group not found');
+			expect(result.status).toBe(404);
+			expect(result.data.success).toBe(false);
+			expect(result.data.message).toContain('Group not found');
 		});
 
 		it('should handle database errors during insert', async () => {
 			const mockGroup = {
-				id: 'group-1',
+				id: TEST_GROUP_ID,
 				group_type: 'public'
 			};
 
@@ -554,19 +552,18 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: 'user-2' } } };
-			const params = { id: 'group-1' };
+			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: TEST_GROUP_ID };
+			const formData = new FormData();
 			const request = {
-				formData: async () => ({
-					get: (): string | null => null,
-					toString: () => '[object FormData]'
-				})
+				formData: async () => formData
 			};
 
 			const result: any = await actions.join({ params, locals, request } as any);
 
-			expect(result.success).toBe(false);
-			expect(result.message).toContain('Failed to join group');
+			expect(result.status).toBe(500);
+			expect(result.data.success).toBe(false);
+			expect(result.data.message).toContain('Failed to join group');
 		});
 	});
 });

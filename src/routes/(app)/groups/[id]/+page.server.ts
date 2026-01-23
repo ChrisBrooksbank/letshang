@@ -140,7 +140,7 @@ export const actions: Actions = {
 			.single();
 
 		if (groupError || !group) {
-			return { success: false, message: 'Group not found' };
+			return fail(404, { success: false, message: 'Group not found' });
 		}
 
 		// Determine the status based on group type
@@ -156,13 +156,13 @@ export const actions: Actions = {
 		});
 
 		if (insertError) {
-			return {
+			return fail(insertError.code === '23505' ? 409 : 500, {
 				success: false,
 				message:
 					insertError.code === '23505'
 						? 'You are already a member or have a pending request'
 						: 'Failed to join group'
-			};
+			});
 		}
 
 		return {
