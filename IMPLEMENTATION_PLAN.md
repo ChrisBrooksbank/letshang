@@ -235,10 +235,10 @@
   - AC: Compresses to max 500KB ✓
   - AC: Placeholder if no photo ✓
 
-- [ ] Build location selection [P1]
-  - AC: City/area text input (geocoding later)
-  - AC: Location stored for future recommendations
-  - AC: Can clear location
+- [x] Build location selection [P1] ✓
+  - AC: City/area text input (geocoding later) ✓
+  - AC: Location stored for future recommendations ✓
+  - AC: Can clear location ✓
 
 - [ ] Add profile visibility settings [P1]
   - AC: Options: Public, Members only, Connections only

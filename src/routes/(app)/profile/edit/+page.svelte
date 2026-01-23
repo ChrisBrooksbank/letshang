@@ -94,21 +94,38 @@
 		<!-- Location -->
 		<div>
 			<label for="location" class="block text-sm font-medium mb-2"> Location </label>
-			<input
-				id="location"
-				name="location"
-				type="text"
-				bind:value={$form.location}
-				aria-invalid={$errors.location ? 'true' : undefined}
-				class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-				class:border-red-500={$errors.location}
-				placeholder="e.g., San Francisco, CA"
-			/>
+			<div class="relative">
+				<input
+					id="location"
+					name="location"
+					type="text"
+					bind:value={$form.location}
+					aria-invalid={$errors.location ? 'true' : undefined}
+					class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+					class:border-red-500={$errors.location}
+					class:pr-20={$form.location && ($form.location as string).length > 0}
+					placeholder="e.g., San Francisco, CA"
+				/>
+				{#if $form.location && ($form.location as string).length > 0}
+					<button
+						type="button"
+						on:click={() => ($form.location = '')}
+						class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+						aria-label="Clear location"
+					>
+						Clear
+					</button>
+				{/if}
+			</div>
 			{#if $errors.location}
 				<p class="text-red-500 text-sm mt-1">{$errors.location}</p>
 			{/if}
 			<p class="text-gray-500 text-xs mt-1">
-				Your location helps us recommend nearby events and groups
+				{#if $form.location && ($form.location as string).length > 0}
+					Your location helps us recommend nearby events and groups. Clear to see global events.
+				{:else}
+					Add your location to see nearby events and groups, or leave blank to see global events.
+				{/if}
 			</p>
 		</div>
 
