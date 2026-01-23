@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { profileUpdateSchema, profileVisibilitySchema, type ProfileUpdateSchema } from './profile';
+import {
+	profileUpdateSchema,
+	profileVisibilitySchema,
+	type ProfileUpdateSchema,
+	type ProfileVisibility
+} from './profile';
 
 describe('profileVisibilitySchema', () => {
 	it('should accept valid visibility options', () => {
@@ -13,6 +18,14 @@ describe('profileVisibilitySchema', () => {
 		expect(() => profileVisibilitySchema.parse('')).toThrow();
 		expect(() => profileVisibilitySchema.parse(null)).toThrow();
 	});
+
+	it('should have correct TypeScript type', () => {
+		// This test verifies the ProfileVisibility type is correctly inferred
+		const validOptions: ProfileVisibility[] = ['public', 'members_only', 'connections_only'];
+		validOptions.forEach((option) => {
+			expect(profileVisibilitySchema.parse(option)).toBe(option);
+		});
+	});
 });
 
 describe('profileUpdateSchema - displayName', () => {
@@ -21,7 +34,8 @@ describe('profileUpdateSchema - displayName', () => {
 			displayName: 'John Doe',
 			bio: '',
 			location: '',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.displayName).toBe('John Doe');
 	});
@@ -31,7 +45,8 @@ describe('profileUpdateSchema - displayName', () => {
 			displayName: 'Jo',
 			bio: '',
 			location: '',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.displayName).toBe('Jo');
 	});
@@ -42,7 +57,8 @@ describe('profileUpdateSchema - displayName', () => {
 			displayName: longName,
 			bio: '',
 			location: '',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.displayName).toBe(longName);
 	});
@@ -53,7 +69,8 @@ describe('profileUpdateSchema - displayName', () => {
 				displayName: 'J',
 				bio: '',
 				location: '',
-				profilePhotoUrl: ''
+				profilePhotoUrl: '',
+				profileVisibility: 'members_only'
 			})
 		).toThrow('Display name must be at least 2 characters');
 	});
@@ -65,7 +82,8 @@ describe('profileUpdateSchema - displayName', () => {
 				displayName: tooLong,
 				bio: '',
 				location: '',
-				profilePhotoUrl: ''
+				profilePhotoUrl: '',
+				profileVisibility: 'members_only'
 			})
 		).toThrow('Display name must be at most 50 characters');
 	});
@@ -76,7 +94,8 @@ describe('profileUpdateSchema - displayName', () => {
 				displayName: '',
 				bio: '',
 				location: '',
-				profilePhotoUrl: ''
+				profilePhotoUrl: '',
+				profileVisibility: 'members_only'
 			})
 		).toThrow();
 	});
@@ -87,7 +106,8 @@ describe('profileUpdateSchema - displayName', () => {
 			displayName: '   ',
 			bio: '',
 			location: '',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.displayName).toBe('   ');
 	});
@@ -99,7 +119,8 @@ describe('profileUpdateSchema - bio', () => {
 			displayName: 'John Doe',
 			bio: 'I love hiking and photography!',
 			location: '',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.bio).toBe('I love hiking and photography!');
 	});
@@ -109,7 +130,8 @@ describe('profileUpdateSchema - bio', () => {
 			displayName: 'John Doe',
 			bio: '',
 			location: '',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.bio).toBe('');
 	});
@@ -126,7 +148,8 @@ describe('profileUpdateSchema - bio', () => {
 			displayName: 'John Doe',
 			bio: '  This is my bio  ',
 			location: '',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.bio).toBe('  This is my bio  ');
 	});
@@ -137,7 +160,8 @@ describe('profileUpdateSchema - bio', () => {
 			displayName: 'John Doe',
 			bio: maxBio,
 			location: '',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.bio).toBe(maxBio);
 	});
@@ -149,7 +173,8 @@ describe('profileUpdateSchema - bio', () => {
 				displayName: 'John Doe',
 				bio: tooLong,
 				location: '',
-				profilePhotoUrl: ''
+				profilePhotoUrl: '',
+				profileVisibility: 'members_only'
 			})
 		).toThrow('Bio must be at most 500 characters');
 	});
@@ -160,7 +185,8 @@ describe('profileUpdateSchema - bio', () => {
 			displayName: 'John Doe',
 			bio: bioWithBreaks,
 			location: '',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.bio).toBe(bioWithBreaks);
 	});
@@ -172,7 +198,8 @@ describe('profileUpdateSchema - location', () => {
 			displayName: 'John Doe',
 			bio: '',
 			location: 'San Francisco, CA',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.location).toBe('San Francisco, CA');
 	});
@@ -182,7 +209,8 @@ describe('profileUpdateSchema - location', () => {
 			displayName: 'John Doe',
 			bio: '',
 			location: '',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.location).toBe('');
 	});
@@ -199,7 +227,8 @@ describe('profileUpdateSchema - location', () => {
 			displayName: 'John Doe',
 			bio: '',
 			location: '  New York, NY  ',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only'
 		});
 		expect(result.location).toBe('  New York, NY  ');
 	});
@@ -249,13 +278,52 @@ describe('profileUpdateSchema - profilePhotoUrl', () => {
 	});
 });
 
+describe('profileUpdateSchema - profileVisibility', () => {
+	it('should accept all valid visibility options', () => {
+		const result1 = profileUpdateSchema.parse({
+			displayName: 'John Doe',
+			profileVisibility: 'public'
+		});
+		expect(result1.profileVisibility).toBe('public');
+
+		const result2 = profileUpdateSchema.parse({
+			displayName: 'John Doe',
+			profileVisibility: 'members_only'
+		});
+		expect(result2.profileVisibility).toBe('members_only');
+
+		const result3 = profileUpdateSchema.parse({
+			displayName: 'John Doe',
+			profileVisibility: 'connections_only'
+		});
+		expect(result3.profileVisibility).toBe('connections_only');
+	});
+
+	it('should default to members_only when not specified', () => {
+		const result = profileUpdateSchema.parse({
+			displayName: 'John Doe'
+		});
+		expect(result.profileVisibility).toBe('members_only');
+	});
+
+	it('should reject invalid visibility values', () => {
+		expect(() =>
+			profileUpdateSchema.parse({
+				displayName: 'John Doe',
+				profileVisibility: 'invalid'
+			})
+		).toThrow();
+	});
+});
+
 describe('profileUpdateSchema - complete validation', () => {
 	it('should accept all valid fields', () => {
 		const validData: ProfileUpdateSchema = {
 			displayName: 'Jane Smith',
 			bio: 'Software engineer who loves coffee',
 			location: 'Seattle, WA',
-			profilePhotoUrl: 'https://example.com/photo.jpg'
+			profilePhotoUrl: 'https://example.com/photo.jpg',
+			profileVisibility: 'public'
 		};
 		const result = profileUpdateSchema.parse(validData);
 		expect(result).toEqual(validData);
@@ -266,13 +334,15 @@ describe('profileUpdateSchema - complete validation', () => {
 			displayName: 'Jo',
 			bio: '',
 			location: '',
-			profilePhotoUrl: ''
+			profilePhotoUrl: '',
+			profileVisibility: 'members_only' as const
 		};
 		const result = profileUpdateSchema.parse(minimalData);
 		expect(result.displayName).toBe('Jo');
+		expect(result.profileVisibility).toBe('members_only');
 	});
 
-	it('should handle missing optional fields', () => {
+	it('should handle missing optional fields and default profileVisibility', () => {
 		const data = {
 			displayName: 'John Doe'
 		};
@@ -281,10 +351,12 @@ describe('profileUpdateSchema - complete validation', () => {
 		expect(result.bio).toBeUndefined();
 		expect(result.location).toBeUndefined();
 		expect(result.profilePhotoUrl).toBeUndefined();
+		expect(result.profileVisibility).toBe('members_only');
 	});
 });
 
-// TODO: Uncomment when profileVisibilityUpdateSchema is implemented in a future iteration
+// Tests for profileVisibilityUpdateSchema - currently commented out as schema is unused
+// Uncomment when we implement a dedicated visibility-only update endpoint
 // describe('profileVisibilityUpdateSchema', () => {
 // 	it('should accept valid visibility update', () => {
 // 		const result = profileVisibilityUpdateSchema.parse({

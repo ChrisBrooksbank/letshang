@@ -240,10 +240,10 @@
   - AC: Location stored for future recommendations ✓
   - AC: Can clear location ✓
 
-- [ ] Add profile visibility settings [P1]
-  - AC: Options: Public, Members only, Connections only
-  - AC: Default is "Members only"
-  - AC: Settings persisted
+- [x] Add profile visibility settings [P1] ✓
+  - AC: Options: Public, Members only, Connections only ✓
+  - AC: Default is "Members only" ✓
+  - AC: Settings persisted ✓
 
 ---
 

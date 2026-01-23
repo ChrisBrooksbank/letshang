@@ -56,7 +56,8 @@ describe('Profile Edit Page Server', () => {
 				display_name: 'John Doe',
 				bio: 'Software engineer',
 				location: 'San Francisco, CA',
-				profile_photo_url: 'https://example.com/photo.jpg'
+				profile_photo_url: 'https://example.com/photo.jpg',
+				profile_visibility: 'public'
 			};
 
 			const mockSupabase = {
@@ -216,7 +217,8 @@ describe('Profile Edit Page Server', () => {
 					displayName: 'John Doe',
 					bio: 'Software engineer',
 					location: 'San Francisco, CA',
-					profilePhotoUrl: 'https://example.com/photo.jpg'
+					profilePhotoUrl: 'https://example.com/photo.jpg',
+					profileVisibility: 'public'
 				}
 			} as never);
 
@@ -268,7 +270,8 @@ describe('Profile Edit Page Server', () => {
 					displayName: 'John Doe',
 					bio: '',
 					location: '',
-					profilePhotoUrl: ''
+					profilePhotoUrl: '',
+					profileVisibility: 'members_only'
 				}
 			} as never);
 
@@ -293,7 +296,8 @@ describe('Profile Edit Page Server', () => {
 				display_name: 'John Doe',
 				bio: null,
 				location: null,
-				profile_photo_url: null
+				profile_photo_url: null,
+				profile_visibility: 'members_only'
 			});
 		});
 
@@ -323,7 +327,8 @@ describe('Profile Edit Page Server', () => {
 					displayName: 'John Doe',
 					bio: 'Test bio',
 					location: 'Test location',
-					profilePhotoUrl: ''
+					profilePhotoUrl: '',
+					profileVisibility: 'members_only'
 				}
 			} as never);
 
@@ -370,7 +375,8 @@ describe('Profile Edit Page Server', () => {
 					displayName: 'John Doe',
 					bio: '',
 					location: '',
-					profilePhotoUrl: ''
+					profilePhotoUrl: '',
+					profileVisibility: 'members_only'
 				}
 			} as never);
 
@@ -395,7 +401,126 @@ describe('Profile Edit Page Server', () => {
 				display_name: 'John Doe',
 				bio: null,
 				location: null,
-				profile_photo_url: null
+				profile_photo_url: null,
+				profile_visibility: 'members_only'
+			});
+		});
+
+		it('should update profile visibility setting', async () => {
+			const mockUpdate = vi.fn().mockReturnValue({
+				eq: vi.fn().mockResolvedValue({
+					error: null
+				})
+			});
+
+			const mockSupabase = {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: { session: { user: { id: 'user-123' } } }
+					})
+				},
+				from: vi.fn().mockReturnValue({
+					update: mockUpdate
+				})
+			};
+
+			const mockLocals = {
+				supabase: mockSupabase
+			};
+
+			vi.mocked(superValidate).mockResolvedValue({
+				valid: true,
+				data: {
+					displayName: 'John Doe',
+					bio: '',
+					location: '',
+					profilePhotoUrl: '',
+					profileVisibility: 'public'
+				}
+			} as never);
+
+			const mockRequest = new Request('http://localhost', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					displayName: 'John Doe',
+					bio: '',
+					location: '',
+					profileVisibility: 'public'
+				})
+			});
+
+			await expect(
+				actions.default({ request: mockRequest, locals: mockLocals } as never)
+			).rejects.toMatchObject({
+				status: 303,
+				location: '/profile'
+			});
+
+			expect(mockUpdate).toHaveBeenCalledWith({
+				display_name: 'John Doe',
+				bio: null,
+				location: null,
+				profile_photo_url: null,
+				profile_visibility: 'public'
+			});
+		});
+
+		it('should accept connections_only visibility', async () => {
+			const mockUpdate = vi.fn().mockReturnValue({
+				eq: vi.fn().mockResolvedValue({
+					error: null
+				})
+			});
+
+			const mockSupabase = {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: { session: { user: { id: 'user-123' } } }
+					})
+				},
+				from: vi.fn().mockReturnValue({
+					update: mockUpdate
+				})
+			};
+
+			const mockLocals = {
+				supabase: mockSupabase
+			};
+
+			vi.mocked(superValidate).mockResolvedValue({
+				valid: true,
+				data: {
+					displayName: 'John Doe',
+					bio: '',
+					location: '',
+					profilePhotoUrl: '',
+					profileVisibility: 'connections_only'
+				}
+			} as never);
+
+			const mockRequest = new Request('http://localhost', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					displayName: 'John Doe',
+					profileVisibility: 'connections_only'
+				})
+			});
+
+			await expect(
+				actions.default({ request: mockRequest, locals: mockLocals } as never)
+			).rejects.toMatchObject({
+				status: 303,
+				location: '/profile'
+			});
+
+			expect(mockUpdate).toHaveBeenCalledWith({
+				display_name: 'John Doe',
+				bio: null,
+				location: null,
+				profile_photo_url: null,
+				profile_visibility: 'connections_only'
 			});
 		});
 	});

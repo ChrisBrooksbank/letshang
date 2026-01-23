@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const { data: profile, error } = await (locals.supabase as any)
 		.from('users')
-		.select('display_name, bio, location, profile_photo_url')
+		.select('display_name, bio, location, profile_photo_url, profile_visibility')
 		.eq('id', session.data.session.user.id)
 		.single();
 
@@ -26,7 +26,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				displayName: '',
 				bio: '',
 				location: '',
-				profilePhotoUrl: ''
+				profilePhotoUrl: '',
+				profileVisibility: 'members_only' as const
 			},
 			// @ts-expect-error - Known Zod/Superforms type incompatibility with optional fields
 			zod(profileUpdateSchema)
@@ -40,7 +41,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			displayName: profile.display_name || '',
 			bio: profile.bio || '',
 			location: profile.location || '',
-			profilePhotoUrl: profile.profile_photo_url || ''
+			profilePhotoUrl: profile.profile_photo_url || '',
+			profileVisibility: profile.profile_visibility || 'members_only'
 		},
 		// @ts-expect-error - Known Zod/Superforms type incompatibility with optional fields
 		zod(profileUpdateSchema)
@@ -66,11 +68,12 @@ export const actions: Actions = {
 		}
 
 		// Type assertions for form.data
-		let { displayName, bio, location, profilePhotoUrl } = form.data as {
+		let { displayName, bio, location, profilePhotoUrl, profileVisibility } = form.data as {
 			displayName: string;
 			bio: string;
 			location: string;
 			profilePhotoUrl: string;
+			profileVisibility: 'public' | 'members_only' | 'connections_only';
 		};
 
 		// Trim all string fields
@@ -99,7 +102,8 @@ export const actions: Actions = {
 				display_name: displayName,
 				bio: bio || null,
 				location: location || null,
-				profile_photo_url: profilePhotoUrl || null
+				profile_photo_url: profilePhotoUrl || null,
+				profile_visibility: profileVisibility
 			})
 			.eq('id', session.data.session.user.id);
 

@@ -10,9 +10,10 @@ export const profileVisibilitySchema = z.enum(['public', 'members_only', 'connec
 
 /**
  * TypeScript type for profile visibility
- * TODO: Will be used in future iteration for profile visibility settings
+ * Exported for potential future use in visibility-related features
+ * @public
  */
-// export type ProfileVisibility = z.infer<typeof profileVisibilitySchema>;
+export type ProfileVisibility = z.infer<typeof profileVisibilitySchema>;
 
 /**
  * Display name validation schema
@@ -57,7 +58,8 @@ export const profileUpdateSchema = z.object({
 	displayName: displayNameSchema,
 	bio: bioSchema,
 	location: locationSchema,
-	profilePhotoUrl: profilePhotoUrlSchema
+	profilePhotoUrl: profilePhotoUrlSchema,
+	profileVisibility: profileVisibilitySchema.default('members_only')
 });
 
 /**
@@ -69,7 +71,8 @@ export type ProfileUpdateSchema = z.infer<typeof profileUpdateSchema>;
 /**
  * Profile visibility update schema
  * Separate schema for updating just the visibility setting
- * TODO: Will be used in future iteration for profile visibility settings
+ * Currently unused - visibility is updated via profileUpdateSchema
+ * This schema can be used in future for a dedicated visibility-only update endpoint
  */
 // export const profileVisibilityUpdateSchema = z.object({
 // 	profileVisibility: profileVisibilitySchema

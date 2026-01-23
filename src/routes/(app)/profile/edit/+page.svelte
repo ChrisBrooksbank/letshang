@@ -25,7 +25,7 @@
 	<div class="mb-6">
 		<h1 class="text-2xl font-bold">Edit Profile</h1>
 		<p class="text-gray-600 text-sm mt-1">
-			Update your profile photo, display name, bio, and location
+			Update your profile photo, display name, bio, location, and privacy settings
 		</p>
 	</div>
 
@@ -126,6 +126,69 @@
 				{:else}
 					Add your location to see nearby events and groups, or leave blank to see global events.
 				{/if}
+			</p>
+		</div>
+
+		<!-- Profile Visibility -->
+		<div>
+			<p class="block text-sm font-medium mb-2">Profile Visibility</p>
+			<div class="space-y-3">
+				<label
+					class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors focus-within:ring-2 focus-within:ring-blue-500"
+				>
+					<input
+						type="radio"
+						name="profileVisibility"
+						value="public"
+						bind:group={$form.profileVisibility}
+						class="mt-0.5 w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+					/>
+					<div>
+						<div class="font-medium text-sm">Public</div>
+						<div class="text-gray-600 text-xs">Anyone can view your profile</div>
+					</div>
+				</label>
+
+				<label
+					class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors focus-within:ring-2 focus-within:ring-blue-500"
+				>
+					<input
+						type="radio"
+						name="profileVisibility"
+						value="members_only"
+						bind:group={$form.profileVisibility}
+						class="mt-0.5 w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+					/>
+					<div>
+						<div class="font-medium text-sm">Members Only (Default)</div>
+						<div class="text-gray-600 text-xs">Only authenticated users can view your profile</div>
+					</div>
+				</label>
+
+				<label
+					class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors focus-within:ring-2 focus-within:ring-blue-500"
+				>
+					<input
+						type="radio"
+						name="profileVisibility"
+						value="connections_only"
+						bind:group={$form.profileVisibility}
+						class="mt-0.5 w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+					/>
+					<div>
+						<div class="font-medium text-sm">Connections Only</div>
+						<div class="text-gray-600 text-xs">
+							Only your direct connections can view your profile (future feature)
+						</div>
+					</div>
+				</label>
+			</div>
+			{#if $errors.profileVisibility}
+				<p class="text-red-500 text-sm mt-1">{$errors.profileVisibility}</p>
+			{/if}
+			<p class="text-gray-500 text-xs mt-2">
+				Control who can view your profile information. This setting is separate from your event
+				attendance visibility.
 			</p>
 		</div>
 
