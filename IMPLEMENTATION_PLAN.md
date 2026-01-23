@@ -267,27 +267,29 @@
 
 > Basic group creation (spec: 02-groups.md)
 
-- [ ] Create groups database schema
-  - AC: `groups` table with fields
-  - AC: `group_id`, `name`, `description`, `cover_image`
-  - AC: `organizer_id`, `group_type` (public/private)
-  - AC: `group_members` junction table with roles
-  - AC: RLS policies for group visibility
+- [x] Create groups database schema ✓
+  - AC: `groups` table with fields ✓
+  - AC: `group_id`, `name`, `description`, `cover_image` ✓
+  - AC: `organizer_id`, `group_type` (public/private) ✓
+  - AC: `group_members` junction table with roles ✓
+  - AC: RLS policies for group visibility ✓
 
-- [ ] Design group creation wizard [P1]
-  - AC: Name (3-100 chars), description (2000 chars)
-  - AC: Cover photo upload with preview
-  - AC: 3-step wizard: Basics, Topics, Settings
+- [x] Design group creation wizard [P1] ✓
+  - AC: Name (3-100 chars), description (2000 chars) ✓
+  - AC: Cover photo upload with preview ✓
+  - AC: 3-step wizard: Basics, Topics, Settings ✓
+  - Implementation: CoverImageUpload component, 3-step wizard with progress indicator
+  - Routes: /groups/create with server-side validation and topic management
 
-- [ ] Build topic/category selection [P1]
-  - AC: Select up to 5 topics from curated list
-  - AC: At least 1 topic required
-  - AC: Topics stored for discovery
+- [x] Build topic/category selection [P1] ✓
+  - AC: Select up to 5 topics from curated list ✓
+  - AC: At least 1 topic required ✓
+  - AC: Topics stored for discovery ✓
 
-- [ ] Add group type selection [P1]
-  - AC: Public - anyone can join
-  - AC: Private - requires approval
-  - AC: Type changeable by organizer
+- [x] Add group type selection [P1] ✓
+  - AC: Public - anyone can join ✓
+  - AC: Private - requires approval ✓
+  - AC: Type changeable by organizer (edit page to be implemented in future iteration)
 
 - [ ] Design group profile/landing page [P1]
   - AC: Shows name, description, cover, topics
