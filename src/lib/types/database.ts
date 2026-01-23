@@ -54,6 +54,7 @@ export interface Database {
 				Row: {
 					id: string;
 					creator_id: string;
+					group_id: string | null;
 					title: string;
 					description: string | null;
 					start_time: string;
@@ -67,6 +68,7 @@ export interface Database {
 				Insert: {
 					id?: string;
 					creator_id: string;
+					group_id?: string | null;
 					title: string;
 					description?: string | null;
 					start_time: string;
@@ -80,6 +82,7 @@ export interface Database {
 				Update: {
 					id?: string;
 					creator_id?: string;
+					group_id?: string | null;
 					title?: string;
 					description?: string | null;
 					start_time?: string;

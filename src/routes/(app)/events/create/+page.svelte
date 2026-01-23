@@ -45,6 +45,29 @@
 
 			<!-- Form -->
 			<form method="POST" use:enhance class="bg-white rounded-lg shadow-sm p-6 space-y-6">
+				<!-- Group Selector (optional) -->
+				{#if data.groups && data.groups.length > 0}
+					<div>
+						<label for="groupId" class="block text-sm font-medium text-gray-700 mb-2">
+							Group (Optional)
+						</label>
+						<select
+							id="groupId"
+							name="groupId"
+							bind:value={$form.groupId}
+							class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+						>
+							<option value="">Standalone Event (No Group)</option>
+							{#each data.groups as group}
+								<option value={group.id}>{group.name}</option>
+							{/each}
+						</select>
+						<p class="mt-1 text-xs text-gray-500">
+							Link this event to a group. Group members will be able to see it.
+						</p>
+					</div>
+				{/if}
+
 				<!-- Title -->
 				<div>
 					<label for="title" class="block text-sm font-medium text-gray-700 mb-2">

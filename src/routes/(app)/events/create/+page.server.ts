@@ -11,10 +11,27 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(303, '/login');
 	}
 
+	// Fetch groups where the user can create events
+	// (groups where they are a member with active status)
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const { data: userGroups } = await (locals.supabase as any)
+		.from('group_members')
+		.select('group_id, groups!inner(id, name)')
+		.eq('user_id', session.data.session.user.id)
+		.eq('status', 'active')
+		.order('groups.name');
+
+	// Transform the data to a simpler format
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const groups = (userGroups || []).map((membership: any) => ({
+		id: membership.groups.id,
+		name: membership.groups.name
+	}));
+
 	// Initialize empty form
 	// @ts-expect-error - zod adapter type compatibility issue
 	const form = await superValidate(null, zod(eventCreationSchema));
-	return { form };
+	return { form, groups };
 };
 
 export const actions: Actions = {
@@ -42,7 +59,8 @@ export const actions: Actions = {
 			endTime,
 			durationMinutes,
 			venueName,
-			venueAddress
+			venueAddress,
+			groupId
 		} = form.data as {
 			title: string;
 			description: string;
@@ -52,6 +70,7 @@ export const actions: Actions = {
 			durationMinutes?: number;
 			venueName?: string;
 			venueAddress?: string;
+			groupId?: string | null;
 		};
 
 		// Calculate end time if duration is provided instead
@@ -68,6 +87,7 @@ export const actions: Actions = {
 			.from('events')
 			.insert({
 				creator_id: session.data.session.user.id,
+				group_id: groupId || null,
 				title,
 				description,
 				event_type: eventType,

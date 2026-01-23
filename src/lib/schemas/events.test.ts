@@ -26,6 +26,7 @@ describe('eventCreationSchema', () => {
 		endTime?: string;
 		venueName?: string;
 		venueAddress?: string;
+		groupId?: string | null;
 	} => ({
 		title: 'Test Event',
 		description: 'A test event description',
@@ -352,6 +353,38 @@ describe('eventCreationSchema', () => {
 				durationMinutes: 30
 			};
 			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+	});
+
+	describe('groupId validation', () => {
+		it('should accept valid UUID for groupId', () => {
+			const event = createValidEvent();
+			event.groupId = '550e8400-e29b-41d4-a716-446655440000';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept null for groupId (standalone event)', () => {
+			const event = createValidEvent();
+			event.groupId = null;
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept undefined for groupId (standalone event)', () => {
+			const event = createValidEvent();
+			// groupId is not set (undefined)
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should reject invalid UUID for groupId', () => {
+			const event = createValidEvent();
+			event.groupId = 'not-a-uuid';
+			expect(() => eventCreationSchema.parse(event)).toThrow('Invalid group ID');
+		});
+
+		it('should reject empty string for groupId', () => {
+			const event = createValidEvent();
+			event.groupId = '';
+			expect(() => eventCreationSchema.parse(event)).toThrow();
 		});
 	});
 });

@@ -52,13 +52,33 @@ describe('Event Creation Page Server', () => {
 		});
 
 		it('should return form when user is authenticated', async () => {
+			const mockSelect = vi.fn().mockReturnThis();
+			const mockEq = vi.fn().mockReturnThis();
+			const mockOrder = vi.fn().mockResolvedValue({
+				data: [],
+				error: null
+			});
+
 			const mockSupabase = {
 				auth: {
 					getSession: vi.fn().mockResolvedValue({
 						data: { session: { user: { id: 'user-123' } } }
 					})
-				}
+				},
+				from: vi.fn().mockReturnValue({
+					select: mockSelect
+				})
 			};
+
+			mockSelect.mockReturnValue({
+				eq: mockEq
+			});
+
+			mockEq.mockReturnValue({
+				eq: vi.fn().mockReturnValue({
+					order: mockOrder
+				})
+			});
 
 			const mockLocals = {
 				supabase: mockSupabase
@@ -69,8 +89,67 @@ describe('Event Creation Page Server', () => {
 
 			const result = await load({ locals: mockLocals } as never);
 
-			expect(result).toEqual({ form: mockForm });
+			expect(result).toEqual({ form: mockForm, groups: [] });
 			expect(superValidate).toHaveBeenCalled();
+			expect(mockSupabase.from).toHaveBeenCalledWith('group_members');
+		});
+
+		it('should return user groups when authenticated', async () => {
+			const mockGroups = [
+				{
+					group_id: 'group-1',
+					groups: { id: 'group-1', name: 'Test Group 1' }
+				},
+				{
+					group_id: 'group-2',
+					groups: { id: 'group-2', name: 'Test Group 2' }
+				}
+			];
+
+			const mockSelect = vi.fn().mockReturnThis();
+			const mockEq = vi.fn().mockReturnThis();
+			const mockOrder = vi.fn().mockResolvedValue({
+				data: mockGroups,
+				error: null
+			});
+
+			const mockSupabase = {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: { session: { user: { id: 'user-123' } } }
+					})
+				},
+				from: vi.fn().mockReturnValue({
+					select: mockSelect
+				})
+			};
+
+			mockSelect.mockReturnValue({
+				eq: mockEq
+			});
+
+			mockEq.mockReturnValue({
+				eq: vi.fn().mockReturnValue({
+					order: mockOrder
+				})
+			});
+
+			const mockLocals = {
+				supabase: mockSupabase
+			};
+
+			const mockForm = { data: {}, errors: {} };
+			vi.mocked(superValidate).mockResolvedValue(mockForm as never);
+
+			const result = await load({ locals: mockLocals } as never);
+
+			expect(result).toEqual({
+				form: mockForm,
+				groups: [
+					{ id: 'group-1', name: 'Test Group 1' },
+					{ id: 'group-2', name: 'Test Group 2' }
+				]
+			});
 		});
 	});
 
@@ -416,6 +495,151 @@ describe('Event Creation Page Server', () => {
 			expect(mockInsert).toHaveBeenCalledWith(
 				expect.objectContaining({
 					end_time: expectedEndTime
+				})
+			);
+		});
+
+		it('should create event with group_id when provided', async () => {
+			const mockInsert = vi.fn().mockReturnThis();
+			const mockSelect = vi.fn().mockReturnThis();
+			const mockSingle = vi.fn().mockResolvedValue({
+				data: { id: 'test-event-id' },
+				error: null
+			});
+
+			const mockSupabase = {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: {
+							session: {
+								user: { id: 'user-123' }
+							}
+						}
+					})
+				},
+				from: vi.fn().mockReturnValue({
+					insert: mockInsert
+				})
+			};
+
+			mockInsert.mockReturnValue({
+				select: mockSelect
+			});
+
+			mockSelect.mockReturnValue({
+				single: mockSingle
+			});
+
+			const mockLocals = {
+				supabase: mockSupabase
+			};
+
+			const mockForm = {
+				valid: true,
+				data: {
+					title: 'Group Event',
+					description: 'A group event',
+					eventType: 'online',
+					startTime: '2024-12-31T12:00:00.000Z',
+					durationMinutes: 60,
+					groupId: 'group-123'
+				}
+			};
+
+			vi.mocked(superValidate).mockResolvedValue(mockForm as never);
+
+			const mockRequest = new Request('http://localhost', {
+				method: 'POST',
+				body: new FormData()
+			});
+
+			await expect(
+				actions.default({
+					request: mockRequest,
+					locals: mockLocals
+				} as never)
+			).rejects.toMatchObject({
+				status: 303,
+				location: '/events/test-event-id'
+			});
+
+			expect(mockInsert).toHaveBeenCalledWith(
+				expect.objectContaining({
+					group_id: 'group-123',
+					title: 'Group Event',
+					creator_id: 'user-123'
+				})
+			);
+		});
+
+		it('should create standalone event when groupId is null', async () => {
+			const mockInsert = vi.fn().mockReturnThis();
+			const mockSelect = vi.fn().mockReturnThis();
+			const mockSingle = vi.fn().mockResolvedValue({
+				data: { id: 'test-event-id' },
+				error: null
+			});
+
+			const mockSupabase = {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: {
+							session: {
+								user: { id: 'user-123' }
+							}
+						}
+					})
+				},
+				from: vi.fn().mockReturnValue({
+					insert: mockInsert
+				})
+			};
+
+			mockInsert.mockReturnValue({
+				select: mockSelect
+			});
+
+			mockSelect.mockReturnValue({
+				single: mockSingle
+			});
+
+			const mockLocals = {
+				supabase: mockSupabase
+			};
+
+			const mockForm = {
+				valid: true,
+				data: {
+					title: 'Standalone Event',
+					description: 'A standalone event',
+					eventType: 'online',
+					startTime: '2024-12-31T12:00:00.000Z',
+					durationMinutes: 60,
+					groupId: null
+				}
+			};
+
+			vi.mocked(superValidate).mockResolvedValue(mockForm as never);
+
+			const mockRequest = new Request('http://localhost', {
+				method: 'POST',
+				body: new FormData()
+			});
+
+			await expect(
+				actions.default({
+					request: mockRequest,
+					locals: mockLocals
+				} as never)
+			).rejects.toMatchObject({
+				status: 303,
+				location: '/events/test-event-id'
+			});
+
+			expect(mockInsert).toHaveBeenCalledWith(
+				expect.objectContaining({
+					group_id: null,
+					title: 'Standalone Event'
 				})
 			);
 		});
