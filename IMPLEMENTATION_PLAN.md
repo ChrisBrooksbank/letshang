@@ -302,11 +302,15 @@
 
 > Leadership and member management (spec: 02-groups.md)
 
-- [ ] Create role management interface [P1]
-  - AC: Organizer can assign/remove roles
-  - AC: Roles: Organizer, Co-organizer, Assistant, Event Organizer
-  - AC: Role hierarchy enforced
-  - AC: At least one organizer required
+- [x] Create role management interface [P1] ✓
+  - AC: Organizer can assign/remove roles ✓
+  - AC: Roles: Organizer, Co-organizer, Assistant, Event Organizer ✓
+  - AC: Role hierarchy enforced ✓
+  - AC: At least one organizer required ✓
+  - Implementation: Members management page at /groups/[id]/members
+  - Features: Inline role editing, member removal, role hierarchy validation
+  - Server-side: Full permission checks, prevent self-modification, prevent last organizer removal
+  - Coverage: 100% on role permissions logic (27 tests)
 
 - [ ] Implement role-based permissions [P1]
   - AC: UI hides actions user can't perform
