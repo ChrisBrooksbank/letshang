@@ -16,6 +16,7 @@
 	const members = $derived(data.members);
 	const currentUserRole = $derived(data.currentUserRole as GroupMemberRole);
 	const organizerCount = $derived(data.organizerCount);
+	const pendingRequests = $derived(data.pendingRequests || []);
 
 	// Track which member is being edited
 	let editingMemberId = $state<string | null>(null);
@@ -99,6 +100,88 @@
 			{:else if form?.message}
 				<div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg" role="alert">
 					{form.message}
+				</div>
+			{/if}
+
+			<!-- Pending Join Requests -->
+			{#if group.group_type === 'private' && pendingRequests.length > 0}
+				<div class="mb-6 bg-white rounded-lg shadow-sm overflow-hidden">
+					<div class="bg-yellow-50 border-b border-yellow-200 px-6 py-4">
+						<h2 class="text-lg font-semibold text-yellow-900">
+							Pending Join Requests ({pendingRequests.length})
+						</h2>
+						<p class="text-sm text-yellow-700 mt-1">
+							Review and approve or deny membership requests
+						</p>
+					</div>
+
+					<div class="divide-y divide-gray-200">
+						{#each pendingRequests as request}
+							<div class="p-6">
+								<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+									<!-- Requester Info -->
+									<div class="flex items-start gap-4 flex-1">
+										{#if request.user?.profile_photo_url}
+											<img
+												src={request.user.profile_photo_url}
+												alt={request.user.display_name || 'User'}
+												class="w-12 h-12 rounded-full object-cover flex-shrink-0"
+											/>
+										{:else}
+											<div
+												class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold flex-shrink-0"
+											>
+												{(request.user?.display_name || 'U').charAt(0).toUpperCase()}
+											</div>
+										{/if}
+
+										<div class="flex-1 min-w-0">
+											<p class="font-medium text-gray-900">
+												{request.user?.display_name || 'Anonymous'}
+											</p>
+											<p class="text-sm text-gray-500 mt-1">
+												Requested {formatDate(request.joined_at)}
+											</p>
+
+											{#if request.join_request_message}
+												<div class="mt-3 p-3 bg-gray-50 rounded-md">
+													<p class="text-sm text-gray-700">
+														<strong>Message:</strong>
+													</p>
+													<p class="text-sm text-gray-700 mt-1 whitespace-pre-wrap">
+														{request.join_request_message}
+													</p>
+												</div>
+											{/if}
+										</div>
+									</div>
+
+									<!-- Action Buttons -->
+									<div class="flex gap-3 md:flex-shrink-0">
+										<form method="POST" action="?/approveRequest" use:enhance>
+											<input type="hidden" name="memberId" value={request.id} />
+											<button
+												type="submit"
+												class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition"
+											>
+												Approve
+											</button>
+										</form>
+
+										<form method="POST" action="?/denyRequest" use:enhance>
+											<input type="hidden" name="memberId" value={request.id} />
+											<button
+												type="submit"
+												class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 focus:ring-4 focus:ring-red-300 transition"
+											>
+												Deny
+											</button>
+										</form>
+									</div>
+								</div>
+							</div>
+						{/each}
+					</div>
 				</div>
 			{/if}
 

@@ -1,6 +1,7 @@
-import { error, redirect } from '@sveltejs/kit';
+import { error, redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { supabase } from '$lib/server/supabase';
+import { joinRequestSchema } from '$lib/schemas/groups';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = locals.session;
@@ -101,7 +102,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 };
 
 export const actions: Actions = {
-	join: async ({ params, locals }) => {
+	join: async ({ params, locals, request }) => {
 		const session = locals.session;
 
 		if (!session?.user) {
@@ -112,6 +113,23 @@ export const actions: Actions = {
 
 		if (!groupId) {
 			throw error(400, 'Group ID is required');
+		}
+
+		// Parse form data
+		const formData = await request.formData();
+		const message = formData.get('message')?.toString() || null;
+
+		// Validate the request
+		const validation = joinRequestSchema.safeParse({
+			group_id: groupId,
+			message
+		});
+
+		if (!validation.success) {
+			return fail(400, {
+				success: false,
+				message: validation.error.issues[0]?.message || 'Invalid join request'
+			});
 		}
 
 		// Fetch group to determine type
@@ -128,12 +146,13 @@ export const actions: Actions = {
 		// Determine the status based on group type
 		const status = group.group_type === 'public' ? 'active' : 'pending';
 
-		// Insert membership
+		// Insert membership with optional message
 		const { error: insertError } = await supabase.from('group_members').insert({
 			group_id: groupId,
 			user_id: session.user.id,
 			role: 'member',
-			status
+			status,
+			join_request_message: status === 'pending' ? message : null
 		});
 
 		if (insertError) {

@@ -28,6 +28,10 @@
 			userMembership?.role === 'co_organizer' ||
 			userMembership?.role === 'assistant_organizer'
 	);
+
+	// State for join request message
+	let showMessageInput = $state(false);
+	let joinRequestMessage = $state('');
 </script>
 
 <svelte:head>
@@ -139,15 +143,56 @@
 							>
 								Request Pending
 							</div>
-						{:else if canJoin || canRequestJoin}
+						{:else if canJoin}
 							<form method="POST" action="?/join" use:enhance>
 								<button
 									type="submit"
 									class="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition"
 								>
-									{canJoin ? 'Join Group' : 'Request to Join'}
+									Join Group
 								</button>
 							</form>
+						{:else if canRequestJoin}
+							{#if !showMessageInput}
+								<button
+									type="button"
+									onclick={() => (showMessageInput = true)}
+									class="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition"
+								>
+									Request to Join
+								</button>
+							{:else}
+								<form method="POST" action="?/join" use:enhance>
+									<div class="space-y-3">
+										<textarea
+											name="message"
+											bind:value={joinRequestMessage}
+											placeholder="Why do you want to join? (optional)"
+											rows="3"
+											maxlength="500"
+											class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+										></textarea>
+										<div class="flex gap-2">
+											<button
+												type="submit"
+												class="flex-1 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition text-sm"
+											>
+												Send Request
+											</button>
+											<button
+												type="button"
+												onclick={() => {
+													showMessageInput = false;
+													joinRequestMessage = '';
+												}}
+												class="px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 transition text-sm"
+											>
+												Cancel
+											</button>
+										</div>
+									</div>
+								</form>
+							{/if}
 						{:else if !isAuthenticated}
 							<a
 								href="/login?redirect=/groups/{group.id}"

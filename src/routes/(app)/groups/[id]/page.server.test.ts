@@ -288,8 +288,14 @@ describe('Group Detail Page Server', () => {
 
 			const locals = { session: { user: { id: 'user-2' } } };
 			const params = { id: 'group-1' };
+			const request = {
+				formData: async () => ({
+					get: (): string | null => null,
+					toString: () => '[object FormData]'
+				})
+			};
 
-			const result: any = await actions.join({ params, locals } as any);
+			const result: any = await actions.join({ params, locals, request } as any);
 
 			expect(result.success).toBe(true);
 			expect(result.message).toContain('Successfully joined');
@@ -326,19 +332,139 @@ describe('Group Detail Page Server', () => {
 
 			const locals = { session: { user: { id: 'user-2' } } };
 			const params = { id: 'group-1' };
+			const request = {
+				formData: async () => ({
+					get: (key: string): string | null => (key === 'message' ? '' : null)
+				})
+			};
 
-			const result: any = await actions.join({ params, locals } as any);
+			const result: any = await actions.join({ params, locals, request } as any);
 
 			expect(result.success).toBe(true);
 			expect(result.message).toContain('Join request sent');
 			expect(insertedData?.status).toBe('pending');
 		});
 
+		it('should include message when joining private group', async () => {
+			const mockGroup = {
+				id: 'group-1',
+				group_type: 'private'
+			};
+
+			let insertedData: any = null;
+
+			mockSupabase.from.mockImplementation((table: string) => {
+				if (table === 'groups') {
+					return {
+						select: vi.fn().mockReturnValue({
+							eq: vi.fn().mockReturnValue({
+								single: vi.fn().mockResolvedValue({ data: mockGroup, error: null })
+							})
+						})
+					};
+				}
+				if (table === 'group_members') {
+					return {
+						insert: vi.fn().mockImplementation((data) => {
+							insertedData = data;
+							return Promise.resolve({ error: null });
+						})
+					};
+				}
+				return {};
+			});
+
+			const locals = { session: { user: { id: 'user-2' } } };
+			const params = { id: 'group-1' };
+			const request = {
+				formData: async () => ({
+					get: (key: string): string | null =>
+						key === 'message' ? 'I am really interested in joining this group!' : null
+				})
+			};
+
+			const result: any = await actions.join({ params, locals, request } as any);
+
+			expect(result.success).toBe(true);
+			expect(insertedData?.status).toBe('pending');
+			expect(insertedData?.join_request_message).toBe(
+				'I am really interested in joining this group!'
+			);
+		});
+
+		it('should not include message for public groups', async () => {
+			const mockGroup = {
+				id: 'group-1',
+				group_type: 'public'
+			};
+
+			let insertedData: any = null;
+
+			mockSupabase.from.mockImplementation((table: string) => {
+				if (table === 'groups') {
+					return {
+						select: vi.fn().mockReturnValue({
+							eq: vi.fn().mockReturnValue({
+								single: vi.fn().mockResolvedValue({ data: mockGroup, error: null })
+							})
+						})
+					};
+				}
+				if (table === 'group_members') {
+					return {
+						insert: vi.fn().mockImplementation((data) => {
+							insertedData = data;
+							return Promise.resolve({ error: null });
+						})
+					};
+				}
+				return {};
+			});
+
+			const locals = { session: { user: { id: 'user-2' } } };
+			const params = { id: 'group-1' };
+			const request = {
+				formData: async () => ({
+					get: (key: string): string | null =>
+						key === 'message' ? 'I want to join but this is a public group' : null
+				})
+			};
+
+			const result: any = await actions.join({ params, locals, request } as any);
+
+			expect(result.success).toBe(true);
+			expect(insertedData?.status).toBe('active');
+			expect(insertedData?.join_request_message).toBe(null);
+		});
+
+		it('should reject message longer than 500 characters', async () => {
+			const longMessage = 'a'.repeat(501);
+
+			const locals = { session: { user: { id: 'user-2' } } };
+			const params = { id: 'group-1' };
+			const request = {
+				formData: async () => ({
+					get: (key: string): string | null => (key === 'message' ? longMessage : null)
+				})
+			};
+
+			const result: any = await actions.join({ params, locals, request } as any);
+
+			expect(result.success).toBe(false);
+			expect(result.message).toContain('500 characters');
+		});
+
 		it('should redirect to login if user is not authenticated', async () => {
 			const locals = { session: null };
 			const params = { id: 'group-1' };
+			const request = {
+				formData: async () => ({
+					get: (): string | null => null,
+					toString: () => '[object FormData]'
+				})
+			};
 
-			await expect(actions.join({ params, locals } as any)).rejects.toThrow();
+			await expect(actions.join({ params, locals, request } as any)).rejects.toThrow();
 		});
 
 		it('should handle duplicate membership gracefully', async () => {
@@ -367,8 +493,14 @@ describe('Group Detail Page Server', () => {
 
 			const locals = { session: { user: { id: 'user-2' } } };
 			const params = { id: 'group-1' };
+			const request = {
+				formData: async () => ({
+					get: (): string | null => null,
+					toString: () => '[object FormData]'
+				})
+			};
 
-			const result: any = await actions.join({ params, locals } as any);
+			const result: any = await actions.join({ params, locals, request } as any);
 
 			expect(result.success).toBe(false);
 			expect(result.message).toContain('already a member');
@@ -385,8 +517,14 @@ describe('Group Detail Page Server', () => {
 
 			const locals = { session: { user: { id: 'user-2' } } };
 			const params = { id: 'non-existent' };
+			const request = {
+				formData: async () => ({
+					get: (): string | null => null,
+					toString: () => '[object FormData]'
+				})
+			};
 
-			const result: any = await actions.join({ params, locals } as any);
+			const result: any = await actions.join({ params, locals, request } as any);
 
 			expect(result.success).toBe(false);
 			expect(result.message).toContain('Group not found');
@@ -418,8 +556,14 @@ describe('Group Detail Page Server', () => {
 
 			const locals = { session: { user: { id: 'user-2' } } };
 			const params = { id: 'group-1' };
+			const request = {
+				formData: async () => ({
+					get: (): string | null => null,
+					toString: () => '[object FormData]'
+				})
+			};
 
-			const result: any = await actions.join({ params, locals } as any);
+			const result: any = await actions.join({ params, locals, request } as any);
 
 			expect(result.success).toBe(false);
 			expect(result.message).toContain('Failed to join group');
