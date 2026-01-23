@@ -615,7 +615,8 @@ describe('Event Creation Page Server', () => {
 					eventType: 'online',
 					startTime: '2024-12-31T12:00:00.000Z',
 					durationMinutes: 60,
-					groupId: null
+					groupId: null,
+					videoLink: 'https://zoom.us/j/123456789'
 				}
 			};
 
@@ -640,6 +641,152 @@ describe('Event Creation Page Server', () => {
 				expect.objectContaining({
 					group_id: null,
 					title: 'Standalone Event'
+				})
+			);
+		});
+
+		it('should include video link for online events', async () => {
+			const mockInsert = vi.fn().mockReturnThis();
+			const mockSelect = vi.fn().mockReturnThis();
+			const mockSingle = vi.fn().mockResolvedValue({
+				data: { id: 'test-event-id' },
+				error: null
+			});
+
+			const mockSupabase = {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: {
+							session: {
+								user: { id: 'user-123' }
+							}
+						}
+					})
+				},
+				from: vi.fn().mockReturnValue({
+					insert: mockInsert
+				})
+			};
+
+			mockInsert.mockReturnValue({
+				select: mockSelect
+			});
+
+			mockSelect.mockReturnValue({
+				single: mockSingle
+			});
+
+			const mockLocals = {
+				supabase: mockSupabase
+			};
+
+			const mockForm = {
+				valid: true,
+				data: {
+					title: 'Online Event',
+					description: 'An online event',
+					eventType: 'online',
+					startTime: '2024-12-31T12:00:00.000Z',
+					durationMinutes: 60,
+					videoLink: 'https://zoom.us/j/123456789'
+				}
+			};
+
+			vi.mocked(superValidate).mockResolvedValue(mockForm as never);
+
+			const mockRequest = new Request('http://localhost', {
+				method: 'POST',
+				body: new FormData()
+			});
+
+			await expect(
+				actions.default({
+					request: mockRequest,
+					locals: mockLocals
+				} as never)
+			).rejects.toMatchObject({
+				status: 303,
+				location: '/events/test-event-id'
+			});
+
+			expect(mockInsert).toHaveBeenCalledWith(
+				expect.objectContaining({
+					video_link: 'https://zoom.us/j/123456789'
+				})
+			);
+		});
+
+		it('should include both venue and video link for hybrid events', async () => {
+			const mockInsert = vi.fn().mockReturnThis();
+			const mockSelect = vi.fn().mockReturnThis();
+			const mockSingle = vi.fn().mockResolvedValue({
+				data: { id: 'test-event-id' },
+				error: null
+			});
+
+			const mockSupabase = {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: {
+							session: {
+								user: { id: 'user-123' }
+							}
+						}
+					})
+				},
+				from: vi.fn().mockReturnValue({
+					insert: mockInsert
+				})
+			};
+
+			mockInsert.mockReturnValue({
+				select: mockSelect
+			});
+
+			mockSelect.mockReturnValue({
+				single: mockSingle
+			});
+
+			const mockLocals = {
+				supabase: mockSupabase
+			};
+
+			const mockForm = {
+				valid: true,
+				data: {
+					title: 'Hybrid Event',
+					description: 'A hybrid event',
+					eventType: 'hybrid',
+					startTime: '2024-12-31T12:00:00.000Z',
+					durationMinutes: 60,
+					venueName: 'Test Venue',
+					venueAddress: '123 Test St',
+					videoLink: 'https://meet.google.com/abc-defg-hij'
+				}
+			};
+
+			vi.mocked(superValidate).mockResolvedValue(mockForm as never);
+
+			const mockRequest = new Request('http://localhost', {
+				method: 'POST',
+				body: new FormData()
+			});
+
+			await expect(
+				actions.default({
+					request: mockRequest,
+					locals: mockLocals
+				} as never)
+			).rejects.toMatchObject({
+				status: 303,
+				location: '/events/test-event-id'
+			});
+
+			expect(mockInsert).toHaveBeenCalledWith(
+				expect.objectContaining({
+					venue_name: 'Test Venue',
+					venue_address: '123 Test St',
+					video_link: 'https://meet.google.com/abc-defg-hij'
 				})
 			);
 		});

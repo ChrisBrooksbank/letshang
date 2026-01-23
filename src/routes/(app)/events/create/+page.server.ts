@@ -60,6 +60,7 @@ export const actions: Actions = {
 			durationMinutes,
 			venueName,
 			venueAddress,
+			videoLink,
 			groupId,
 			visibility
 		} = form.data as {
@@ -71,6 +72,7 @@ export const actions: Actions = {
 			durationMinutes?: number;
 			venueName?: string;
 			venueAddress?: string;
+			videoLink?: string;
 			groupId?: string | null;
 			visibility: 'public' | 'group_only' | 'hidden';
 		};
@@ -97,7 +99,8 @@ export const actions: Actions = {
 				start_time: startTime,
 				end_time: calculatedEndTime || null,
 				venue_name: venueName || null,
-				venue_address: venueAddress || null
+				venue_address: venueAddress || null,
+				video_link: videoLink || null
 			})
 			.select()
 			.single();

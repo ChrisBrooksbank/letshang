@@ -26,6 +26,7 @@ describe('eventCreationSchema', () => {
 		endTime?: string;
 		venueName?: string;
 		venueAddress?: string;
+		videoLink?: string;
 		groupId?: string | null;
 		visibility?: 'public' | 'group_only' | 'hidden';
 	} => ({
@@ -33,7 +34,8 @@ describe('eventCreationSchema', () => {
 		description: 'A test event description',
 		eventType: 'online' as const,
 		startTime: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
-		durationMinutes: 60
+		durationMinutes: 60,
+		videoLink: 'https://zoom.us/j/123456789'
 	});
 
 	describe('title validation', () => {
@@ -320,6 +322,7 @@ describe('eventCreationSchema', () => {
 		it('should not require venue information for online events', () => {
 			const event = createValidEvent();
 			event.eventType = 'online';
+			event.videoLink = 'https://zoom.us/j/123456789';
 			expect(() => eventCreationSchema.parse(event)).not.toThrow();
 		});
 
@@ -328,7 +331,101 @@ describe('eventCreationSchema', () => {
 			event.eventType = 'online';
 			event.venueName = 'Optional Venue';
 			event.venueAddress = 'Optional Address';
+			event.videoLink = 'https://zoom.us/j/123456789';
 			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+	});
+
+	describe('videoLink validation for online events', () => {
+		it('should require video link for online events', () => {
+			const event = createValidEvent();
+			event.eventType = 'online';
+			delete event.videoLink; // Remove video link to test validation
+			expect(() => eventCreationSchema.parse(event)).toThrow('Video link is required');
+		});
+
+		it('should accept valid video link for online events', () => {
+			const event = createValidEvent();
+			event.eventType = 'online';
+			event.videoLink = 'https://zoom.us/j/123456789';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept various video conferencing platforms', () => {
+			const event = createValidEvent();
+			event.eventType = 'online';
+
+			// Zoom
+			event.videoLink = 'https://zoom.us/j/123456789?pwd=abc123';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+
+			// Google Meet
+			event.videoLink = 'https://meet.google.com/abc-defg-hij';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+
+			// Microsoft Teams
+			event.videoLink = 'https://teams.microsoft.com/l/meetup-join/123';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should reject invalid URLs for video link', () => {
+			const event = createValidEvent();
+			event.eventType = 'online';
+			event.videoLink = 'not a url';
+			expect(() => eventCreationSchema.parse(event)).toThrow('valid URL');
+		});
+
+		it('should reject video links that are too long', () => {
+			const event = createValidEvent();
+			event.eventType = 'online';
+			event.videoLink = 'https://zoom.us/' + 'a'.repeat(2000);
+			expect(() => eventCreationSchema.parse(event)).toThrow('must not exceed 2000 characters');
+		});
+
+		it('should not require video link for in-person events', () => {
+			const event = createValidEvent();
+			event.eventType = 'in_person';
+			event.venueName = 'Test Venue';
+			event.venueAddress = '123 Test St';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+	});
+
+	describe('videoLink validation for hybrid events', () => {
+		it('should require video link for hybrid events', () => {
+			const event = createValidEvent();
+			event.eventType = 'hybrid';
+			event.venueName = 'Test Venue';
+			event.venueAddress = '123 Test St';
+			delete event.videoLink; // Remove video link to test validation
+			expect(() => eventCreationSchema.parse(event)).toThrow('Video link is required');
+		});
+
+		it('should accept valid video link and venue for hybrid events', () => {
+			const event = createValidEvent();
+			event.eventType = 'hybrid';
+			event.venueName = 'Test Venue';
+			event.venueAddress = '123 Test St';
+			event.videoLink = 'https://zoom.us/j/123456789';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should require both venue and video link for hybrid events', () => {
+			const event = createValidEvent();
+			event.eventType = 'hybrid';
+			event.videoLink = 'https://zoom.us/j/123456789';
+			delete event.venueName;
+			delete event.venueAddress;
+			// Missing venue
+			expect(() => eventCreationSchema.parse(event)).toThrow('Venue name is required');
+
+			const event2 = createValidEvent();
+			event2.eventType = 'hybrid';
+			event2.venueName = 'Test Venue';
+			event2.venueAddress = '123 Test St';
+			delete event2.videoLink;
+			// Missing video link
+			expect(() => eventCreationSchema.parse(event2)).toThrow('Video link is required');
 		});
 	});
 
@@ -341,7 +438,8 @@ describe('eventCreationSchema', () => {
 				startTime: new Date(Date.now() + 86400000).toISOString(),
 				endTime: new Date(Date.now() + 86400000 + 7200000).toISOString(),
 				venueName: 'Test Venue',
-				venueAddress: '123 Test St, City, State 12345'
+				venueAddress: '123 Test St, City, State 12345',
+				videoLink: 'https://zoom.us/j/123456789'
 			};
 			expect(() => eventCreationSchema.parse(event)).not.toThrow();
 		});
@@ -351,7 +449,8 @@ describe('eventCreationSchema', () => {
 				title: 'Minimal Event',
 				eventType: 'online' as const,
 				startTime: new Date(Date.now() + 86400000).toISOString(),
-				durationMinutes: 30
+				durationMinutes: 30,
+				videoLink: 'https://zoom.us/j/123456789'
 			};
 			expect(() => eventCreationSchema.parse(event)).not.toThrow();
 		});
@@ -416,6 +515,7 @@ describe('eventCreationSchema - visibility validation', () => {
 		endTime?: string;
 		venueName?: string;
 		venueAddress?: string;
+		videoLink?: string;
 		groupId?: string | null;
 		visibility?: 'public' | 'group_only' | 'hidden';
 	} => ({
@@ -423,7 +523,8 @@ describe('eventCreationSchema - visibility validation', () => {
 		description: 'A test event description',
 		eventType: 'online' as const,
 		startTime: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
-		durationMinutes: 60
+		durationMinutes: 60,
+		videoLink: 'https://zoom.us/j/123456789'
 	});
 
 	describe('visibility defaults', () => {

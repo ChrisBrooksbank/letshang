@@ -341,6 +341,42 @@
 					</div>
 				{/if}
 
+				<!-- Video Link (shown for online and hybrid) -->
+				{#if $form.eventType === 'online' || $form.eventType === 'hybrid'}
+					<div class="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+						<h3 class="font-medium text-gray-900">Online Meeting Details</h3>
+
+						<!-- Video Link -->
+						<div>
+							<label for="videoLink" class="block text-sm font-medium text-gray-700 mb-2">
+								Video Conference Link <span class="text-red-500">*</span>
+							</label>
+							<input
+								id="videoLink"
+								name="videoLink"
+								type="url"
+								required={$form.eventType === 'online' || $form.eventType === 'hybrid'}
+								bind:value={$form.videoLink}
+								aria-invalid={$errors.videoLink ? 'true' : undefined}
+								aria-describedby={$errors.videoLink ? 'videoLink-error' : undefined}
+								class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+								class:border-red-500={$errors.videoLink}
+								placeholder="https://zoom.us/j/123456789 or https://meet.google.com/abc-defg-hij"
+								maxlength="2000"
+							/>
+							{#if $errors.videoLink && Array.isArray($errors.videoLink)}
+								<p id="videoLink-error" class="mt-2 text-sm text-red-600" role="alert">
+									{$errors.videoLink[0] ?? ''}
+								</p>
+							{/if}
+							<p class="mt-1 text-xs text-gray-600">
+								Zoom, Google Meet, Teams, or any video conferencing link. This link will only be
+								visible to RSVPed attendees.
+							</p>
+						</div>
+					</div>
+				{/if}
+
 				<!-- Start Date and Time -->
 				<div>
 					<label for="startTime" class="block text-sm font-medium text-gray-700 mb-2">

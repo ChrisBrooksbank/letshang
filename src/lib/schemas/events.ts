@@ -64,6 +64,14 @@ export const eventCreationSchema = z
 			.trim()
 			.optional(),
 
+		// Video link for online events (Zoom, Meet, etc.)
+		videoLink: z
+			.string()
+			.url({ message: 'Please enter a valid URL' })
+			.max(2000, 'Video link must not exceed 2000 characters')
+			.trim()
+			.optional(),
+
 		// Optional group association
 		groupId: z.string().uuid({ message: 'Invalid group ID' }).optional().nullable(),
 
@@ -85,6 +93,17 @@ export const eventCreationSchema = z
 					code: z.ZodIssueCode.custom,
 					message: 'Venue address is required for in-person and hybrid events',
 					path: ['venueAddress']
+				});
+			}
+		}
+
+		// Validate that online events have video link
+		if (data.eventType === 'online' || data.eventType === 'hybrid') {
+			if (!data.videoLink || data.videoLink.trim() === '') {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: 'Video link is required for online and hybrid events',
+					path: ['videoLink']
 				});
 			}
 		}
