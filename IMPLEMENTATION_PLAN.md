@@ -322,10 +322,16 @@
   - Database: RLS policies + triggers for defense-in-depth
   - Coverage: Comprehensive tests in group-members.test.ts (27 permission tests)
 
-- [ ] Build member list with search [P1]
-  - AC: Shows member name, photo, join date
-  - AC: Search by name
-  - AC: Filter by role
+- [x] Build member list with search [P1] ✓
+  - AC: Shows member name, photo, join date ✓
+  - AC: Search by name ✓
+  - AC: Filter by role ✓
+  - Implementation: Client-side filtering using Svelte 5 $derived.by
+  - Search: Case-insensitive name filtering with instant results
+  - Filter: Role dropdown with "all" option, filters by role type
+  - UI: Mobile-responsive layout with search input and filter dropdown
+  - Results count shows "Showing X of Y members"
+  - Coverage: 17 tests in page.test.ts covering search and filter functionality
 
 - [ ] Implement join request workflow [P1]
   - AC: Private groups show pending requests
