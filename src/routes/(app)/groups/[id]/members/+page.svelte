@@ -21,8 +21,33 @@
 	let editingMemberId = $state<string | null>(null);
 	let confirmRemoveMemberId = $state<string | null>(null);
 
+	// Search and filter state
+	let searchQuery = $state('');
+	let roleFilter = $state<GroupMemberRole | 'all'>('all');
+
 	// Get assignable roles for current user
 	const assignableRoles = $derived(getAssignableRoles(currentUserRole));
+
+	// Filtered members based on search and role filter
+	const filteredMembers = $derived.by(() => {
+		let result = members;
+
+		// Apply search filter
+		if (searchQuery.trim()) {
+			const query = searchQuery.toLowerCase();
+			result = result.filter((member) => {
+				const displayName = member.user?.display_name?.toLowerCase() || '';
+				return displayName.includes(query);
+			});
+		}
+
+		// Apply role filter
+		if (roleFilter !== 'all') {
+			result = result.filter((member) => member.role === roleFilter);
+		}
+
+		return result;
+	});
 
 	// Check if user can modify a specific member
 	function canUserModifyMember(memberRole: GroupMemberRole): boolean {
@@ -77,6 +102,50 @@
 				</div>
 			{/if}
 
+			<!-- Search and Filter -->
+			<div class="mb-6 bg-white rounded-lg shadow-sm p-6">
+				<div class="flex flex-col sm:flex-row gap-4">
+					<!-- Search Input -->
+					<div class="flex-1">
+						<label for="search" class="block text-sm font-medium text-gray-700 mb-2">
+							Search members
+						</label>
+						<input
+							type="text"
+							id="search"
+							bind:value={searchQuery}
+							placeholder="Search by name..."
+							class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+						/>
+					</div>
+
+					<!-- Role Filter -->
+					<div class="sm:w-64">
+						<label for="roleFilter" class="block text-sm font-medium text-gray-700 mb-2">
+							Filter by role
+						</label>
+						<select
+							id="roleFilter"
+							bind:value={roleFilter}
+							class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+						>
+							<option value="all">All roles</option>
+							<option value="organizer">Organizer</option>
+							<option value="co_organizer">Co-organizer</option>
+							<option value="assistant_organizer">Assistant Organizer</option>
+							<option value="event_organizer">Event Organizer</option>
+							<option value="member">Member</option>
+						</select>
+					</div>
+				</div>
+
+				<!-- Results count -->
+				<div class="mt-4 text-sm text-gray-600">
+					Showing {filteredMembers.length} of {members.length}
+					{members.length === 1 ? 'member' : 'members'}
+				</div>
+			</div>
+
 			<!-- Members List -->
 			<div class="bg-white rounded-lg shadow-sm overflow-hidden">
 				<div class="overflow-x-auto">
@@ -106,7 +175,7 @@
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-gray-200">
-							{#each members as member}
+							{#each filteredMembers as member}
 								{@const memberRole = member.role as GroupMemberRole}
 								{@const canModify = canUserModifyMember(memberRole)}
 								{@const isEditing = editingMemberId === member.id}
@@ -249,9 +318,15 @@
 					</table>
 				</div>
 
-				{#if members.length === 0}
+				{#if filteredMembers.length === 0}
 					<div class="text-center py-12">
-						<p class="text-gray-500">No members found</p>
+						<p class="text-gray-500">
+							{#if searchQuery || roleFilter !== 'all'}
+								No members match your search criteria
+							{:else}
+								No members found
+							{/if}
+						</p>
 					</div>
 				{/if}
 			</div>
