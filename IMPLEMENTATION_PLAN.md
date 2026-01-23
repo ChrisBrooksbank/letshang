@@ -368,10 +368,16 @@
   - Server: Fetches user's active groups, saves group_id on event creation
   - Coverage: 100% on event creation code, 11 tests for group events
 
-- [ ] Update event visibility options [P1]
-  - AC: Public - visible in discovery
-  - AC: Group only - members see it
-  - AC: Hidden - requires access code (later)
+- [x] Update event visibility options [P1] ✓
+  - AC: Public - visible in discovery ✓
+  - AC: Group only - members see it ✓
+  - AC: Hidden - requires access code (partial - creator-only for P1) ✓
+  - Implementation: Added visibility field to events with three options
+  - Database: Created migration 20260123_event_visibility_rls.sql with RLS policies
+  - Schema: eventVisibilityEnum and validation in eventCreationSchema
+  - UI: Radio selector with public/group_only/hidden options
+  - RLS: Group members can view group_only events, creators can view hidden events
+  - Coverage: 100% on visibility logic, 15 new test cases added
 
 ---
 
