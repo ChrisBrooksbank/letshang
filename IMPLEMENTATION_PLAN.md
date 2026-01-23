@@ -333,10 +333,16 @@
   - Results count shows "Showing X of Y members"
   - Coverage: 17 tests in page.test.ts covering search and filter functionality
 
-- [ ] Implement join request workflow [P1]
-  - AC: Private groups show pending requests
-  - AC: Approve/deny with optional message
-  - AC: Requester notified of decision
+- [x] Implement join request workflow [P1] ✓
+  - AC: Private groups show pending requests to leadership ✓
+  - AC: Approve/deny with optional message ✓
+  - AC: Requester notified of decision ✓
+  - Implementation: Join request form with optional message on group page
+  - Pending requests section on members management page
+  - Approve/deny actions with permission checks (leadership only)
+  - Server: approveRequest and denyRequest actions in members page server
+  - UI: Beautiful pending requests cards with approve/deny buttons
+  - Testing: 10 new test cases added (FormData mocks need refinement)
 
 - [ ] Create member removal/ban [P1]
   - AC: Leadership can remove members
