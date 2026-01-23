@@ -60,6 +60,7 @@ export interface Database {
 					start_time: string;
 					end_time: string | null;
 					event_type: 'in_person' | 'online' | 'hybrid';
+					visibility: 'public' | 'group_only' | 'hidden';
 					venue_name: string | null;
 					venue_address: string | null;
 					created_at: string;
@@ -74,6 +75,7 @@ export interface Database {
 					start_time: string;
 					end_time?: string | null;
 					event_type: 'in_person' | 'online' | 'hybrid';
+					visibility?: 'public' | 'group_only' | 'hidden';
 					venue_name?: string | null;
 					venue_address?: string | null;
 					created_at?: string;
@@ -88,6 +90,7 @@ export interface Database {
 					start_time?: string;
 					end_time?: string | null;
 					event_type?: 'in_person' | 'online' | 'hybrid';
+					visibility?: 'public' | 'group_only' | 'hidden';
 					venue_name?: string | null;
 					venue_address?: string | null;
 					created_at?: string;

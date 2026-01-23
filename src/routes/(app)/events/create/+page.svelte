@@ -68,6 +68,92 @@
 					</div>
 				{/if}
 
+				<!-- Event Visibility -->
+				<div>
+					<fieldset>
+						<legend class="block text-sm font-medium text-gray-700 mb-3">
+							Event Visibility <span class="text-red-500">*</span>
+						</legend>
+						<div class="space-y-3">
+							<label
+								class="flex items-start p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition"
+								class:bg-blue-50={$form.visibility === 'public'}
+								class:border-blue-500={$form.visibility === 'public'}
+							>
+								<input
+									type="radio"
+									name="visibility"
+									value="public"
+									bind:group={$form.visibility}
+									class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500"
+									required
+								/>
+								<span class="ml-3 flex-1">
+									<span class="block font-medium text-gray-900">Public</span>
+									<span class="block text-sm text-gray-600"
+										>Anyone can discover and view this event</span
+									>
+								</span>
+							</label>
+
+							<label
+								class="flex items-start p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition"
+								class:bg-blue-50={$form.visibility === 'group_only'}
+								class:border-blue-500={$form.visibility === 'group_only'}
+								class:opacity-50={!$form.groupId}
+								class:cursor-not-allowed={!$form.groupId}
+							>
+								<input
+									type="radio"
+									name="visibility"
+									value="group_only"
+									bind:group={$form.visibility}
+									disabled={!$form.groupId}
+									class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500"
+									required
+								/>
+								<span class="ml-3 flex-1">
+									<span class="block font-medium text-gray-900">Group Only</span>
+									<span class="block text-sm text-gray-600"
+										>Only members of the selected group can see this event</span
+									>
+									{#if !$form.groupId}
+										<span class="block text-xs text-yellow-600 mt-1"
+											>Select a group above to enable this option</span
+										>
+									{/if}
+								</span>
+							</label>
+
+							<label
+								class="flex items-start p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition"
+								class:bg-blue-50={$form.visibility === 'hidden'}
+								class:border-blue-500={$form.visibility === 'hidden'}
+							>
+								<input
+									type="radio"
+									name="visibility"
+									value="hidden"
+									bind:group={$form.visibility}
+									class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500"
+									required
+								/>
+								<span class="ml-3 flex-1">
+									<span class="block font-medium text-gray-900">Hidden</span>
+									<span class="block text-sm text-gray-600"
+										>Event is not discoverable. Share the direct link to invite people.</span
+									>
+								</span>
+							</label>
+						</div>
+						{#if $errors.visibility && Array.isArray($errors.visibility)}
+							<p class="mt-2 text-sm text-red-600" role="alert">
+								{$errors.visibility[0] ?? ''}
+							</p>
+						{/if}
+					</fieldset>
+				</div>
+
 				<!-- Title -->
 				<div>
 					<label for="title" class="block text-sm font-medium text-gray-700 mb-2">

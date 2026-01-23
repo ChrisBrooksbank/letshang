@@ -7,6 +7,12 @@ import { z } from 'zod';
 export const eventTypeEnum = z.enum(['in_person', 'online', 'hybrid']);
 
 /**
+ * Event visibility enum for validation
+ * Must match the event_visibility enum in the database
+ */
+export const eventVisibilityEnum = z.enum(['public', 'group_only', 'hidden']);
+
+/**
  * Event creation schema
  * Validates basic event creation form data
  */
@@ -59,7 +65,10 @@ export const eventCreationSchema = z
 			.optional(),
 
 		// Optional group association
-		groupId: z.string().uuid({ message: 'Invalid group ID' }).optional().nullable()
+		groupId: z.string().uuid({ message: 'Invalid group ID' }).optional().nullable(),
+
+		// Visibility: who can see this event
+		visibility: eventVisibilityEnum.default('public')
 	})
 	.superRefine((data, ctx) => {
 		// Validate that in-person events have venue information
@@ -99,6 +108,15 @@ export const eventCreationSchema = z
 				code: z.ZodIssueCode.custom,
 				message: 'Either end time or duration must be provided',
 				path: ['endTime']
+			});
+		}
+
+		// Validate that group_only events have a group_id
+		if (data.visibility === 'group_only' && !data.groupId) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: 'Group-only events must be associated with a group',
+				path: ['visibility']
 			});
 		}
 	});

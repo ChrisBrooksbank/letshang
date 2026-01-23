@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { eventCreationSchema, eventTypeEnum } from './events';
+import { eventCreationSchema, eventTypeEnum, eventVisibilityEnum } from './events';
 
 describe('eventTypeEnum', () => {
 	it('should accept valid event types', () => {
@@ -27,6 +27,7 @@ describe('eventCreationSchema', () => {
 		venueName?: string;
 		venueAddress?: string;
 		groupId?: string | null;
+		visibility?: 'public' | 'group_only' | 'hidden';
 	} => ({
 		title: 'Test Event',
 		description: 'A test event description',
@@ -385,6 +386,157 @@ describe('eventCreationSchema', () => {
 			const event = createValidEvent();
 			event.groupId = '';
 			expect(() => eventCreationSchema.parse(event)).toThrow();
+		});
+	});
+});
+
+describe('eventVisibilityEnum', () => {
+	it('should accept valid visibility values', () => {
+		expect(eventVisibilityEnum.parse('public')).toBe('public');
+		expect(eventVisibilityEnum.parse('group_only')).toBe('group_only');
+		expect(eventVisibilityEnum.parse('hidden')).toBe('hidden');
+	});
+
+	it('should reject invalid visibility values', () => {
+		expect(() => eventVisibilityEnum.parse('invalid')).toThrow();
+		expect(() => eventVisibilityEnum.parse('')).toThrow();
+		expect(() => eventVisibilityEnum.parse('Public')).toThrow();
+		expect(() => eventVisibilityEnum.parse('group-only')).toThrow();
+	});
+});
+
+describe('eventCreationSchema - visibility validation', () => {
+	// Helper to create a valid base event
+	const createValidEvent = (): {
+		title: string;
+		description: string;
+		eventType: 'online' | 'in_person' | 'hybrid';
+		startTime: string;
+		durationMinutes?: number;
+		endTime?: string;
+		venueName?: string;
+		venueAddress?: string;
+		groupId?: string | null;
+		visibility?: 'public' | 'group_only' | 'hidden';
+	} => ({
+		title: 'Test Event',
+		description: 'A test event description',
+		eventType: 'online' as const,
+		startTime: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
+		durationMinutes: 60
+	});
+
+	describe('visibility defaults', () => {
+		it('should default to public when visibility is not provided', () => {
+			const event = createValidEvent();
+			const result = eventCreationSchema.parse(event);
+			expect(result.visibility).toBe('public');
+		});
+
+		it('should default to public for standalone events', () => {
+			const event = createValidEvent();
+			event.groupId = null;
+			const result = eventCreationSchema.parse(event);
+			expect(result.visibility).toBe('public');
+		});
+	});
+
+	describe('public visibility', () => {
+		it('should accept public visibility for standalone events', () => {
+			const event = createValidEvent();
+			event.visibility = 'public';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept public visibility for group events', () => {
+			const event = createValidEvent();
+			event.visibility = 'public';
+			event.groupId = '550e8400-e29b-41d4-a716-446655440000';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+	});
+
+	describe('group_only visibility', () => {
+		it('should accept group_only visibility when groupId is provided', () => {
+			const event = createValidEvent();
+			event.visibility = 'group_only';
+			event.groupId = '550e8400-e29b-41d4-a716-446655440000';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should reject group_only visibility without a groupId', () => {
+			const event = createValidEvent();
+			event.visibility = 'group_only';
+			expect(() => eventCreationSchema.parse(event)).toThrow(
+				'Group-only events must be associated with a group'
+			);
+		});
+
+		it('should reject group_only visibility with null groupId', () => {
+			const event = createValidEvent();
+			event.visibility = 'group_only';
+			event.groupId = null;
+			expect(() => eventCreationSchema.parse(event)).toThrow(
+				'Group-only events must be associated with a group'
+			);
+		});
+
+		it('should reject group_only visibility with undefined groupId', () => {
+			const event = createValidEvent();
+			event.visibility = 'group_only';
+			event.groupId = undefined;
+			expect(() => eventCreationSchema.parse(event)).toThrow(
+				'Group-only events must be associated with a group'
+			);
+		});
+	});
+
+	describe('hidden visibility', () => {
+		it('should accept hidden visibility for standalone events', () => {
+			const event = createValidEvent();
+			event.visibility = 'hidden';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept hidden visibility for group events', () => {
+			const event = createValidEvent();
+			event.visibility = 'hidden';
+			event.groupId = '550e8400-e29b-41d4-a716-446655440000';
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept hidden visibility without a groupId', () => {
+			const event = createValidEvent();
+			event.visibility = 'hidden';
+			event.groupId = null;
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+	});
+
+	describe('visibility integration tests', () => {
+		it('should accept all combinations of valid visibility and group settings', () => {
+			const validCombinations = [
+				{ visibility: 'public' as const, groupId: null },
+				{ visibility: 'public' as const, groupId: '550e8400-e29b-41d4-a716-446655440000' },
+				{ visibility: 'group_only' as const, groupId: '550e8400-e29b-41d4-a716-446655440000' },
+				{ visibility: 'hidden' as const, groupId: null },
+				{ visibility: 'hidden' as const, groupId: '550e8400-e29b-41d4-a716-446655440000' }
+			];
+
+			for (const combo of validCombinations) {
+				const event = createValidEvent();
+				event.visibility = combo.visibility;
+				event.groupId = combo.groupId;
+				expect(() => eventCreationSchema.parse(event)).not.toThrow();
+			}
+		});
+
+		it('should properly parse and return visibility value', () => {
+			const event = createValidEvent();
+			event.visibility = 'group_only';
+			event.groupId = '550e8400-e29b-41d4-a716-446655440000';
+			const result = eventCreationSchema.parse(event);
+			expect(result.visibility).toBe('group_only');
 		});
 	});
 });

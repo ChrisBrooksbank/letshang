@@ -60,7 +60,8 @@ export const actions: Actions = {
 			durationMinutes,
 			venueName,
 			venueAddress,
-			groupId
+			groupId,
+			visibility
 		} = form.data as {
 			title: string;
 			description: string;
@@ -71,6 +72,7 @@ export const actions: Actions = {
 			venueName?: string;
 			venueAddress?: string;
 			groupId?: string | null;
+			visibility: 'public' | 'group_only' | 'hidden';
 		};
 
 		// Calculate end time if duration is provided instead
@@ -91,6 +93,7 @@ export const actions: Actions = {
 				title,
 				description,
 				event_type: eventType,
+				visibility: visibility || 'public',
 				start_time: startTime,
 				end_time: calculatedEndTime || null,
 				venue_name: venueName || null,
