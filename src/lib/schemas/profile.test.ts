@@ -20,7 +20,8 @@ describe('profileUpdateSchema - displayName', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: 'John Doe',
 			bio: '',
-			location: ''
+			location: '',
+			profilePhotoUrl: ''
 		});
 		expect(result.displayName).toBe('John Doe');
 	});
@@ -29,7 +30,8 @@ describe('profileUpdateSchema - displayName', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: 'Jo',
 			bio: '',
-			location: ''
+			location: '',
+			profilePhotoUrl: ''
 		});
 		expect(result.displayName).toBe('Jo');
 	});
@@ -39,7 +41,8 @@ describe('profileUpdateSchema - displayName', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: longName,
 			bio: '',
-			location: ''
+			location: '',
+			profilePhotoUrl: ''
 		});
 		expect(result.displayName).toBe(longName);
 	});
@@ -49,7 +52,8 @@ describe('profileUpdateSchema - displayName', () => {
 			profileUpdateSchema.parse({
 				displayName: 'J',
 				bio: '',
-				location: ''
+				location: '',
+				profilePhotoUrl: ''
 			})
 		).toThrow('Display name must be at least 2 characters');
 	});
@@ -60,7 +64,8 @@ describe('profileUpdateSchema - displayName', () => {
 			profileUpdateSchema.parse({
 				displayName: tooLong,
 				bio: '',
-				location: ''
+				location: '',
+				profilePhotoUrl: ''
 			})
 		).toThrow('Display name must be at most 50 characters');
 	});
@@ -70,7 +75,8 @@ describe('profileUpdateSchema - displayName', () => {
 			profileUpdateSchema.parse({
 				displayName: '',
 				bio: '',
-				location: ''
+				location: '',
+				profilePhotoUrl: ''
 			})
 		).toThrow();
 	});
@@ -80,7 +86,8 @@ describe('profileUpdateSchema - displayName', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: '   ',
 			bio: '',
-			location: ''
+			location: '',
+			profilePhotoUrl: ''
 		});
 		expect(result.displayName).toBe('   ');
 	});
@@ -91,7 +98,8 @@ describe('profileUpdateSchema - bio', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: 'John Doe',
 			bio: 'I love hiking and photography!',
-			location: ''
+			location: '',
+			profilePhotoUrl: ''
 		});
 		expect(result.bio).toBe('I love hiking and photography!');
 	});
@@ -100,7 +108,8 @@ describe('profileUpdateSchema - bio', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: 'John Doe',
 			bio: '',
-			location: ''
+			location: '',
+			profilePhotoUrl: ''
 		});
 		expect(result.bio).toBe('');
 	});
@@ -116,7 +125,8 @@ describe('profileUpdateSchema - bio', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: 'John Doe',
 			bio: '  This is my bio  ',
-			location: ''
+			location: '',
+			profilePhotoUrl: ''
 		});
 		expect(result.bio).toBe('  This is my bio  ');
 	});
@@ -126,7 +136,8 @@ describe('profileUpdateSchema - bio', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: 'John Doe',
 			bio: maxBio,
-			location: ''
+			location: '',
+			profilePhotoUrl: ''
 		});
 		expect(result.bio).toBe(maxBio);
 	});
@@ -137,7 +148,8 @@ describe('profileUpdateSchema - bio', () => {
 			profileUpdateSchema.parse({
 				displayName: 'John Doe',
 				bio: tooLong,
-				location: ''
+				location: '',
+				profilePhotoUrl: ''
 			})
 		).toThrow('Bio must be at most 500 characters');
 	});
@@ -147,7 +159,8 @@ describe('profileUpdateSchema - bio', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: 'John Doe',
 			bio: bioWithBreaks,
-			location: ''
+			location: '',
+			profilePhotoUrl: ''
 		});
 		expect(result.bio).toBe(bioWithBreaks);
 	});
@@ -158,7 +171,8 @@ describe('profileUpdateSchema - location', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: 'John Doe',
 			bio: '',
-			location: 'San Francisco, CA'
+			location: 'San Francisco, CA',
+			profilePhotoUrl: ''
 		});
 		expect(result.location).toBe('San Francisco, CA');
 	});
@@ -167,7 +181,8 @@ describe('profileUpdateSchema - location', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: 'John Doe',
 			bio: '',
-			location: ''
+			location: '',
+			profilePhotoUrl: ''
 		});
 		expect(result.location).toBe('');
 	});
@@ -183,9 +198,54 @@ describe('profileUpdateSchema - location', () => {
 		const result = profileUpdateSchema.parse({
 			displayName: 'John Doe',
 			bio: '',
-			location: '  New York, NY  '
+			location: '  New York, NY  ',
+			profilePhotoUrl: ''
 		});
 		expect(result.location).toBe('  New York, NY  ');
+	});
+});
+
+describe('profileUpdateSchema - profilePhotoUrl', () => {
+	it('should accept valid URL', () => {
+		const result = profileUpdateSchema.parse({
+			displayName: 'John Doe',
+			profilePhotoUrl: 'https://example.com/photo.jpg'
+		});
+		expect(result.profilePhotoUrl).toBe('https://example.com/photo.jpg');
+	});
+
+	it('should accept empty string', () => {
+		const result = profileUpdateSchema.parse({
+			displayName: 'John Doe',
+			profilePhotoUrl: ''
+		});
+		expect(result.profilePhotoUrl).toBe('');
+	});
+
+	it('should accept data URL', () => {
+		const dataUrl =
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+		const result = profileUpdateSchema.parse({
+			displayName: 'John Doe',
+			profilePhotoUrl: dataUrl
+		});
+		expect(result.profilePhotoUrl).toBe(dataUrl);
+	});
+
+	it('should accept undefined profilePhotoUrl', () => {
+		const result = profileUpdateSchema.parse({
+			displayName: 'John Doe'
+		});
+		expect(result.profilePhotoUrl).toBeUndefined();
+	});
+
+	it('should reject invalid URL (not empty or valid URL)', () => {
+		expect(() =>
+			profileUpdateSchema.parse({
+				displayName: 'John Doe',
+				profilePhotoUrl: 'not a url'
+			})
+		).toThrow();
 	});
 });
 
@@ -194,7 +254,8 @@ describe('profileUpdateSchema - complete validation', () => {
 		const validData: ProfileUpdateSchema = {
 			displayName: 'Jane Smith',
 			bio: 'Software engineer who loves coffee',
-			location: 'Seattle, WA'
+			location: 'Seattle, WA',
+			profilePhotoUrl: 'https://example.com/photo.jpg'
 		};
 		const result = profileUpdateSchema.parse(validData);
 		expect(result).toEqual(validData);
@@ -204,7 +265,8 @@ describe('profileUpdateSchema - complete validation', () => {
 		const minimalData = {
 			displayName: 'Jo',
 			bio: '',
-			location: ''
+			location: '',
+			profilePhotoUrl: ''
 		};
 		const result = profileUpdateSchema.parse(minimalData);
 		expect(result.displayName).toBe('Jo');
@@ -218,6 +280,7 @@ describe('profileUpdateSchema - complete validation', () => {
 		expect(result.displayName).toBe('John Doe');
 		expect(result.bio).toBeUndefined();
 		expect(result.location).toBeUndefined();
+		expect(result.profilePhotoUrl).toBeUndefined();
 	});
 });
 

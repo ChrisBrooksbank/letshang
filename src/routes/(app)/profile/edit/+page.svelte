@@ -2,6 +2,7 @@
 	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { profileUpdateSchema } from '$lib/schemas/profile';
+	import ProfilePhotoUpload from '$lib/components/ProfilePhotoUpload.svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -11,15 +12,40 @@
 		validators: zodClient(profileUpdateSchema),
 		dataType: 'json'
 	});
+
+	/**
+	 * Handle profile photo change
+	 */
+	function handlePhotoChange(photoDataUrl: string) {
+		$form.profilePhotoUrl = photoDataUrl;
+	}
 </script>
 
 <div class="container mx-auto max-w-2xl p-4">
 	<div class="mb-6">
 		<h1 class="text-2xl font-bold">Edit Profile</h1>
-		<p class="text-gray-600 text-sm mt-1">Update your display name, bio, and location</p>
+		<p class="text-gray-600 text-sm mt-1">
+			Update your profile photo, display name, bio, and location
+		</p>
 	</div>
 
 	<form method="POST" use:enhance class="space-y-6">
+		<!-- Profile Photo -->
+		<div>
+			<p class="block text-sm font-medium mb-2">Profile Photo</p>
+			<ProfilePhotoUpload
+				currentPhotoUrl={$form.profilePhotoUrl as string | undefined}
+				onPhotoChange={handlePhotoChange}
+				disabled={$delayed}
+			/>
+			{#if $errors.profilePhotoUrl}
+				<p class="text-red-500 text-sm mt-1">{$errors.profilePhotoUrl}</p>
+			{/if}
+		</div>
+
+		<!-- Hidden input to store photo URL in form -->
+		<input type="hidden" name="profilePhotoUrl" bind:value={$form.profilePhotoUrl} />
+
 		<!-- Display Name -->
 		<div>
 			<label for="displayName" class="block text-sm font-medium mb-2">

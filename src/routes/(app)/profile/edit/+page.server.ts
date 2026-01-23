@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const { data: profile, error } = await (locals.supabase as any)
 		.from('users')
-		.select('display_name, bio, location')
+		.select('display_name, bio, location, profile_photo_url')
 		.eq('id', session.data.session.user.id)
 		.single();
 
@@ -25,7 +25,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			{
 				displayName: '',
 				bio: '',
-				location: ''
+				location: '',
+				profilePhotoUrl: ''
 			},
 			// @ts-expect-error - Known Zod/Superforms type incompatibility with optional fields
 			zod(profileUpdateSchema)
@@ -38,7 +39,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		{
 			displayName: profile.display_name || '',
 			bio: profile.bio || '',
-			location: profile.location || ''
+			location: profile.location || '',
+			profilePhotoUrl: profile.profile_photo_url || ''
 		},
 		// @ts-expect-error - Known Zod/Superforms type incompatibility with optional fields
 		zod(profileUpdateSchema)
@@ -64,16 +66,18 @@ export const actions: Actions = {
 		}
 
 		// Type assertions for form.data
-		let { displayName, bio, location } = form.data as {
+		let { displayName, bio, location, profilePhotoUrl } = form.data as {
 			displayName: string;
 			bio: string;
 			location: string;
+			profilePhotoUrl: string;
 		};
 
 		// Trim all string fields
 		displayName = displayName.trim();
 		bio = bio.trim();
 		location = location.trim();
+		profilePhotoUrl = profilePhotoUrl.trim();
 
 		// Validate displayName after trimming
 		if (displayName.length < 2) {
@@ -94,7 +98,8 @@ export const actions: Actions = {
 			.update({
 				display_name: displayName,
 				bio: bio || null,
-				location: location || null
+				location: location || null,
+				profile_photo_url: profilePhotoUrl || null
 			})
 			.eq('id', session.data.session.user.id);
 

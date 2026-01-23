@@ -38,6 +38,17 @@ const bioSchema = z.string().max(500, 'Bio must be at most 500 characters').opti
 const locationSchema = z.string().optional();
 
 /**
+ * Profile photo URL validation schema
+ * - Must be a valid URL or empty string
+ * - Optional field
+ */
+const profilePhotoUrlSchema = z
+	.string()
+	.url('Profile photo URL must be a valid URL')
+	.optional()
+	.or(z.literal(''));
+
+/**
  * Profile update schema
  * Validates all editable profile fields
  * Used for the profile editing form
@@ -45,7 +56,8 @@ const locationSchema = z.string().optional();
 export const profileUpdateSchema = z.object({
 	displayName: displayNameSchema,
 	bio: bioSchema,
-	location: locationSchema
+	location: locationSchema,
+	profilePhotoUrl: profilePhotoUrlSchema
 });
 
 /**

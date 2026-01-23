@@ -12,6 +12,7 @@
 		"prettier-plugin-svelte",
 		"svelte",
 		"svelte-check",
+		"svelte-easy-crop",
 		"tailwindcss",
 		"typescript",
 		"vite",

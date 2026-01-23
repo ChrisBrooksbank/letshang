@@ -55,7 +55,8 @@ describe('Profile Edit Page Server', () => {
 			const mockProfile = {
 				display_name: 'John Doe',
 				bio: 'Software engineer',
-				location: 'San Francisco, CA'
+				location: 'San Francisco, CA',
+				profile_photo_url: 'https://example.com/photo.jpg'
 			};
 
 			const mockSupabase = {
@@ -214,7 +215,8 @@ describe('Profile Edit Page Server', () => {
 				data: {
 					displayName: 'John Doe',
 					bio: 'Software engineer',
-					location: 'San Francisco, CA'
+					location: 'San Francisco, CA',
+					profilePhotoUrl: 'https://example.com/photo.jpg'
 				}
 			} as never);
 
@@ -265,7 +267,8 @@ describe('Profile Edit Page Server', () => {
 				data: {
 					displayName: 'John Doe',
 					bio: '',
-					location: ''
+					location: '',
+					profilePhotoUrl: ''
 				}
 			} as never);
 
@@ -289,7 +292,8 @@ describe('Profile Edit Page Server', () => {
 			expect(mockUpdate).toHaveBeenCalledWith({
 				display_name: 'John Doe',
 				bio: null,
-				location: null
+				location: null,
+				profile_photo_url: null
 			});
 		});
 
@@ -318,7 +322,8 @@ describe('Profile Edit Page Server', () => {
 				data: {
 					displayName: 'John Doe',
 					bio: 'Test bio',
-					location: 'Test location'
+					location: 'Test location',
+					profilePhotoUrl: ''
 				}
 			} as never);
 
@@ -364,7 +369,8 @@ describe('Profile Edit Page Server', () => {
 				data: {
 					displayName: 'John Doe',
 					bio: '',
-					location: ''
+					location: '',
+					profilePhotoUrl: ''
 				}
 			} as never);
 
@@ -388,7 +394,8 @@ describe('Profile Edit Page Server', () => {
 			expect(mockUpdate).toHaveBeenCalledWith({
 				display_name: 'John Doe',
 				bio: null,
-				location: null
+				location: null,
+				profile_photo_url: null
 			});
 		});
 	});
