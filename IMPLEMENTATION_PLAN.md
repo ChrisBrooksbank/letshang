@@ -256,10 +256,10 @@
   - AC: Email auto-populated from Google ✓
   - AC: Profile photo imported if available ✓
 
-- [ ] Implement Apple Sign In [P1]
-  - AC: Works on iOS/Safari
-  - AC: Handles Apple's email relay
-  - AC: Links to existing account if email matches
+- [x] Implement Apple Sign In [P1] ✓
+  - AC: Works on iOS/Safari ✓
+  - AC: Handles Apple's email relay ✓
+  - AC: Links to existing account if email matches ✓
 
 ---
 
