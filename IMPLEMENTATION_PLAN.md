@@ -428,9 +428,15 @@
 
 > Waitlist, check-in, and format tags (spec: 03-events.md)
 
-- [ ] Add attendee limit [P1]
-  - AC: Optional capacity (1-10000)
-  - AC: Enforced on RSVP
+- [x] Add attendee limit [P1] ✓
+  - AC: Optional capacity (1-10000) ✓
+  - AC: Enforced on RSVP ✓
+  - Implementation: Added capacity field to event schema (1-10000, nullable)
+  - Implementation: Event creation form includes capacity input
+  - Implementation: RSVP action checks capacity before allowing "going" status
+  - Implementation: Event detail page shows capacity info ("X / Y Going", "X spots left", "Filling up fast!")
+  - Coverage: 20 new tests (14 schema validation + 6 RSVP enforcement)
+  - Commit: 9bafc29
 
 - [ ] Build waitlist system [P1]
   - AC: Auto-add when capacity reached
