@@ -38,7 +38,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const counts = {
 		going: rsvpCounts?.filter((r) => r.status === 'going').length || 0,
 		interested: rsvpCounts?.filter((r) => r.status === 'interested').length || 0,
-		notGoing: rsvpCounts?.filter((r) => r.status === 'not_going').length || 0
+		notGoing: rsvpCounts?.filter((r) => r.status === 'not_going').length || 0,
+		waitlisted: rsvpCounts?.filter((r) => r.status === 'waitlisted').length || 0
 	};
 
 	return {
@@ -114,11 +115,73 @@ export const actions: Actions = {
 			const currentGoingCount = goingRsvps?.length || 0;
 			const userAlreadyGoing = userCurrentRsvp?.status === 'going';
 
-			// If capacity is reached and user is not already going, reject
+			// If capacity is reached and user is not already going, add to waitlist
 			if (currentGoingCount >= event.capacity && !userAlreadyGoing) {
-				return fail(400, {
-					error: `Event is at capacity (${event.capacity} attendees). You have been added to the waitlist.`
-				});
+				// Get current waitlist count to assign position
+				const { data: waitlistRsvps, error: waitlistError } = await supabase
+					.from('event_rsvps')
+					.select('waitlist_position')
+					.eq('event_id', eventId)
+					.eq('status', 'waitlisted')
+					.order('waitlist_position', { ascending: false })
+					.limit(1);
+
+				if (waitlistError) {
+					// eslint-disable-next-line no-console -- Server-side logging for debugging
+					console.error('Error fetching waitlist:', waitlistError);
+					return fail(500, { error: 'Failed to add to waitlist' });
+				}
+
+				const maxPosition = waitlistRsvps?.[0]?.waitlist_position || 0;
+				const newPosition = maxPosition + 1;
+
+				// Check if RSVP exists
+				const { data: existingRsvp } = await supabase
+					.from('event_rsvps')
+					.select('*')
+					.eq('event_id', eventId)
+					.eq('user_id', session.user.id)
+					.single();
+
+				const waitlistData = {
+					status: 'waitlisted',
+					waitlist_position: newPosition,
+					updated_at: new Date().toISOString()
+				};
+
+				if (existingRsvp) {
+					// Update existing RSVP to waitlisted
+					const { error: updateError } = await supabase
+						.from('event_rsvps')
+						.update(waitlistData)
+						.eq('id', existingRsvp.id);
+
+					if (updateError) {
+						// eslint-disable-next-line no-console -- Server-side logging for debugging
+						console.error('Error updating to waitlist:', updateError);
+						return fail(500, { error: 'Failed to add to waitlist' });
+					}
+				} else {
+					// Create new waitlisted RSVP
+					const { error: insertError } = await supabase.from('event_rsvps').insert({
+						event_id: eventId,
+						user_id: session.user.id,
+						...waitlistData
+					});
+
+					if (insertError) {
+						// eslint-disable-next-line no-console -- Server-side logging for debugging
+						console.error('Error creating waitlist RSVP:', insertError);
+						return fail(500, { error: 'Failed to add to waitlist' });
+					}
+				}
+
+				return {
+					success: true,
+					waitlisted: true,
+					position: newPosition,
+					message: `Event is at capacity. You're #${newPosition} on the waitlist!`
+				};
 			}
 		}
 
@@ -185,6 +248,16 @@ export const actions: Actions = {
 
 		const { id: eventId } = params;
 
+		// Get the user's current RSVP before deleting
+		const { data: currentRsvp } = await supabase
+			.from('event_rsvps')
+			.select('status')
+			.eq('event_id', eventId)
+			.eq('user_id', session.user.id)
+			.single();
+
+		const wasGoing = currentRsvp?.status === 'going';
+
 		const { error: deleteError } = await supabase
 			.from('event_rsvps')
 			.delete()
@@ -195,6 +268,57 @@ export const actions: Actions = {
 			// eslint-disable-next-line no-console -- Server-side logging for debugging
 			console.error('Error canceling RSVP:', deleteError);
 			return fail(500, { error: 'Failed to cancel RSVP' });
+		}
+
+		// If the user was "going", check if we need to promote from waitlist
+		if (wasGoing) {
+			// Fetch event to check capacity
+			const { data: event } = await supabase
+				.from('events')
+				.select('capacity')
+				.eq('id', eventId)
+				.single();
+
+			if (event?.capacity) {
+				// Get the first person on the waitlist (FIFO)
+				const { data: nextInLine, error: waitlistError } = await supabase
+					.from('event_rsvps')
+					.select('id, user_id, waitlist_position')
+					.eq('event_id', eventId)
+					.eq('status', 'waitlisted')
+					.order('waitlist_position', { ascending: true })
+					.limit(1)
+					.single();
+
+				if (!waitlistError && nextInLine) {
+					// Promote the first person on the waitlist to "going"
+					const { error: promoteError } = await supabase
+						.from('event_rsvps')
+						.update({
+							status: 'going',
+							waitlist_position: null,
+							updated_at: new Date().toISOString()
+						})
+						.eq('id', nextInLine.id);
+
+					if (promoteError) {
+						// eslint-disable-next-line no-console -- Server-side logging for debugging
+						console.error('Error promoting from waitlist:', promoteError);
+						// Don't fail the whole operation if promotion fails
+					} else {
+						// Update positions for remaining waitlist members
+						const { error: reorderError } = await supabase.rpc('reorder_waitlist', {
+							p_event_id: eventId
+						});
+
+						if (reorderError) {
+							// eslint-disable-next-line no-console -- Server-side logging for debugging
+							console.error('Error reordering waitlist:', reorderError);
+							// Don't fail the whole operation if reordering fails
+						}
+					}
+				}
+			}
 		}
 
 		return { success: true, canceled: true };

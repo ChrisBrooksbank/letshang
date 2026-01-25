@@ -109,6 +109,12 @@
 					<span class="font-semibold text-gray-900">{counts.interested}</span>
 					<span class="text-gray-600 ml-1">Interested</span>
 				</div>
+				{#if counts.waitlisted > 0}
+					<div>
+						<span class="font-semibold text-gray-900">{counts.waitlisted}</span>
+						<span class="text-gray-600 ml-1">Waitlisted</span>
+					</div>
+				{/if}
 			</div>
 			{#if event.capacity}
 				{@const spotsLeft = event.capacity - counts.going}
@@ -123,9 +129,48 @@
 					{/if}
 				{:else}
 					<div class="mt-2 text-xs font-medium text-red-600">Event is at capacity</div>
+					{#if counts.waitlisted > 0}
+						<div class="mt-1 text-xs text-gray-600">
+							{counts.waitlisted}
+							{counts.waitlisted === 1 ? 'person' : 'people'} on waitlist
+						</div>
+					{/if}
 				{/if}
 			{/if}
 		</div>
+
+		<!-- Waitlist Status -->
+		{#if userRsvp?.status === 'waitlisted'}
+			<div class="mb-6 bg-purple-50 border border-purple-200 rounded-lg p-4">
+				<div class="flex items-center gap-2 mb-2">
+					<svg
+						class="w-5 h-5 text-purple-600"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+					<h3 class="text-lg font-semibold text-purple-900">You're on the waitlist!</h3>
+				</div>
+				{#if userRsvp.waitlist_position}
+					<p class="text-purple-800">
+						You're <span class="font-bold">#{userRsvp.waitlist_position}</span> in line. We'll notify
+						you if a spot opens up!
+					</p>
+				{:else}
+					<p class="text-purple-800">
+						You're on the waitlist. We'll notify you if a spot opens up!
+					</p>
+				{/if}
+			</div>
+		{/if}
 
 		<!-- RSVP Selector -->
 		<div class="mb-8">
