@@ -438,10 +438,19 @@
   - Coverage: 20 new tests (14 schema validation + 6 RSVP enforcement)
   - Commit: 9bafc29
 
-- [ ] Build waitlist system [P1]
-  - AC: Auto-add when capacity reached
-  - AC: FIFO promotion when spots open
-  - AC: User sees waitlist position
+- [x] Build waitlist system [P1] ✓
+  - AC: Auto-add when capacity reached ✓
+  - AC: FIFO promotion when spots open ✓
+  - AC: User sees waitlist position ✓
+  - Implementation: Added waitlist_position column to event_rsvps table
+  - Implementation: Added 'waitlisted' status to rsvp_status enum
+  - Implementation: Created reorder_waitlist() database function for FIFO queue management
+  - Implementation: RSVP action adds users to waitlist when event at capacity
+  - Implementation: Automatic FIFO promotion when someone cancels "going" RSVP
+  - Implementation: Event detail page displays waitlist position badge
+  - Implementation: Waitlist count shown in attendee stats
+  - Coverage: 100% on waitlist logic (12 new tests, 43 total new test cases)
+  - Commit: 1c9fbe4
 
 - [ ] Create check-in interface [P1]
   - AC: Host marks attendees as checked in
