@@ -103,6 +103,7 @@ export interface Database {
 					event_id: string;
 					user_id: string;
 					status: 'going' | 'interested' | 'not_going';
+					attendance_mode: 'in_person' | 'online' | null;
 					created_at: string;
 					updated_at: string;
 				};
@@ -111,6 +112,7 @@ export interface Database {
 					event_id: string;
 					user_id: string;
 					status: 'going' | 'interested' | 'not_going';
+					attendance_mode?: 'in_person' | 'online' | null;
 					created_at?: string;
 					updated_at?: string;
 				};
@@ -119,6 +121,7 @@ export interface Database {
 					event_id?: string;
 					user_id?: string;
 					status?: 'going' | 'interested' | 'not_going';
+					attendance_mode?: 'in_person' | 'online' | null;
 					created_at?: string;
 					updated_at?: string;
 				};

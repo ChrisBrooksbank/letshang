@@ -200,6 +200,18 @@ describe('Event Detail Page Server', () => {
 		it('should create new RSVP', async () => {
 			const mockFrom = vi.fn();
 
+			// Mock event query
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'in_person' },
+							error: null
+						})
+					})
+				})
+			});
+
 			// Mock existing RSVP check (none found)
 			mockFrom.mockReturnValueOnce({
 				select: vi.fn().mockReturnValue({
@@ -236,7 +248,7 @@ describe('Event Detail Page Server', () => {
 				params: { id: 'event-123' }
 			} as any);
 
-			expect(result).toEqual({ success: true, status: 'going' });
+			expect(result).toEqual({ success: true, status: 'going', attendanceMode: null });
 		});
 
 		it('should update existing RSVP', async () => {
@@ -248,6 +260,18 @@ describe('Event Detail Page Server', () => {
 			};
 
 			const mockFrom = vi.fn();
+
+			// Mock event query
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'in_person' },
+							error: null
+						})
+					})
+				})
+			});
 
 			// Mock existing RSVP check
 			mockFrom.mockReturnValueOnce({
@@ -287,7 +311,7 @@ describe('Event Detail Page Server', () => {
 				params: { id: 'event-123' }
 			} as any);
 
-			expect(result).toEqual({ success: true, status: 'going' });
+			expect(result).toEqual({ success: true, status: 'going', attendanceMode: null });
 		});
 
 		it('should reject invalid status', async () => {
@@ -323,6 +347,18 @@ describe('Event Detail Page Server', () => {
 
 		it('should handle database errors on insert', async () => {
 			const mockFrom = vi.fn();
+
+			// Mock event query
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'in_person' },
+							error: null
+						})
+					})
+				})
+			});
 
 			// Mock existing RSVP check (none found)
 			mockFrom.mockReturnValueOnce({
@@ -422,6 +458,431 @@ describe('Event Detail Page Server', () => {
 			} as any);
 
 			expect(result).toHaveProperty('status', 500);
+		});
+	});
+
+	describe('Hybrid Event Attendance Mode', () => {
+		it('should require attendance_mode for hybrid events with going status', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (hybrid event)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'hybrid' },
+							error: null
+						})
+					})
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'going');
+			// No attendance_mode provided
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toHaveProperty('status', 400);
+			expect(result).toHaveProperty('data.error', 'Attendance mode is required for hybrid events');
+		});
+
+		it('should accept in_person attendance mode for hybrid events', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (hybrid event)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'hybrid' },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock existing RSVP check (none found)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: null,
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock insert
+			mockFrom.mockReturnValueOnce({
+				insert: vi.fn().mockResolvedValue({
+					error: null
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'going');
+			formData.append('attendance_mode', 'in_person');
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toEqual({ success: true, status: 'going', attendanceMode: 'in_person' });
+		});
+
+		it('should accept online attendance mode for hybrid events', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (hybrid event)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'hybrid' },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock existing RSVP check (none found)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: null,
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock insert
+			mockFrom.mockReturnValueOnce({
+				insert: vi.fn().mockResolvedValue({
+					error: null
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'going');
+			formData.append('attendance_mode', 'online');
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toEqual({ success: true, status: 'going', attendanceMode: 'online' });
+		});
+
+		it('should reject invalid attendance mode', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (hybrid event)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'hybrid' },
+							error: null
+						})
+					})
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'going');
+			formData.append('attendance_mode', 'invalid');
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toHaveProperty('status', 400);
+			expect(result).toHaveProperty('data.error', 'Invalid attendance mode');
+		});
+
+		it('should not require attendance_mode for non-hybrid events', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (in-person event)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'in_person' },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock existing RSVP check (none found)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: null,
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock insert
+			mockFrom.mockReturnValueOnce({
+				insert: vi.fn().mockResolvedValue({
+					error: null
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'going');
+			// No attendance_mode provided for in-person event
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toEqual({ success: true, status: 'going', attendanceMode: null });
+		});
+
+		it('should set attendance_mode to null for non-hybrid events even if provided', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (online event)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'online' },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock existing RSVP check (none found)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: null,
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock insert - verify attendance_mode is set to null
+			const mockInsert = vi.fn().mockResolvedValue({ error: null });
+			mockFrom.mockReturnValueOnce({
+				insert: mockInsert
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'going');
+			formData.append('attendance_mode', 'in_person');
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toHaveProperty('success', true);
+			// Verify that insert was called with attendance_mode: null
+			expect(mockInsert).toHaveBeenCalledWith(
+				expect.objectContaining({
+					attendance_mode: null
+				})
+			);
+		});
+
+		it('should allow interested status without attendance_mode for hybrid events', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (hybrid event)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'hybrid' },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock existing RSVP check (none found)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: null,
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock insert
+			mockFrom.mockReturnValueOnce({
+				insert: vi.fn().mockResolvedValue({
+					error: null
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'interested');
+			// No attendance_mode for interested status
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toEqual({ success: true, status: 'interested', attendanceMode: null });
+		});
+
+		it('should update existing RSVP with attendance_mode', async () => {
+			const mockExistingRsvp = {
+				id: 'rsvp-123',
+				event_id: 'event-123',
+				user_id: 'user-123',
+				status: 'interested',
+				attendance_mode: null
+			};
+
+			const mockFrom = vi.fn();
+
+			// Mock event query (hybrid event)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'hybrid' },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock existing RSVP check
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: mockExistingRsvp,
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock update
+			const mockUpdate = vi.fn().mockReturnValue({
+				eq: vi.fn().mockResolvedValue({
+					error: null
+				})
+			});
+			mockFrom.mockReturnValueOnce({
+				update: mockUpdate
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'going');
+			formData.append('attendance_mode', 'online');
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toEqual({ success: true, status: 'going', attendanceMode: 'online' });
+			// Verify that update was called with attendance_mode
+			expect(mockUpdate).toHaveBeenCalledWith(
+				expect.objectContaining({
+					status: 'going',
+					attendance_mode: 'online'
+				})
+			);
 		});
 	});
 });

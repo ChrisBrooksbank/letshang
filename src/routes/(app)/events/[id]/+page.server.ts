@@ -58,13 +58,35 @@ export const actions: Actions = {
 
 		const formData = await request.formData();
 		const status = formData.get('status') as string;
+		const attendanceMode = formData.get('attendance_mode') as string | null;
 
 		// Validate status
 		if (!['going', 'interested', 'not_going'].includes(status)) {
 			return fail(400, { error: 'Invalid RSVP status' });
 		}
 
+		// Validate attendance mode if provided
+		if (attendanceMode && !['in_person', 'online'].includes(attendanceMode)) {
+			return fail(400, { error: 'Invalid attendance mode' });
+		}
+
 		const { id: eventId } = params;
+
+		// Fetch event to check if it's hybrid
+		const { data: event, error: eventError } = await supabase
+			.from('events')
+			.select('event_type')
+			.eq('id', eventId)
+			.single();
+
+		if (eventError || !event) {
+			return fail(404, { error: 'Event not found' });
+		}
+
+		// For hybrid events with "going" status, attendance mode is required
+		if (event.event_type === 'hybrid' && status === 'going' && !attendanceMode) {
+			return fail(400, { error: 'Attendance mode is required for hybrid events' });
+		}
 
 		// Check if RSVP exists
 		const { data: existingRsvp } = await supabase
@@ -74,11 +96,28 @@ export const actions: Actions = {
 			.eq('user_id', session.user.id)
 			.single();
 
+		// Prepare RSVP data
+		const rsvpData: {
+			status: string;
+			updated_at: string;
+			attendance_mode?: 'in_person' | 'online' | null;
+		} = {
+			status,
+			updated_at: new Date().toISOString()
+		};
+
+		// Only set attendance_mode for hybrid events when going/interested
+		if (event.event_type === 'hybrid' && (status === 'going' || status === 'interested')) {
+			rsvpData.attendance_mode = (attendanceMode as 'in_person' | 'online') || null;
+		} else {
+			rsvpData.attendance_mode = null;
+		}
+
 		if (existingRsvp) {
 			// Update existing RSVP
 			const { error: updateError } = await supabase
 				.from('event_rsvps')
-				.update({ status, updated_at: new Date().toISOString() })
+				.update(rsvpData)
 				.eq('id', existingRsvp.id);
 
 			if (updateError) {
@@ -91,7 +130,7 @@ export const actions: Actions = {
 			const { error: insertError } = await supabase.from('event_rsvps').insert({
 				event_id: eventId,
 				user_id: session.user.id,
-				status
+				...rsvpData
 			});
 
 			if (insertError) {
@@ -101,7 +140,7 @@ export const actions: Actions = {
 			}
 		}
 
-		return { success: true, status };
+		return { success: true, status, attendanceMode };
 	},
 
 	cancelRsvp: async ({ locals, params }) => {

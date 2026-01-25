@@ -11,6 +11,8 @@
 	$: counts = data.counts;
 
 	let loading = false;
+	let selectedAttendanceMode: 'in_person' | 'online' | null = userRsvp?.attendance_mode || null;
+	let showAttendanceModeError = false;
 
 	function formatDate(dateString: string): string {
 		const date = new Date(dateString);
@@ -107,10 +109,95 @@
 		<!-- RSVP Selector -->
 		<div class="mb-8">
 			<h2 class="text-lg font-semibold text-gray-900 mb-3">Are you attending?</h2>
+
+			<!-- Attendance Mode Selector for Hybrid Events -->
+			{#if event.event_type === 'hybrid'}
+				<div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+					<fieldset>
+						<legend class="block text-sm font-medium text-gray-900 mb-2">
+							How will you attend?
+						</legend>
+						<div class="grid grid-cols-2 gap-3">
+							<button
+								type="button"
+								onclick={() => {
+									selectedAttendanceMode = 'in_person';
+									showAttendanceModeError = false;
+								}}
+								class="flex items-center justify-center p-3 rounded-lg border-2 transition-all min-h-[44px] {selectedAttendanceMode ===
+								'in_person'
+									? 'border-blue-600 bg-blue-100 text-blue-700'
+									: 'border-gray-300 bg-white text-gray-700 hover:border-blue-400 hover:bg-blue-50'}"
+							>
+								<svg
+									class="w-5 h-5 mr-2"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+									/>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+									/>
+								</svg>
+								<span class="font-medium">In-Person</span>
+							</button>
+							<button
+								type="button"
+								onclick={() => {
+									selectedAttendanceMode = 'online';
+									showAttendanceModeError = false;
+								}}
+								class="flex items-center justify-center p-3 rounded-lg border-2 transition-all min-h-[44px] {selectedAttendanceMode ===
+								'online'
+									? 'border-blue-600 bg-blue-100 text-blue-700'
+									: 'border-gray-300 bg-white text-gray-700 hover:border-blue-400 hover:bg-blue-50'}"
+							>
+								<svg
+									class="w-5 h-5 mr-2"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+									/>
+								</svg>
+								<span class="font-medium">Online</span>
+							</button>
+						</div>
+						{#if showAttendanceModeError}
+							<p class="text-red-600 text-sm mt-2">Please select how you'll attend</p>
+						{/if}
+					</fieldset>
+				</div>
+			{/if}
+
 			<form
 				method="POST"
 				action="?/rsvp"
 				use:enhance={() => {
+					// Validate attendance mode for hybrid events before submitting
+					if (event.event_type === 'hybrid' && !selectedAttendanceMode) {
+						showAttendanceModeError = true;
+						return async () => {
+							// Don't submit the form
+						};
+					}
+
 					loading = true;
 					return async ({ update, result }) => {
 						await update();
@@ -121,6 +208,11 @@
 					};
 				}}
 			>
+				<!-- Hidden field for attendance mode -->
+				{#if event.event_type === 'hybrid' && selectedAttendanceMode}
+					<input type="hidden" name="attendance_mode" value={selectedAttendanceMode} />
+				{/if}
+
 				<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
 					<!-- Going Button -->
 					<button

@@ -264,3 +264,91 @@ describe('RSVP Schema Migration', () => {
 		});
 	});
 });
+
+describe('Hybrid Event Attendance Mode Migration', () => {
+	const migrationPath = resolve(
+		process.cwd(),
+		'supabase/migrations/20260125_hybrid_attendance_mode.sql'
+	);
+	let migrationContent: string;
+
+	try {
+		migrationContent = readFileSync(migrationPath, 'utf-8');
+	} catch {
+		migrationContent = '';
+	}
+
+	it('should have migration file present', () => {
+		expect(migrationContent).toBeTruthy();
+		expect(migrationContent.length).toBeGreaterThan(0);
+	});
+
+	describe('Attendance Mode Enum', () => {
+		it('should create attendance_mode enum', () => {
+			expect(migrationContent).toContain('CREATE TYPE attendance_mode');
+			expect(migrationContent).toContain("'in_person'");
+			expect(migrationContent).toContain("'online'");
+		});
+
+		it('should have both attendance mode values', () => {
+			const enumMatch = migrationContent.match(/CREATE TYPE attendance_mode AS ENUM \(([^)]+)\)/);
+			expect(enumMatch).toBeTruthy();
+			if (enumMatch) {
+				const enumValues = enumMatch[1];
+				expect(enumValues).toContain("'in_person'");
+				expect(enumValues).toContain("'online'");
+			}
+		});
+	});
+
+	describe('Table Alteration', () => {
+		it('should add attendance_mode column to event_rsvps', () => {
+			expect(migrationContent).toContain('ALTER TABLE public.event_rsvps');
+			expect(migrationContent).toContain('ADD COLUMN attendance_mode attendance_mode');
+		});
+
+		it('should have comment for attendance_mode column', () => {
+			expect(migrationContent).toContain('COMMENT ON COLUMN public.event_rsvps.attendance_mode');
+		});
+
+		it('should describe hybrid events in attendance_mode comment', () => {
+			const commentMatch = migrationContent.match(
+				/COMMENT ON COLUMN public\.event_rsvps\.attendance_mode IS '([^']+)'/
+			);
+			expect(commentMatch).toBeTruthy();
+			if (commentMatch) {
+				const comment = commentMatch[1];
+				expect(comment.toLowerCase()).toContain('hybrid');
+			}
+		});
+	});
+
+	describe('Indexes', () => {
+		it('should create index on attendance_mode', () => {
+			expect(migrationContent).toContain('CREATE INDEX idx_event_rsvps_attendance_mode');
+			expect(migrationContent).toContain('ON public.event_rsvps(attendance_mode)');
+		});
+	});
+
+	describe('Acceptance Criteria Validation', () => {
+		it('AC: attendance_mode field added', () => {
+			expect(migrationContent).toContain('ADD COLUMN attendance_mode');
+		});
+
+		it('AC: attendance_mode enum has in_person and online', () => {
+			expect(migrationContent).toContain("'in_person'");
+			expect(migrationContent).toContain("'online'");
+		});
+
+		it('AC: attendance_mode is nullable (for non-hybrid events)', () => {
+			// The column should NOT have a NOT NULL constraint
+			const addColumnLine = migrationContent
+				.split('\n')
+				.find((line) => line.includes('ADD COLUMN attendance_mode'));
+			expect(addColumnLine).toBeTruthy();
+			if (addColumnLine) {
+				expect(addColumnLine).not.toContain('NOT NULL');
+			}
+		});
+	});
+});
