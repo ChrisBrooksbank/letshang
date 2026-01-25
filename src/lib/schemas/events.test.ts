@@ -640,4 +640,120 @@ describe('eventCreationSchema - visibility validation', () => {
 			expect(result.visibility).toBe('group_only');
 		});
 	});
+
+	describe('capacity validation', () => {
+		it('should accept events without capacity (unlimited)', () => {
+			const event = createValidEvent();
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept null capacity', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: null
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept undefined capacity', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: undefined
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept minimum capacity of 1', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: 1
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept maximum capacity of 10000', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: 10000
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept capacity within valid range', () => {
+			const validCapacities = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000];
+			for (const capacity of validCapacities) {
+				const event = {
+					...createValidEvent(),
+					capacity
+				};
+				expect(() => eventCreationSchema.parse(event)).not.toThrow();
+			}
+		});
+
+		it('should reject capacity of 0', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: 0
+			};
+			expect(() => eventCreationSchema.parse(event)).toThrow('Capacity must be at least 1');
+		});
+
+		it('should reject negative capacity', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: -1
+			};
+			expect(() => eventCreationSchema.parse(event)).toThrow('Capacity must be at least 1');
+		});
+
+		it('should reject capacity over 10000', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: 10001
+			};
+			expect(() => eventCreationSchema.parse(event)).toThrow('Capacity must not exceed 10,000');
+		});
+
+		it('should reject capacity over 10000 (large number)', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: 50000
+			};
+			expect(() => eventCreationSchema.parse(event)).toThrow('Capacity must not exceed 10,000');
+		});
+
+		it('should reject non-integer capacity', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: 10.5
+			};
+			expect(() => eventCreationSchema.parse(event)).toThrow('Capacity must be a whole number');
+		});
+
+		it('should reject non-integer capacity (decimal)', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: 99.99
+			};
+			expect(() => eventCreationSchema.parse(event)).toThrow('Capacity must be a whole number');
+		});
+
+		it('should properly parse and return capacity value', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: 50
+			};
+			const result = eventCreationSchema.parse(event);
+			expect(result.capacity).toBe(50);
+		});
+
+		it('should properly parse and return null capacity', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: null
+			};
+			const result = eventCreationSchema.parse(event);
+			expect(result.capacity).toBeNull();
+		});
+	});
 });

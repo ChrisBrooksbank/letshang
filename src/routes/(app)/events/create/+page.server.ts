@@ -64,7 +64,8 @@ export const actions: Actions = {
 			venueLng,
 			videoLink,
 			groupId,
-			visibility
+			visibility,
+			capacity
 		} = form.data as {
 			title: string;
 			description: string;
@@ -79,6 +80,7 @@ export const actions: Actions = {
 			videoLink?: string;
 			groupId?: string | null;
 			visibility: 'public' | 'group_only' | 'hidden';
+			capacity?: number | null;
 		};
 
 		// Calculate end time if duration is provided instead
@@ -106,7 +108,8 @@ export const actions: Actions = {
 				venue_address: venueAddress || null,
 				venue_lat: venueLat || null,
 				venue_lng: venueLng || null,
-				video_link: videoLink || null
+				video_link: videoLink || null,
+				capacity: capacity || null
 			})
 			.select()
 			.single();

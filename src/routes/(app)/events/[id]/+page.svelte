@@ -99,13 +99,32 @@
 			<div class="flex gap-6 text-sm">
 				<div>
 					<span class="font-semibold text-gray-900">{counts.going}</span>
-					<span class="text-gray-600 ml-1">Going</span>
+					{#if event.capacity}
+						<span class="text-gray-600 ml-1">/ {event.capacity} Going</span>
+					{:else}
+						<span class="text-gray-600 ml-1">Going</span>
+					{/if}
 				</div>
 				<div>
 					<span class="font-semibold text-gray-900">{counts.interested}</span>
 					<span class="text-gray-600 ml-1">Interested</span>
 				</div>
 			</div>
+			{#if event.capacity}
+				{@const spotsLeft = event.capacity - counts.going}
+				{@const percentageFull = (counts.going / event.capacity) * 100}
+				{#if spotsLeft > 0}
+					<div class="mt-2 text-xs text-gray-600">
+						{spotsLeft}
+						{spotsLeft === 1 ? 'spot' : 'spots'} left
+					</div>
+					{#if percentageFull >= 80}
+						<div class="mt-2 text-xs font-medium text-orange-600">Filling up fast!</div>
+					{/if}
+				{:else}
+					<div class="mt-2 text-xs font-medium text-red-600">Event is at capacity</div>
+				{/if}
+			{/if}
 		</div>
 
 		<!-- RSVP Selector -->

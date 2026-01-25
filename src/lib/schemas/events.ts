@@ -80,7 +80,16 @@ export const eventCreationSchema = z
 		groupId: z.string().uuid({ message: 'Invalid group ID' }).optional().nullable(),
 
 		// Visibility: who can see this event
-		visibility: eventVisibilityEnum.default('public')
+		visibility: eventVisibilityEnum.default('public'),
+
+		// Capacity: optional attendee limit (1-10000)
+		capacity: z
+			.number()
+			.int({ message: 'Capacity must be a whole number' })
+			.min(1, 'Capacity must be at least 1')
+			.max(10000, 'Capacity must not exceed 10,000')
+			.optional()
+			.nullable()
 	})
 	.superRefine((data, ctx) => {
 		// Validate that in-person events have venue information

@@ -456,6 +456,35 @@
 					{/if}
 				</div>
 
+				<!-- Capacity (Optional) -->
+				<div>
+					<label for="capacity" class="block text-sm font-medium text-gray-700 mb-2">
+						Attendee Limit (Optional)
+					</label>
+					<input
+						id="capacity"
+						name="capacity"
+						type="number"
+						min="1"
+						max="10000"
+						bind:value={$form.capacity}
+						aria-invalid={$errors.capacity ? 'true' : undefined}
+						aria-describedby={$errors.capacity ? 'capacity-error' : undefined}
+						class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+						class:border-red-500={$errors.capacity}
+						placeholder="Leave empty for unlimited"
+					/>
+					{#if $errors.capacity && Array.isArray($errors.capacity)}
+						<p id="capacity-error" class="mt-2 text-sm text-red-600" role="alert">
+							{$errors.capacity[0] ?? ''}
+						</p>
+					{/if}
+					<p class="mt-1 text-xs text-gray-500">
+						Set a maximum number of attendees (1-10,000). When capacity is reached, new RSVPs will
+						be added to a waitlist.
+					</p>
+				</div>
+
 				<!-- General form errors -->
 				{#if $errors._errors && Array.isArray($errors._errors)}
 					<div class="rounded-lg bg-red-50 p-4" role="alert">

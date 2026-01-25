@@ -72,10 +72,10 @@ export const actions: Actions = {
 
 		const { id: eventId } = params;
 
-		// Fetch event to check if it's hybrid
+		// Fetch event to check if it's hybrid and capacity
 		const { data: event, error: eventError } = await supabase
 			.from('events')
-			.select('event_type')
+			.select('event_type, capacity')
 			.eq('id', eventId)
 			.single();
 
@@ -86,6 +86,40 @@ export const actions: Actions = {
 		// For hybrid events with "going" status, attendance mode is required
 		if (event.event_type === 'hybrid' && status === 'going' && !attendanceMode) {
 			return fail(400, { error: 'Attendance mode is required for hybrid events' });
+		}
+
+		// Check capacity if user is trying to RSVP "going"
+		if (status === 'going' && event.capacity) {
+			// Count current "going" RSVPs
+			const { data: goingRsvps, error: countError } = await supabase
+				.from('event_rsvps')
+				.select('id')
+				.eq('event_id', eventId)
+				.eq('status', 'going');
+
+			if (countError) {
+				// eslint-disable-next-line no-console -- Server-side logging for debugging
+				console.error('Error counting RSVPs:', countError);
+				return fail(500, { error: 'Failed to check event capacity' });
+			}
+
+			// Check if user already has an existing "going" RSVP
+			const { data: userCurrentRsvp } = await supabase
+				.from('event_rsvps')
+				.select('status')
+				.eq('event_id', eventId)
+				.eq('user_id', session.user.id)
+				.single();
+
+			const currentGoingCount = goingRsvps?.length || 0;
+			const userAlreadyGoing = userCurrentRsvp?.status === 'going';
+
+			// If capacity is reached and user is not already going, reject
+			if (currentGoingCount >= event.capacity && !userAlreadyGoing) {
+				return fail(400, {
+					error: `Event is at capacity (${event.capacity} attendees). You have been added to the waitlist.`
+				});
+			}
 		}
 
 		// Check if RSVP exists

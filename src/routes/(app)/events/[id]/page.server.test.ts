@@ -885,4 +885,393 @@ describe('Event Detail Page Server', () => {
 			);
 		});
 	});
+
+	describe('actions.rsvp - capacity enforcement', () => {
+		it('should allow RSVP when event has no capacity limit', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (no capacity)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'online', capacity: null },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock existing RSVP check
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: null,
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock insert
+			mockFrom.mockReturnValueOnce({
+				insert: vi.fn().mockResolvedValue({
+					error: null
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'going');
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toEqual({ success: true, status: 'going', attendanceMode: null });
+		});
+
+		it('should allow RSVP when capacity is not reached', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (capacity: 10)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'online', capacity: 10 },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock RSVP count (5 going)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockResolvedValue({
+							data: [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }, { id: '5' }],
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock user current RSVP check
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: null,
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock existing RSVP check
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: null,
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock insert
+			mockFrom.mockReturnValueOnce({
+				insert: vi.fn().mockResolvedValue({
+					error: null
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'going');
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toEqual({ success: true, status: 'going', attendanceMode: null });
+		});
+
+		it('should reject RSVP when capacity is reached', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (capacity: 10)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'online', capacity: 10 },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock RSVP count (10 going - at capacity)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockResolvedValue({
+							data: Array(10).fill({ id: 'rsvp' }),
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock user current RSVP check (user is not going)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: { status: 'interested' },
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'going');
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toHaveProperty('status', 400);
+			expect(result).toHaveProperty(
+				'data.error',
+				'Event is at capacity (10 attendees). You have been added to the waitlist.'
+			);
+		});
+
+		it('should allow user to change their existing going RSVP even when at capacity', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (capacity: 10)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'online', capacity: 10 },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock RSVP count (10 going - at capacity)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockResolvedValue({
+							data: Array(10).fill({ id: 'rsvp' }),
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock user current RSVP check (user is already going)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: { status: 'going' },
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock existing RSVP check
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: { id: 'rsvp-123', status: 'going' },
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock update
+			mockFrom.mockReturnValueOnce({
+				update: vi.fn().mockReturnValue({
+					eq: vi.fn().mockResolvedValue({
+						error: null
+					})
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'going');
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toEqual({ success: true, status: 'going', attendanceMode: null });
+		});
+
+		it('should not enforce capacity for interested status', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (capacity: 10)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'online', capacity: 10 },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock existing RSVP check
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: null,
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock insert
+			mockFrom.mockReturnValueOnce({
+				insert: vi.fn().mockResolvedValue({
+					error: null
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'interested');
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toEqual({ success: true, status: 'interested', attendanceMode: null });
+		});
+
+		it('should not enforce capacity for not_going status', async () => {
+			const mockFrom = vi.fn();
+
+			// Mock event query (capacity: 10)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({
+							data: { id: 'event-123', event_type: 'online', capacity: 10 },
+							error: null
+						})
+					})
+				})
+			});
+
+			// Mock existing RSVP check
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: null,
+								error: null
+							})
+						})
+					})
+				})
+			});
+
+			// Mock insert
+			mockFrom.mockReturnValueOnce({
+				insert: vi.fn().mockResolvedValue({
+					error: null
+				})
+			});
+
+			(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+			const formData = new FormData();
+			formData.append('status', 'not_going');
+
+			const result = await actions.rsvp({
+				request: { formData: async () => formData } as any,
+				locals: {
+					session: {
+						user: { id: 'user-123' }
+					}
+				},
+				params: { id: 'event-123' }
+			} as any);
+
+			expect(result).toEqual({ success: true, status: 'not_going', attendanceMode: null });
+		});
+	});
 });
