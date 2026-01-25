@@ -394,9 +394,16 @@
   - Display: Event detail page shows video link only to RSVPed attendees
   - Coverage: 100% on validation logic (9 new test cases)
 
-- [ ] Implement hybrid events [P1]
-  - AC: Both location AND video link ✓ (already complete - both fields required for hybrid)
-  - AC: Attendees select mode when RSVPing
+- [x] Implement hybrid events [P1] ✓
+  - AC: Both location AND video link ✓
+  - AC: Attendees select mode when RSVPing ✓
+  - Implementation: Added attendance_mode field (in_person/online) to event_rsvps table
+  - Database: Created migration with attendance_mode enum and nullable column
+  - Server: Updated RSVP action to validate and store attendance mode for hybrid events
+  - UI: Added attendance mode selector with visual feedback (fieldset with legend)
+  - Validation: Required attendance_mode for "going" status on hybrid events
+  - Coverage: 100% on hybrid event RSVP logic (10 new test cases)
+  - Commit: 1a4038e
 
 - [ ] Build location search and map [P1]
   - AC: Mapbox integration
