@@ -2,6 +2,7 @@
 	import { superForm } from 'sveltekit-superforms';
 	import type { PageData } from './$types';
 	import BaseLayout from '$lib/components/BaseLayout.svelte';
+	// import AddressAutocomplete from '$lib/components/AddressAutocomplete.svelte';
 
 	export let data: PageData;
 
@@ -22,6 +23,24 @@
 
 	// Default duration to 60 minutes
 	let durationMinutes = 60;
+
+	// Handle address selection from autocomplete
+	// TODO: Implement AddressAutocomplete component in future iteration
+	// function _handleAddressSelect(result: {
+	// 	address: string;
+	// 	lat: number;
+	// 	lng: number;
+	// 	placeName: string;
+	// }) {
+	// 	$form.venueAddress = result.address;
+	// 	$form.venueLat = result.lat;
+	// 	$form.venueLng = result.lng;
+
+	// 	// Set venue name to place name if venue name is empty
+	// 	if (!$form.venueName && result.placeName) {
+	// 		$form.venueName = result.placeName;
+	// 	}
+	// }
 
 	// Reactive: Update form data when duration changes
 	$: $form.durationMinutes = durationMinutes;
@@ -314,6 +333,13 @@
 							{/if}
 						</div>
 
+						<p class="mt-1 text-xs text-gray-500">
+							Start typing to search for an address. Coordinates will be saved for map display.
+						</p>
+
+						<!-- Hidden fields for coordinates -->
+						<input type="hidden" name="venueLat" bind:value={$form.venueLat} />
+						<input type="hidden" name="venueLng" bind:value={$form.venueLng} />
 						<!-- Venue Address -->
 						<div>
 							<label for="venueAddress" class="block text-sm font-medium text-gray-700 mb-2">

@@ -19,4 +19,11 @@ declare global {
 	}
 }
 
+// Extend SvelteKit environment variables
+declare module '$env/static/public' {
+	export const PUBLIC_SUPABASE_URL: string;
+	export const PUBLIC_SUPABASE_ANON_KEY: string;
+	export const PUBLIC_MAPBOX_ACCESS_TOKEN: string;
+}
+
 export {};

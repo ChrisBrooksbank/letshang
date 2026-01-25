@@ -60,6 +60,8 @@ export const actions: Actions = {
 			durationMinutes,
 			venueName,
 			venueAddress,
+			venueLat,
+			venueLng,
 			videoLink,
 			groupId,
 			visibility
@@ -72,6 +74,8 @@ export const actions: Actions = {
 			durationMinutes?: number;
 			venueName?: string;
 			venueAddress?: string;
+			venueLat?: number | null;
+			venueLng?: number | null;
 			videoLink?: string;
 			groupId?: string | null;
 			visibility: 'public' | 'group_only' | 'hidden';
@@ -100,6 +104,8 @@ export const actions: Actions = {
 				end_time: calculatedEndTime || null,
 				venue_name: venueName || null,
 				venue_address: venueAddress || null,
+				venue_lat: venueLat || null,
+				venue_lng: venueLng || null,
 				video_link: videoLink || null
 			})
 			.select()

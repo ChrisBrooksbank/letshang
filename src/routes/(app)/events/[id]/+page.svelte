@@ -3,6 +3,8 @@
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import BaseLayout from '$lib/components/BaseLayout.svelte';
+	import EventMap from '$lib/components/EventMap.svelte';
+	import { getDirectionsUrl } from '$lib/utils/geocoding';
 
 	export let data: PageData;
 
@@ -356,6 +358,48 @@
 				{/if}
 				{#if event.venue_address}
 					<p class="text-gray-700">{event.venue_address}</p>
+
+					<!-- Map Display -->
+					{#if event.venue_lat && event.venue_lng}
+						<div class="mb-3 overflow-hidden rounded-lg">
+							<EventMap
+								latitude={event.venue_lat}
+								longitude={event.venue_lng}
+								markerLabel={event.venue_name || 'Event Location'}
+								height="300px"
+							/>
+						</div>
+
+						<!-- Get Directions Link -->
+						<a
+							href={getDirectionsUrl(event.venue_lat, event.venue_lng)}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition min-h-[44px]"
+						>
+							<svg
+								class="w-5 h-5"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+								/>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+								/>
+							</svg>
+							Get Directions
+						</a>
+					{/if}
 				{/if}
 			</div>
 		{/if}

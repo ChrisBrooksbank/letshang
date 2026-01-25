@@ -1,0 +1,18 @@
+{
+	"ignores": [
+		"@mapbox/mapbox-gl-geocoder",
+		"mapbox-gl",
+		"@tailwindcss/postcss",
+		"@testing-library/svelte",
+		"@vitest/coverage-v8",
+		"autoprefixer",
+		"globals",
+		"postcss",
+		"prettier-plugin-svelte",
+		"svelte-easy-crop",
+		"tailwindcss",
+		"vite-bundle-analyzer",
+		"$lib",
+		"$env"
+	]
+}

@@ -59,9 +59,11 @@
 		"vitest": "^4.0.17"
 	},
 	"dependencies": {
+		"@mapbox/mapbox-gl-geocoder": "^5.1.2",
 		"@supabase/ssr": "^0.8.0",
 		"@supabase/supabase-js": "^2.91.0",
 		"browser-image-compression": "^2.0.2",
+		"mapbox-gl": "^3.18.1",
 		"sveltekit-superforms": "^2.29.1",
 		"zod": "^4.3.5"
 	}

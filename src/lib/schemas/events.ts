@@ -64,6 +64,10 @@ export const eventCreationSchema = z
 			.trim()
 			.optional(),
 
+		// Latitude and longitude for map integration
+		venueLat: z.number().min(-90).max(90).optional().nullable(),
+		venueLng: z.number().min(-180).max(180).optional().nullable(),
+
 		// Video link for online events (Zoom, Meet, etc.)
 		videoLink: z
 			.string()
