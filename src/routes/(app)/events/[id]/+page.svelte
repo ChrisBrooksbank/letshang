@@ -11,6 +11,8 @@
 	$: event = data.event;
 	$: userRsvp = data.userRsvp;
 	$: counts = data.counts;
+	$: userId = data.userId;
+	$: isHost = event.creator_id === userId;
 
 	let loading = false;
 	let selectedAttendanceMode: 'in_person' | 'online' | null = userRsvp?.attendance_mode || null;
@@ -93,6 +95,33 @@
 				{getEventTypeLabel(event.event_type)}
 			</span>
 		</div>
+
+		<!-- Host Actions -->
+		{#if isHost}
+			<div class="mb-6 bg-purple-50 border border-purple-200 rounded-lg p-4">
+				<h2 class="text-lg font-semibold text-purple-900 mb-3">Host Actions</h2>
+				<a
+					href="/events/{event.id}/checkin"
+					class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition min-h-[44px]"
+				>
+					<svg
+						class="w-5 h-5"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+						/>
+					</svg>
+					Manage Check-in
+				</a>
+			</div>
+		{/if}
 
 		<!-- Attendee Counts -->
 		<div class="bg-gray-50 rounded-lg p-4 mb-6">

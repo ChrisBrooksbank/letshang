@@ -452,10 +452,19 @@
   - Coverage: 100% on waitlist logic (12 new tests, 43 total new test cases)
   - Commit: 1c9fbe4
 
-- [ ] Create check-in interface [P1]
-  - AC: Host marks attendees as checked in
-  - AC: Opens 1 hour before event
-  - AC: Shows RSVP vs checked-in count
+- [x] Create check-in interface [P1] ✓
+  - AC: Host marks attendees as checked in ✓
+  - AC: Opens 1 hour before event ✓
+  - AC: Shows RSVP vs checked-in count ✓
+  - Implementation: Added checked_in_at column to event_rsvps table
+  - Implementation: Created check-in page at /events/[id]/checkin for event hosts
+  - Implementation: Check-in opens 1 hour before event start time
+  - Implementation: Real-time stats showing total going, checked-in, and not checked-in counts
+  - Implementation: Search functionality to filter attendees by name or email
+  - Implementation: Host actions section on event detail page with link to check-in
+  - Implementation: Check-in and uncheck-in actions with permission validation
+  - Coverage: 100% on check-in logic (35 new tests: 19 server-side + 16 schema tests)
+  - Commit: (next commit)
 
 - [ ] Design format tag system [P1]
   - AC: Categories: Speaker, Workshop, Activity, etc.
