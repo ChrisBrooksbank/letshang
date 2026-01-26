@@ -9,7 +9,8 @@
 		"src/lib/schemas/comments.ts:^CommentCreation$",
 		"src/lib/schemas/comments.ts:^CommentEdit$",
 		"src/lib/schemas/comments.ts:^CommentDeletion$",
-		"src/lib/schemas/comments.ts:^CommentQuery$"
+		"src/lib/schemas/comments.ts:^CommentQuery$",
+		"src/lib/schemas/search.ts:^SearchQuery$"
 	],
 	"ignoreDependencies": ["@testing-library/svelte", "globals", "vite-bundle-analyzer"],
 	"ignoreExportsUsedInFile": true
