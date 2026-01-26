@@ -312,6 +312,176 @@ describe('Search Functionality', () => {
 		});
 	});
 
+	describe('searchEventsWithFilters', () => {
+		it('should filter by event type', async () => {
+			const mockEvents = [
+				{
+					id: 'event-1',
+					title: 'Online Yoga',
+					description: 'Zoom yoga session',
+					event_type: 'online',
+					start_time: '2026-02-01T10:00:00Z',
+					venue_name: null,
+					venue_address: null,
+					capacity: 50,
+					cover_image_url: null,
+					visibility: 'public',
+					creator_id: 'user-1',
+					group_id: null,
+					event_size: 'medium',
+					rank: 0.9
+				}
+			];
+
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess(mockEvents));
+
+			const { searchEventsWithFilters } = await import('./search');
+			const results = await searchEventsWithFilters('yoga', 'user-1', {
+				eventType: 'online'
+			});
+
+			expect(results).toHaveLength(1);
+			expect(results[0].event_type).toBe('online');
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'yoga',
+				max_results: 20,
+				current_user_id: 'user-1',
+				filter_event_type: 'online',
+				filter_start_date: null,
+				filter_end_date: null,
+				filter_event_size: null
+			});
+		});
+
+		it('should filter by date range', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
+
+			const { searchEventsWithFilters } = await import('./search');
+			await searchEventsWithFilters('event', 'user-1', {
+				startDate: '2026-02-01T00:00:00Z',
+				endDate: '2026-02-28T23:59:59Z'
+			});
+
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'event',
+				max_results: 20,
+				current_user_id: 'user-1',
+				filter_event_type: null,
+				filter_start_date: '2026-02-01T00:00:00Z',
+				filter_end_date: '2026-02-28T23:59:59Z',
+				filter_event_size: null
+			});
+		});
+
+		it('should filter by event size', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
+
+			const { searchEventsWithFilters } = await import('./search');
+			await searchEventsWithFilters('event', 'user-1', {
+				eventSize: 'intimate'
+			});
+
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'event',
+				max_results: 20,
+				current_user_id: 'user-1',
+				filter_event_type: null,
+				filter_start_date: null,
+				filter_end_date: null,
+				filter_event_size: 'intimate'
+			});
+		});
+
+		it('should apply multiple filters simultaneously', async () => {
+			const mockEvents = [
+				{
+					id: 'event-1',
+					title: 'Small In-Person Meetup',
+					description: 'Coffee chat',
+					event_type: 'in_person',
+					start_time: '2026-02-15T14:00:00Z',
+					venue_name: 'Coffee Shop',
+					venue_address: '123 Main St',
+					capacity: 8,
+					cover_image_url: null,
+					visibility: 'public',
+					creator_id: 'user-1',
+					group_id: null,
+					event_size: 'intimate',
+					rank: 0.85
+				}
+			];
+
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess(mockEvents));
+
+			const { searchEventsWithFilters } = await import('./search');
+			const results = await searchEventsWithFilters('meetup', 'user-1', {
+				eventType: 'in_person',
+				startDate: '2026-02-01T00:00:00Z',
+				endDate: '2026-02-28T23:59:59Z',
+				eventSize: 'intimate'
+			});
+
+			expect(results).toHaveLength(1);
+			expect(results[0].event_type).toBe('in_person');
+			expect(results[0].event_size).toBe('intimate');
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'meetup',
+				max_results: 20,
+				current_user_id: 'user-1',
+				filter_event_type: 'in_person',
+				filter_start_date: '2026-02-01T00:00:00Z',
+				filter_end_date: '2026-02-28T23:59:59Z',
+				filter_event_size: 'intimate'
+			});
+		});
+
+		it('should work with no filters (same as searchEvents)', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
+
+			const { searchEventsWithFilters } = await import('./search');
+			await searchEventsWithFilters('event', 'user-1', {});
+
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'event',
+				max_results: 20,
+				current_user_id: 'user-1',
+				filter_event_type: null,
+				filter_start_date: null,
+				filter_end_date: null,
+				filter_event_size: null
+			});
+		});
+
+		it('should return empty array on database error', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockError('DB error'));
+
+			const { searchEventsWithFilters } = await import('./search');
+			const results = await searchEventsWithFilters('event', 'user-1', {
+				eventType: 'online'
+			});
+
+			expect(results).toEqual([]);
+		});
+
+		it('should handle custom limit with filters', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
+
+			const { searchEventsWithFilters } = await import('./search');
+			await searchEventsWithFilters('event', 'user-1', { eventType: 'hybrid' }, 10);
+
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'event',
+				max_results: 10,
+				current_user_id: 'user-1',
+				filter_event_type: 'hybrid',
+				filter_start_date: null,
+				filter_end_date: null,
+				filter_event_size: null
+			});
+		});
+	});
+
 	describe('search', () => {
 		it('should return combined results from events and groups', async () => {
 			const mockEvents = [

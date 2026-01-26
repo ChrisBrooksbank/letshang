@@ -16,7 +16,15 @@ export interface SearchEventResult {
 	visibility: string;
 	creator_id: string;
 	group_id: string | null;
+	event_size: string | null;
 	rank?: number; // Relevance ranking score
+}
+
+export interface SearchFilters {
+	eventType?: 'in_person' | 'online' | 'hybrid';
+	startDate?: string;
+	endDate?: string;
+	eventSize?: 'intimate' | 'small' | 'medium' | 'large';
 }
 
 export interface SearchGroupResult {
@@ -125,14 +133,65 @@ export async function searchGroups(
 }
 
 /**
+ * Search for events with filters
+ * @param query - Search query string
+ * @param userId - Current user ID (for RLS)
+ * @param filters - Optional filters (event type, date range, size)
+ * @param limit - Maximum number of results (default: 20)
+ * @returns Array of matching events, ordered by relevance
+ */
+export async function searchEventsWithFilters(
+	query: string,
+	userId: string | null = null,
+	filters: SearchFilters = {},
+	limit = 20
+): Promise<SearchEventResult[]> {
+	try {
+		// Prepare search query
+		const searchTerm = query
+			.trim()
+			.replace(/[^\w\s]/g, ' ')
+			.trim();
+
+		if (!searchTerm) {
+			return [];
+		}
+
+		// Call RPC with filter parameters
+		const { data, error } = await supabaseAdmin.rpc('search_events_ranked', {
+			search_query: searchTerm,
+			max_results: limit,
+			current_user_id: userId,
+			filter_event_type: filters.eventType || null,
+			filter_start_date: filters.startDate || null,
+			filter_end_date: filters.endDate || null,
+			filter_event_size: filters.eventSize || null
+		});
+
+		if (error) {
+			throw error;
+		}
+
+		return (data || []) as SearchEventResult[];
+	} catch {
+		return [];
+	}
+}
+
+/**
  * Search both events and groups
  * @param query - Search query string
  * @param userId - Current user ID (for RLS)
+ * @param filters - Optional filters (event type, date range, size)
  * @returns Combined search results
  */
-export async function search(query: string, userId: string | null = null): Promise<SearchResults> {
+export async function search(
+	query: string,
+	userId: string | null = null,
+	filters: SearchFilters = {}
+): Promise<SearchResults> {
 	const [events, groups] = await Promise.all([
-		searchEvents(query, userId),
+		searchEventsWithFilters(query, userId, filters),
 		searchGroups(query, userId)
 	]);
 

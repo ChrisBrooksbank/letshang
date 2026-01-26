@@ -11,10 +11,21 @@
 	// State for search input - sync with data changes
 	let searchQuery = $state('');
 	let activeTab: 'all' | 'events' | 'groups' = $state('all');
+	let showFilters = $state(false);
 
-	// Update searchQuery when data changes
+	// Filter state
+	let eventType = $state<string>('');
+	let startDate = $state<string>('');
+	let endDate = $state<string>('');
+	let eventSize = $state<string>('');
+
+	// Update search query and filters when data changes
 	$effect(() => {
 		searchQuery = data.query;
+		eventType = data.filters.eventType || '';
+		startDate = data.filters.startDate || '';
+		endDate = data.filters.endDate || '';
+		eventSize = data.filters.eventSize || '';
 	});
 
 	// Get current tab from URL or default to 'all'
@@ -27,11 +38,39 @@
 		}
 	});
 
+	// Check if any filters are active
+	const hasActiveFilters = $derived(Boolean(eventType || startDate || endDate || eventSize));
+
 	function handleSearch(event: Event) {
 		event.preventDefault();
 		if (searchQuery.trim()) {
-			goto(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+			applySearch();
 		}
+	}
+
+	function applySearch() {
+		const url = new URL('/search', $page.url.origin);
+		url.searchParams.set('q', searchQuery.trim());
+
+		// Add filter params if set
+		if (eventType) url.searchParams.set('eventType', eventType);
+		if (startDate) url.searchParams.set('startDate', startDate);
+		if (endDate) url.searchParams.set('endDate', endDate);
+		if (eventSize) url.searchParams.set('eventSize', eventSize);
+
+		goto(url.toString());
+	}
+
+	function clearFilters() {
+		eventType = '';
+		startDate = '';
+		endDate = '';
+		eventSize = '';
+		applySearch();
+	}
+
+	function toggleFilters() {
+		showFilters = !showFilters;
 	}
 
 	function setActiveTab(tab: 'all' | 'events' | 'groups') {
@@ -77,23 +116,140 @@
 							aria-label="Search query"
 						/>
 						<button
+							type="button"
+							onclick={toggleFilters}
+							class="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 {hasActiveFilters
+								? 'bg-blue-50 border-blue-300'
+								: 'bg-white'}"
+							aria-label="Toggle filters"
+							aria-expanded={showFilters}
+						>
+							<svg
+								class="w-5 h-5 {hasActiveFilters ? 'text-blue-600' : 'text-gray-700'}"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+								/>
+							</svg>
+						</button>
+						<button
 							type="submit"
 							class="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
 						>
 							Search
 						</button>
 					</div>
+
+					<!-- Filter Panel -->
+					{#if showFilters}
+						<div class="mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
+							<div class="flex justify-between items-center mb-4">
+								<h3 class="text-sm font-medium text-gray-900">Filters</h3>
+								{#if hasActiveFilters}
+									<button
+										type="button"
+										onclick={clearFilters}
+										class="text-sm text-blue-600 hover:text-blue-700"
+									>
+										Clear all
+									</button>
+								{/if}
+							</div>
+
+							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+								<!-- Event Type Filter -->
+								<div>
+									<label for="eventType" class="block text-sm font-medium text-gray-700 mb-1">
+										Event Type
+									</label>
+									<select
+										id="eventType"
+										bind:value={eventType}
+										onchange={applySearch}
+										class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+									>
+										<option value="">All types</option>
+										<option value="in_person">In-Person</option>
+										<option value="online">Online</option>
+										<option value="hybrid">Hybrid</option>
+									</select>
+								</div>
+
+								<!-- Start Date Filter -->
+								<div>
+									<label for="startDate" class="block text-sm font-medium text-gray-700 mb-1">
+										From Date
+									</label>
+									<input
+										type="date"
+										id="startDate"
+										bind:value={startDate}
+										onchange={applySearch}
+										class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+									/>
+								</div>
+
+								<!-- End Date Filter -->
+								<div>
+									<label for="endDate" class="block text-sm font-medium text-gray-700 mb-1">
+										To Date
+									</label>
+									<input
+										type="date"
+										id="endDate"
+										bind:value={endDate}
+										onchange={applySearch}
+										class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+									/>
+								</div>
+
+								<!-- Event Size Filter -->
+								<div>
+									<label for="eventSize" class="block text-sm font-medium text-gray-700 mb-1">
+										Event Size
+									</label>
+									<select
+										id="eventSize"
+										bind:value={eventSize}
+										onchange={applySearch}
+										class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+									>
+										<option value="">All sizes</option>
+										<option value="intimate">Intimate (&lt;10)</option>
+										<option value="small">Small (10-20)</option>
+										<option value="medium">Medium (20-50)</option>
+										<option value="large">Large (50+)</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					{/if}
 				</form>
 
 				<!-- Results Summary -->
 				{#if data.query}
-					<p class="text-sm text-gray-600">
-						{#if hasResults}
-							Found {totalResults} result{totalResults === 1 ? '' : 's'} for "{data.query}"
-						{:else}
-							No results found for "{data.query}"
+					<div class="flex items-center gap-2 flex-wrap">
+						<p class="text-sm text-gray-600">
+							{#if hasResults}
+								Found {totalResults} result{totalResults === 1 ? '' : 's'} for "{data.query}"
+							{:else}
+								No results found for "{data.query}"
+							{/if}
+						</p>
+						{#if hasActiveFilters}
+							<span
+								class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded"
+							>
+								Filters applied
+							</span>
 						{/if}
-					</p>
+					</div>
 				{/if}
 
 				<!-- Error Message -->

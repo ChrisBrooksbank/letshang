@@ -597,12 +597,16 @@
   - Testing: 25 unit tests with 100% coverage on new code
   - Coverage: All quality gates pass (check, lint, test, build, knip, depcheck)
 
-- [ ] Add search filters [P1]
-  - AC: Location/distance radius
-  - AC: Category/topic
-  - AC: Event type (in-person, online, hybrid)
-  - AC: Date range picker
-  - AC: Event size filter
+- [~] Add search filters [P1] (PARTIAL - schema foundation complete)
+  - AC: Location/distance radius (deferred - requires user location geocoding)
+  - AC: Category/topic (deferred - events don't have topics in schema yet)
+  - AC: Event type (in-person, online, hybrid) - Schema complete ✓
+  - AC: Date range picker - Schema complete ✓
+  - AC: Event size filter - Schema complete ✓
+  - Implementation: Filter schemas added with 100% test coverage (14 new tests)
+  - Implementation: searchFiltersSchema, searchWithFiltersSchema, eventTypeEnum, eventSizeEnum
+  - Remaining: Server-side filtering logic, UI filter controls (next iteration)
+  - Commit: 38b6a36
 
 ---
 
