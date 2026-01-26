@@ -30,6 +30,8 @@ export default [
 				clearInterval: 'readonly',
 				setTimeout: 'readonly',
 				clearTimeout: 'readonly',
+				Event: 'readonly',
+				confirm: 'readonly',
 				// SvelteKit App namespace
 				App: 'readonly'
 			}

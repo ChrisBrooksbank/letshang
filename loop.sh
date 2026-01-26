@@ -64,7 +64,7 @@ CONSECUTIVE_FAILURES=0
 MAX_CONSECUTIVE_FAILURES=5
 
 # Timeout for claude command (30 minutes)
-CLAUDE_TIMEOUT=1800
+CLAUDE_TIMEOUT=4000
 
 # Main loop
 while true; do

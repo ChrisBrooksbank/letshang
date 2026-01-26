@@ -2,6 +2,17 @@ import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { supabase } from '$lib/server/supabase';
 import { getConfirmationStats } from '$lib/server/confirmation-ping';
+import {
+	fetchEventComments,
+	createComment,
+	editComment,
+	deleteComment
+} from '$lib/server/comments';
+import {
+	commentCreationSchema,
+	commentEditSchema,
+	commentDeletionSchema
+} from '$lib/schemas/comments';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = locals.session;
@@ -55,12 +66,25 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		}
 	}
 
+	// Fetch comments if user has RSVPed
+	let comments: Awaited<ReturnType<typeof fetchEventComments>>['comments'] = [];
+	let hasRsvped = false;
+	if (userRsvp) {
+		hasRsvped = true;
+		const commentsResult = await fetchEventComments(id, session.user.id);
+		if (!commentsResult.error) {
+			comments = commentsResult.comments;
+		}
+	}
+
 	return {
 		event,
 		userRsvp: userRsvp || null,
 		counts,
 		userId: session.user.id,
-		confirmationStats
+		confirmationStats,
+		comments,
+		hasRsvped
 	};
 };
 
@@ -336,5 +360,101 @@ export const actions: Actions = {
 		}
 
 		return { success: true, canceled: true };
+	},
+
+	postComment: async ({ request, locals, params }) => {
+		const session = locals.session;
+		if (!session?.user) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const rawData = {
+			eventId: params.id,
+			content: formData.get('content') as string,
+			parentCommentId: (formData.get('parentCommentId') as string) || null
+		};
+
+		// Validate with Zod schema
+		const validation = commentCreationSchema.safeParse(rawData);
+		if (!validation.success) {
+			const firstError = validation.error.issues[0];
+			return fail(400, {
+				error: firstError?.message || 'Invalid comment data'
+			});
+		}
+
+		const { eventId, content, parentCommentId } = validation.data;
+
+		const result = await createComment(eventId, session.user.id, content, parentCommentId || null);
+
+		if (result.error) {
+			return fail(400, { error: result.error });
+		}
+
+		return { success: true, comment: result.comment };
+	},
+
+	editComment: async ({ request, locals }) => {
+		const session = locals.session;
+		if (!session?.user) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const rawData = {
+			commentId: formData.get('commentId') as string,
+			content: formData.get('content') as string
+		};
+
+		// Validate with Zod schema
+		const validation = commentEditSchema.safeParse(rawData);
+		if (!validation.success) {
+			const firstError = validation.error.issues[0];
+			return fail(400, {
+				error: firstError?.message || 'Invalid comment data'
+			});
+		}
+
+		const { commentId, content } = validation.data;
+
+		const result = await editComment(commentId, session.user.id, content);
+
+		if (result.error) {
+			return fail(400, { error: result.error });
+		}
+
+		return { success: true, comment: result.comment };
+	},
+
+	deleteComment: async ({ request, locals }) => {
+		const session = locals.session;
+		if (!session?.user) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const rawData = {
+			commentId: formData.get('commentId') as string
+		};
+
+		// Validate with Zod schema
+		const validation = commentDeletionSchema.safeParse(rawData);
+		if (!validation.success) {
+			const firstError = validation.error.issues[0];
+			return fail(400, {
+				error: firstError?.message || 'Invalid comment data'
+			});
+		}
+
+		const { commentId } = validation.data;
+
+		const result = await deleteComment(commentId, session.user.id);
+
+		if (!result.success) {
+			return fail(400, { error: result.error || 'Failed to delete comment' });
+		}
+
+		return { success: true, deleted: true };
 	}
 };

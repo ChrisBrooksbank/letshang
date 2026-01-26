@@ -5,6 +5,7 @@
 	import { page } from '$app/stores';
 	import BaseLayout from '$lib/components/BaseLayout.svelte';
 	import EventMap from '$lib/components/EventMap.svelte';
+	import EventComments from '$lib/components/EventComments.svelte';
 	import { getDirectionsUrl } from '$lib/utils/geocoding';
 	import {
 		calculateEventSize,
@@ -714,6 +715,14 @@
 				</div>
 			{/if}
 		{/if}
+
+		<!-- Event Comments -->
+		<EventComments
+			eventId={event.id}
+			comments={data.comments}
+			hasRsvped={data.hasRsvped}
+			userId={data.userId}
+		/>
 
 		<!-- Back to Dashboard -->
 		<div class="mt-8">
