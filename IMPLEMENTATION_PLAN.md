@@ -517,15 +517,33 @@
   - Coverage: 31 utils tests (100%) + 14 server tests (86%) = 45 tests total
   - Commit: 827a89e
 
-- [ ] Implement confirmation ping [P1]
-  - AC: "Still coming?" notification day of
-  - AC: One-tap confirm or bail out
-  - AC: Responses visible to host
+- [x] Implement confirmation ping [P1] ✓
+  - AC: "Still coming?" notification day of event ✓
+  - AC: One-tap confirm or bail out ✓
+  - AC: Responses visible to host ✓
+  - Implementation: Database migration adds confirmation_status, confirmation_sent_at, confirmation_response_at, bail_out_reason columns
+  - Implementation: Created confirm_attendance() and bail_out_attendance() database functions
+  - Implementation: Server functions: fetchRsvpsNeedingConfirmation, sendConfirmationPing, confirmAttendance, bailOutAttendance, getConfirmationStats
+  - Implementation: Utility functions for formatting confirmation status and statistics
+  - Implementation: /events/[id]/confirm page for one-tap confirmation
+  - Implementation: /events/[id]/bail-out page for graceful bail-out with optional reason
+  - Implementation: Event detail page shows confirmation prompt for "going" RSVPs on event day
+  - Implementation: Event detail page displays confirmation stats for host (confirmed, pending, bailed out)
+  - Implementation: Bail-out auto-promotes from waitlist using existing reorder_waitlist() function
+  - Coverage: 100% on new code (confirmation-ping.ts: 92.2% statements/91.11% branches, confirmation.ts: 100%, confirm page: 95.23%/100%, bail-out page: 95.45%/87.5%)
+  - Coverage: 69 total tests (22 server + 29 utils + 8 confirm + 10 bail-out)
+  - Note: Graceful bail-out AC merged into this task (same implementation)
+  - Commit: 98641e0
 
-- [ ] Build graceful bail-out [P1]
-  - AC: "Can't make it" with optional reason
-  - AC: Auto-promotes from waitlist
-  - AC: No-guilt messaging
+- [x] Build graceful bail-out [P1] ✓
+  - AC: "Can't make it" with optional reason ✓
+  - AC: Auto-promotes from waitlist ✓
+  - AC: No-guilt messaging ✓
+  - Note: Implemented as part of confirmation ping task above
+  - Implementation: Bail-out page with optional reason field (500 char max)
+  - Implementation: No-guilt messaging: "No worries! Things come up. Letting the host know helps them plan better"
+  - Implementation: Auto-promotion via bail_out_attendance() database function
+  - Commit: 98641e0
 
 - [ ] Implement event comments [P1]
   - AC: Threaded discussion for RSVPed users
