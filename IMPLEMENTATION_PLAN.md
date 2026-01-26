@@ -506,10 +506,16 @@
 
 > Reminders and day-of confirmation (spec: 03-events.md)
 
-- [ ] Build reminder scheduling [P1]
-  - AC: 7 days, 2 days, day-of reminders
-  - AC: Email delivery (push later)
-  - AC: Include event details
+- [x] Build reminder scheduling [P1] ✓
+  - AC: 7 days, 2 days, day-of reminders ✓
+  - AC: Email delivery (push later) ✓ (placeholder implementation)
+  - AC: Include event details ✓
+  - Implementation: Created event_reminders table with automatic scheduling via triggers
+  - Implementation: Database functions for calculating reminder times and managing schedules
+  - Implementation: Server-side reminder processing functions (fetchDueReminders, sendReminderEmail, processScheduledReminders)
+  - Implementation: Utility functions for formatting reminders and building email data
+  - Coverage: 31 utils tests (100%) + 14 server tests (86%) = 45 tests total
+  - Commit: 827a89e
 
 - [ ] Implement confirmation ping [P1]
   - AC: "Still coming?" notification day of
