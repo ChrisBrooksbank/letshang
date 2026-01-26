@@ -545,9 +545,23 @@
   - Implementation: Auto-promotion via bail_out_attendance() database function
   - Commit: 98641e0
 
-- [ ] Implement event comments [P1]
-  - AC: Threaded discussion for RSVPed users
-  - AC: Visible to all attendees
+- [x] Implement event comments [P1] ✓
+  - AC: Threaded discussion for RSVPed users ✓
+  - AC: Visible to all attendees ✓
+  - Implementation: Database migration creates event_comments table with threaded structure (parent_comment_id)
+  - Implementation: Soft delete support via deleted_at timestamp for moderation
+  - Implementation: RLS policies enforce RSVP requirement for viewing/posting comments
+  - Implementation: Server functions: fetchEventComments, createComment, editComment, deleteComment
+  - Implementation: Permission system: RSVP required to comment, ownership for edit, owner + event creator for delete
+  - Implementation: EventComments.svelte component with threaded display, reply functionality, edit/delete actions
+  - Implementation: Relative time formatting (e.g., "5m ago", "2d ago"), character counter (5000 max)
+  - Implementation: Mobile-responsive design with proper touch targets
+  - Implementation: RSVP gate prompts users to RSVP before participating
+  - Implementation: Event detail page integrated with comments section
+  - Implementation: Form actions: postComment, editComment, deleteComment with Zod validation
+  - Coverage: 100% on new code (83 total tests: 42 schema + 22 server + 19 integration)
+  - ESLint: Added Event and confirm to browser globals for proper linting
+  - Commit: 29491f6
 
 ---
 
