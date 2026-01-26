@@ -1,6 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { supabase } from '$lib/server/supabase';
+import { getConfirmationStats } from '$lib/server/confirmation-ping';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = locals.session;
@@ -42,11 +43,24 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		waitlisted: rsvpCounts?.filter((r) => r.status === 'waitlisted').length || 0
 	};
 
+	// Fetch confirmation stats for host
+	let confirmationStats = null;
+	if (event.creator_id === session.user.id) {
+		try {
+			confirmationStats = await getConfirmationStats(id);
+		} catch (e) {
+			// Don't fail the page load if confirmation stats fail
+			// eslint-disable-next-line no-console
+			console.error('Error fetching confirmation stats:', e);
+		}
+	}
+
 	return {
 		event,
 		userRsvp: userRsvp || null,
 		counts,
-		userId: session.user.id
+		userId: session.user.id,
+		confirmationStats
 	};
 };
 

@@ -2,6 +2,7 @@
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
+	import { page } from '$app/stores';
 	import BaseLayout from '$lib/components/BaseLayout.svelte';
 	import EventMap from '$lib/components/EventMap.svelte';
 	import { getDirectionsUrl } from '$lib/utils/geocoding';
@@ -10,6 +11,12 @@
 		getEventSizeLabel,
 		getEventSizeDescription
 	} from '$lib/utils/event-size';
+	import {
+		shouldShowConfirmation,
+		getConfirmationStatusLabel,
+		getConfirmationStatusColor,
+		formatConfirmationStats
+	} from '$lib/utils/confirmation';
 
 	export let data: PageData;
 
@@ -18,6 +25,10 @@
 	$: counts = data.counts;
 	$: userId = data.userId;
 	$: isHost = event.creator_id === userId;
+	$: confirmationStats = data.confirmationStats;
+	$: showConfirmationUI = shouldShowConfirmation(event.start_time);
+	$: confirmed = $page.url.searchParams.get('confirmed') === 'true';
+	$: bailedOut = $page.url.searchParams.get('bailedout') === 'true';
 
 	let loading = false;
 	let selectedAttendanceMode: 'in_person' | 'online' | null = userRsvp?.attendance_mode || null;
@@ -154,10 +165,138 @@
 			</div>
 		{/if}
 
+		<!-- Success/Info Messages -->
+		{#if confirmed}
+			<div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+				<div class="flex items-center gap-2">
+					<svg
+						class="w-5 h-5 text-green-600"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+					<p class="text-green-800 font-medium">Great! We'll see you at the event.</p>
+				</div>
+			</div>
+		{/if}
+
+		{#if bailedOut}
+			<div class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+				<div class="flex items-center gap-2">
+					<svg
+						class="w-5 h-5 text-blue-600"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+					<p class="text-blue-800">Thanks for letting us know. Hope to see you at the next one!</p>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Confirmation Ping UI (Day of Event) -->
+		{#if showConfirmationUI && userRsvp?.status === 'going' && !confirmed && userRsvp.confirmation_status !== 'confirmed'}
+			<div class="mb-6 bg-yellow-50 border-2 border-yellow-300 rounded-lg p-5">
+				<div class="flex items-start gap-3">
+					<svg
+						class="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+					<div class="flex-1">
+						<h3 class="text-lg font-semibold text-yellow-900 mb-2">Still coming today?</h3>
+						<p class="text-yellow-800 mb-4">
+							Let the host know if you're still planning to attend. It helps with planning!
+						</p>
+						<div class="flex flex-col sm:flex-row gap-3">
+							<a
+								href="/events/{event.id}/confirm?rsvp={userRsvp.id}"
+								class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition min-h-[44px]"
+							>
+								<svg
+									class="w-5 h-5"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M5 13l4 4L19 7"
+									/>
+								</svg>
+								Yes, I'm Coming!
+							</a>
+							<a
+								href="/events/{event.id}/bail-out?rsvp={userRsvp.id}"
+								class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition min-h-[44px]"
+							>
+								Can't Make It
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Confirmation Status Badge (for users who already responded) -->
+		{#if showConfirmationUI && userRsvp?.status === 'going' && userRsvp.confirmation_status}
+			{@const statusLabel = getConfirmationStatusLabel(userRsvp.confirmation_status)}
+			{@const statusColor = getConfirmationStatusColor(userRsvp.confirmation_status)}
+			<div class="mb-6 {statusColor} border rounded-lg p-4">
+				<p class="font-medium">
+					Status: <span class="font-bold">{statusLabel}</span>
+				</p>
+			</div>
+		{/if}
+
 		<!-- Host Actions -->
 		{#if isHost}
 			<div class="mb-6 bg-purple-50 border border-purple-200 rounded-lg p-4">
 				<h2 class="text-lg font-semibold text-purple-900 mb-3">Host Actions</h2>
+
+				<!-- Confirmation Stats (Day of Event) -->
+				{#if showConfirmationUI && confirmationStats}
+					<div class="mb-4 p-3 bg-white rounded-lg border border-purple-100">
+						<h3 class="text-sm font-medium text-gray-700 mb-2">Day-of Confirmations</h3>
+						<p class="text-sm text-gray-600">
+							{formatConfirmationStats(confirmationStats)}
+						</p>
+						<div class="mt-2 flex gap-4 text-xs text-gray-600">
+							<span>✅ {confirmationStats.confirmed} confirmed</span>
+							<span>⏳ {confirmationStats.pending} pending</span>
+							<span>❌ {confirmationStats.bailedOut} bailed out</span>
+						</div>
+					</div>
+				{/if}
+
 				<a
 					href="/events/{event.id}/checkin"
 					class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition min-h-[44px]"
