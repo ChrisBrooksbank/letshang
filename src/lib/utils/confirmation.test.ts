@@ -49,7 +49,8 @@ describe('Confirmation Utilities', () => {
 		it('should return true for events today that have not started', () => {
 			const now = new Date();
 			const futureToday = new Date(now);
-			futureToday.setHours(now.getHours() + 2);
+			// Set to 23:59 today (end of day) to ensure it's definitely today and in the future
+			futureToday.setHours(23, 59, 59, 999);
 
 			expect(shouldShowConfirmation(futureToday)).toBe(true);
 		});
@@ -82,7 +83,8 @@ describe('Confirmation Utilities', () => {
 		it('should handle ISO string input', () => {
 			const now = new Date();
 			const futureToday = new Date(now);
-			futureToday.setHours(now.getHours() + 2);
+			// Set to 23:59 today (end of day) to ensure it's definitely today and in the future
+			futureToday.setHours(23, 59, 59, 999);
 
 			expect(shouldShowConfirmation(futureToday.toISOString())).toBe(true);
 		});
