@@ -58,8 +58,13 @@ echo ""
 echo "Starting in 3 seconds... (Ctrl+C to abort)"
 sleep 3
 
-# Iteration counter
+# Counters
 ITERATION=0
+CONSECUTIVE_FAILURES=0
+MAX_CONSECUTIVE_FAILURES=5
+
+# Timeout for claude command (30 minutes)
+CLAUDE_TIMEOUT=1800
 
 # Main loop
 while true; do
@@ -70,23 +75,40 @@ while true; do
     echo "Iteration $ITERATION - $(date '+%Y-%m-%d %H:%M:%S')"
     echo "============================================"
 
-    # Run Claude with the prompt (capture exit code without triggering set -e)
+    # Run Claude with timeout to prevent hanging
     EXIT_CODE=0
-    cat "$PROMPT_FILE" | claude -p \
+    timeout --signal=KILL $CLAUDE_TIMEOUT bash -c "cat '$PROMPT_FILE' | claude -p \
         --dangerously-skip-permissions \
         --model sonnet \
-        --verbose || EXIT_CODE=$?
+        --verbose" 2>&1 || EXIT_CODE=$?
 
-    if [[ $EXIT_CODE -ne 0 ]]; then
-        echo "Claude exited with code $EXIT_CODE"
-        echo "Pausing for 10 seconds before retry..."
-        sleep 10
+    # Exit code 137 = killed by timeout
+    if [[ $EXIT_CODE -eq 137 ]]; then
+        echo "Claude timed out after ${CLAUDE_TIMEOUT}s"
     fi
 
-    # Push changes after each iteration (build mode only)
-    # Use < /dev/null to prevent waiting for input (e.g. credentials)
+    if [[ $EXIT_CODE -ne 0 ]]; then
+        CONSECUTIVE_FAILURES=$((CONSECUTIVE_FAILURES + 1))
+        echo ""
+        echo "Claude exited with code $EXIT_CODE (failure $CONSECUTIVE_FAILURES of $MAX_CONSECUTIVE_FAILURES)"
+
+        if [[ $CONSECUTIVE_FAILURES -ge $MAX_CONSECUTIVE_FAILURES ]]; then
+            echo "Too many consecutive failures. Exiting."
+            exit 1
+        fi
+
+        echo "Pausing for 30 seconds before retry..."
+        sleep 30
+        continue
+    fi
+
+    # Success - reset failure counter
+    CONSECUTIVE_FAILURES=0
+
+    # Push changes after successful iteration (build mode only)
     if [[ "$MODE" == "build" ]]; then
-        git push < /dev/null 2>&1 || true
+        echo "Pushing changes..."
+        timeout 60 git push < /dev/null 2>&1 || echo "Push failed or nothing to push"
     fi
 
     # Check iteration limit

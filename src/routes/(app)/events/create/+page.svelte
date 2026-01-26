@@ -599,8 +599,8 @@
 						</p>
 					{/if}
 					<p class="mt-1 text-xs text-gray-500">
-						If not specified, the event size will be automatically calculated based on the
-						capacity. Small events help anxious attendees feel more comfortable.
+						If not specified, the event size will be automatically calculated based on the capacity.
+						Small events help anxious attendees feel more comfortable.
 					</p>
 				</div>
 

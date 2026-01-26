@@ -279,6 +279,44 @@ export interface Database {
 					updated_at?: string;
 				};
 			};
+			event_reminders: {
+				Row: {
+					id: string;
+					event_id: string;
+					user_id: string;
+					reminder_type: 'seven_days' | 'two_days' | 'day_of';
+					scheduled_for: string;
+					status: 'scheduled' | 'sent' | 'failed' | 'cancelled';
+					sent_at: string | null;
+					error_message: string | null;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					event_id: string;
+					user_id: string;
+					reminder_type: 'seven_days' | 'two_days' | 'day_of';
+					scheduled_for: string;
+					status?: 'scheduled' | 'sent' | 'failed' | 'cancelled';
+					sent_at?: string | null;
+					error_message?: string | null;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: {
+					id?: string;
+					event_id?: string;
+					user_id?: string;
+					reminder_type?: 'seven_days' | 'two_days' | 'day_of';
+					scheduled_for?: string;
+					status?: 'scheduled' | 'sent' | 'failed' | 'cancelled';
+					sent_at?: string | null;
+					error_message?: string | null;
+					created_at?: string;
+					updated_at?: string;
+				};
+			};
 		};
 		Views: Record<string, never>;
 		Functions: Record<string, never>;
@@ -293,6 +331,8 @@ export interface Database {
 				| 'assistant_organizer'
 				| 'event_organizer'
 				| 'member';
+			reminder_type: 'seven_days' | 'two_days' | 'day_of';
+			delivery_status: 'scheduled' | 'sent' | 'failed' | 'cancelled';
 		};
 	};
 }
