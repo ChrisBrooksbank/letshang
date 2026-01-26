@@ -486,9 +486,19 @@
   - Coverage: 100% on new event schema code (19 new test cases total for both tag types)
   - Commit: d43e473
 
-- [ ] Implement event size indicators [P1]
-  - AC: Intimate (<10), Small (10-20), Medium (20-50), Large (50+)
-  - AC: Size badge on event cards
+- [x] Implement event size indicators [P1] ✓
+  - AC: Intimate (<10), Small (10-20), Medium (20-50), Large (50+) ✓
+  - AC: Size badge on event cards ✓ (event detail page)
+  - AC: Auto-calculated from capacity, or manually set ✓
+  - AC: Position small events as welcoming, not lesser ✓
+  - Implementation: Created event_size enum and column with migration
+  - Implementation: Added eventSizeEnum validation and optional eventSize field to schema
+  - Implementation: Created event-size.ts with calculation and formatting functions
+  - Implementation: Added purple size badge to event detail page with tooltip
+  - Implementation: Added optional size selector in event creation form
+  - Implementation: Auto-calculates size from capacity if not manually set
+  - Coverage: 100% on new code (49 new tests: 39 utility + 10 schema)
+  - Commit: cf1931e
 
 ---
 
