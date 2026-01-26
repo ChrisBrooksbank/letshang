@@ -96,6 +96,46 @@
 			</span>
 		</div>
 
+		<!-- Format Tags -->
+		{#if event.format_tags && event.format_tags.length > 0}
+			<div class="mb-6">
+				<h3 class="text-sm font-medium text-gray-700 mb-2">Event Format</h3>
+				<div class="flex flex-wrap gap-2">
+					{#each event.format_tags as tag}
+						<span
+							class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
+						>
+							{#if tag === 'speaker'}Speaker{/if}
+							{#if tag === 'workshop'}Workshop{/if}
+							{#if tag === 'activity'}Activity{/if}
+							{#if tag === 'discussion'}Discussion{/if}
+							{#if tag === 'mixer'}Mixer{/if}
+							{#if tag === 'hangout'}Hangout{/if}
+						</span>
+					{/each}
+				</div>
+			</div>
+		{/if}
+
+		<!-- Accessibility Tags -->
+		{#if event.accessibility_tags && event.accessibility_tags.length > 0}
+			<div class="mb-6">
+				<h3 class="text-sm font-medium text-gray-700 mb-2">Who's Welcome</h3>
+				<div class="flex flex-wrap gap-2">
+					{#each event.accessibility_tags as tag}
+						<span
+							class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
+						>
+							{#if tag === 'first_timer_friendly'}First-Timer Friendly{/if}
+							{#if tag === 'structured_activity'}Structured Activity{/if}
+							{#if tag === 'low_pressure'}Low-Pressure{/if}
+							{#if tag === 'beginner_welcome'}Beginner Welcome{/if}
+						</span>
+					{/each}
+				</div>
+			</div>
+		{/if}
+
 		<!-- Host Actions -->
 		{#if isHost}
 			<div class="mb-6 bg-purple-50 border border-purple-200 rounded-lg p-4">

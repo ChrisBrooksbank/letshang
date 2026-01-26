@@ -13,6 +13,30 @@ export const eventTypeEnum = z.enum(['in_person', 'online', 'hybrid']);
 export const eventVisibilityEnum = z.enum(['public', 'group_only', 'hidden']);
 
 /**
+ * Event format tag enum for validation
+ * Must match the event_format_tag enum in the database
+ */
+export const eventFormatTagEnum = z.enum([
+	'speaker',
+	'workshop',
+	'activity',
+	'discussion',
+	'mixer',
+	'hangout'
+]);
+
+/**
+ * Event accessibility tag enum for validation
+ * Must match the event_accessibility_tag enum in the database
+ */
+export const eventAccessibilityTagEnum = z.enum([
+	'first_timer_friendly',
+	'structured_activity',
+	'low_pressure',
+	'beginner_welcome'
+]);
+
+/**
  * Event creation schema
  * Validates basic event creation form data
  */
@@ -89,7 +113,13 @@ export const eventCreationSchema = z
 			.min(1, 'Capacity must be at least 1')
 			.max(10000, 'Capacity must not exceed 10,000')
 			.optional()
-			.nullable()
+			.nullable(),
+
+		// Format tags: multiple allowed
+		formatTags: z.array(eventFormatTagEnum).default([]),
+
+		// Accessibility tags: multiple allowed
+		accessibilityTags: z.array(eventAccessibilityTagEnum).default([])
 	})
 	.superRefine((data, ctx) => {
 		// Validate that in-person events have venue information

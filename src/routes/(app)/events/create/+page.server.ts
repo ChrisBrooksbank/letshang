@@ -65,7 +65,9 @@ export const actions: Actions = {
 			videoLink,
 			groupId,
 			visibility,
-			capacity
+			capacity,
+			formatTags,
+			accessibilityTags
 		} = form.data as {
 			title: string;
 			description: string;
@@ -81,6 +83,10 @@ export const actions: Actions = {
 			groupId?: string | null;
 			visibility: 'public' | 'group_only' | 'hidden';
 			capacity?: number | null;
+			formatTags?: Array<'speaker' | 'workshop' | 'activity' | 'discussion' | 'mixer' | 'hangout'>;
+			accessibilityTags?: Array<
+				'first_timer_friendly' | 'structured_activity' | 'low_pressure' | 'beginner_welcome'
+			>;
 		};
 
 		// Calculate end time if duration is provided instead
@@ -109,7 +115,9 @@ export const actions: Actions = {
 				venue_lat: venueLat || null,
 				venue_lng: venueLng || null,
 				video_link: videoLink || null,
-				capacity: capacity || null
+				capacity: capacity || null,
+				format_tags: formatTags || [],
+				accessibility_tags: accessibilityTags || []
 			})
 			.select()
 			.single();

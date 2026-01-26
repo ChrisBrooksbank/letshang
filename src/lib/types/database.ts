@@ -63,6 +63,16 @@ export interface Database {
 					visibility: 'public' | 'group_only' | 'hidden';
 					venue_name: string | null;
 					venue_address: string | null;
+					venue_lat: number | null;
+					venue_lng: number | null;
+					video_link: string | null;
+					capacity: number | null;
+					format_tags: Array<
+						'speaker' | 'workshop' | 'activity' | 'discussion' | 'mixer' | 'hangout'
+					>;
+					accessibility_tags: Array<
+						'first_timer_friendly' | 'structured_activity' | 'low_pressure' | 'beginner_welcome'
+					>;
 					created_at: string;
 					updated_at: string;
 				};
@@ -78,6 +88,16 @@ export interface Database {
 					visibility?: 'public' | 'group_only' | 'hidden';
 					venue_name?: string | null;
 					venue_address?: string | null;
+					venue_lat?: number | null;
+					venue_lng?: number | null;
+					video_link?: string | null;
+					capacity?: number | null;
+					format_tags?: Array<
+						'speaker' | 'workshop' | 'activity' | 'discussion' | 'mixer' | 'hangout'
+					>;
+					accessibility_tags?: Array<
+						'first_timer_friendly' | 'structured_activity' | 'low_pressure' | 'beginner_welcome'
+					>;
 					created_at?: string;
 					updated_at?: string;
 				};
@@ -93,6 +113,16 @@ export interface Database {
 					visibility?: 'public' | 'group_only' | 'hidden';
 					venue_name?: string | null;
 					venue_address?: string | null;
+					venue_lat?: number | null;
+					venue_lng?: number | null;
+					video_link?: string | null;
+					capacity?: number | null;
+					format_tags?: Array<
+						'speaker' | 'workshop' | 'activity' | 'discussion' | 'mixer' | 'hangout'
+					>;
+					accessibility_tags?: Array<
+						'first_timer_friendly' | 'structured_activity' | 'low_pressure' | 'beginner_welcome'
+					>;
 					created_at?: string;
 					updated_at?: string;
 				};

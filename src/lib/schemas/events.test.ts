@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { eventCreationSchema, eventTypeEnum, eventVisibilityEnum } from './events';
+import {
+	eventCreationSchema,
+	eventTypeEnum,
+	eventVisibilityEnum,
+	eventFormatTagEnum,
+	eventAccessibilityTagEnum
+} from './events';
 
 describe('eventTypeEnum', () => {
 	it('should accept valid event types', () => {
@@ -755,5 +761,177 @@ describe('eventCreationSchema - visibility validation', () => {
 			const result = eventCreationSchema.parse(event);
 			expect(result.capacity).toBeNull();
 		});
+	});
+
+	describe('format tags validation', () => {
+		it('should accept valid format tags', () => {
+			const validTags: Array<
+				'speaker' | 'workshop' | 'activity' | 'discussion' | 'mixer' | 'hangout'
+			> = ['speaker', 'workshop', 'activity', 'discussion', 'mixer', 'hangout'];
+			for (const tag of validTags) {
+				const event = {
+					...createValidEvent(),
+					formatTags: [tag]
+				};
+				expect(() => eventCreationSchema.parse(event)).not.toThrow();
+			}
+		});
+
+		it('should accept multiple format tags', () => {
+			const event = {
+				...createValidEvent(),
+				formatTags: ['speaker', 'workshop', 'activity']
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept empty format tags array', () => {
+			const event = {
+				...createValidEvent(),
+				formatTags: []
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should default to empty array when format tags omitted', () => {
+			const event = createValidEvent();
+			const result = eventCreationSchema.parse(event);
+			expect(result.formatTags).toEqual([]);
+		});
+
+		it('should reject invalid format tags', () => {
+			const event = {
+				...createValidEvent(),
+				formatTags: ['invalid']
+			};
+			expect(() => eventCreationSchema.parse(event)).toThrow();
+		});
+
+		it('should reject duplicate format tags', () => {
+			const event = {
+				...createValidEvent(),
+				formatTags: ['speaker', 'speaker']
+			};
+			const result = eventCreationSchema.parse(event);
+			// Zod doesn't automatically remove duplicates, it just validates each item
+			expect(result.formatTags).toEqual(['speaker', 'speaker']);
+		});
+
+		it('should properly parse and return format tags', () => {
+			const event = {
+				...createValidEvent(),
+				formatTags: ['workshop', 'activity']
+			};
+			const result = eventCreationSchema.parse(event);
+			expect(result.formatTags).toEqual(['workshop', 'activity']);
+		});
+	});
+
+	describe('accessibility tags validation', () => {
+		it('should accept valid accessibility tags', () => {
+			const validTags: Array<
+				'first_timer_friendly' | 'structured_activity' | 'low_pressure' | 'beginner_welcome'
+			> = ['first_timer_friendly', 'structured_activity', 'low_pressure', 'beginner_welcome'];
+			for (const tag of validTags) {
+				const event = {
+					...createValidEvent(),
+					accessibilityTags: [tag]
+				};
+				expect(() => eventCreationSchema.parse(event)).not.toThrow();
+			}
+		});
+
+		it('should accept multiple accessibility tags', () => {
+			const event = {
+				...createValidEvent(),
+				accessibilityTags: ['first_timer_friendly', 'low_pressure']
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept empty accessibility tags array', () => {
+			const event = {
+				...createValidEvent(),
+				accessibilityTags: []
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should default to empty array when accessibility tags omitted', () => {
+			const event = createValidEvent();
+			const result = eventCreationSchema.parse(event);
+			expect(result.accessibilityTags).toEqual([]);
+		});
+
+		it('should reject invalid accessibility tags', () => {
+			const event = {
+				...createValidEvent(),
+				accessibilityTags: ['invalid']
+			};
+			expect(() => eventCreationSchema.parse(event)).toThrow();
+		});
+
+		it('should properly parse and return accessibility tags', () => {
+			const event = {
+				...createValidEvent(),
+				accessibilityTags: ['beginner_welcome', 'structured_activity']
+			};
+			const result = eventCreationSchema.parse(event);
+			expect(result.accessibilityTags).toEqual(['beginner_welcome', 'structured_activity']);
+		});
+	});
+
+	describe('combined tags validation', () => {
+		it('should accept both format and accessibility tags together', () => {
+			const event = {
+				...createValidEvent(),
+				formatTags: ['workshop', 'activity'],
+				accessibilityTags: ['first_timer_friendly', 'beginner_welcome']
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should properly parse both tag types', () => {
+			const event = {
+				...createValidEvent(),
+				formatTags: ['speaker'],
+				accessibilityTags: ['low_pressure']
+			};
+			const result = eventCreationSchema.parse(event);
+			expect(result.formatTags).toEqual(['speaker']);
+			expect(result.accessibilityTags).toEqual(['low_pressure']);
+		});
+	});
+});
+
+describe('eventFormatTagEnum', () => {
+	it('should accept valid format tags', () => {
+		expect(eventFormatTagEnum.parse('speaker')).toBe('speaker');
+		expect(eventFormatTagEnum.parse('workshop')).toBe('workshop');
+		expect(eventFormatTagEnum.parse('activity')).toBe('activity');
+		expect(eventFormatTagEnum.parse('discussion')).toBe('discussion');
+		expect(eventFormatTagEnum.parse('mixer')).toBe('mixer');
+		expect(eventFormatTagEnum.parse('hangout')).toBe('hangout');
+	});
+
+	it('should reject invalid format tags', () => {
+		expect(() => eventFormatTagEnum.parse('invalid')).toThrow();
+		expect(() => eventFormatTagEnum.parse('')).toThrow();
+		expect(() => eventFormatTagEnum.parse('Speaker')).toThrow();
+	});
+});
+
+describe('eventAccessibilityTagEnum', () => {
+	it('should accept valid accessibility tags', () => {
+		expect(eventAccessibilityTagEnum.parse('first_timer_friendly')).toBe('first_timer_friendly');
+		expect(eventAccessibilityTagEnum.parse('structured_activity')).toBe('structured_activity');
+		expect(eventAccessibilityTagEnum.parse('low_pressure')).toBe('low_pressure');
+		expect(eventAccessibilityTagEnum.parse('beginner_welcome')).toBe('beginner_welcome');
+	});
+
+	it('should reject invalid accessibility tags', () => {
+		expect(() => eventAccessibilityTagEnum.parse('invalid')).toThrow();
+		expect(() => eventAccessibilityTagEnum.parse('')).toThrow();
+		expect(() => eventAccessibilityTagEnum.parse('First-Timer Friendly')).toThrow();
 	});
 });

@@ -10,6 +10,10 @@
 		resetForm: false
 	});
 
+	// Initialize arrays if they don't exist
+	if (!$form.formatTags) $form.formatTags = [];
+	if (!$form.accessibilityTags) $form.accessibilityTags = [];
+
 	// Helper to format datetime-local input format (YYYY-MM-DDTHH:MM)
 	function formatDateTimeLocal(date: Date): string {
 		const pad = (n: number) => String(n).padStart(2, '0');
@@ -483,6 +487,93 @@
 						Set a maximum number of attendees (1-10,000). When capacity is reached, new RSVPs will
 						be added to a waitlist.
 					</p>
+				</div>
+
+				<!-- Format Tags (Optional) -->
+				<div>
+					<fieldset>
+						<legend class="block text-sm font-medium text-gray-700 mb-3">
+							Event Format (Optional)
+						</legend>
+						<p class="text-sm text-gray-600 mb-3">
+							Select all that apply to help attendees understand what to expect.
+						</p>
+						<div class="grid grid-cols-2 gap-3">
+							{#each [{ value: 'speaker', label: 'Speaker' }, { value: 'workshop', label: 'Workshop' }, { value: 'activity', label: 'Activity' }, { value: 'discussion', label: 'Discussion' }, { value: 'mixer', label: 'Mixer' }, { value: 'hangout', label: 'Hangout' }] as tag}
+								<label
+									class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition"
+								>
+									<input
+										type="checkbox"
+										name="formatTags"
+										value={tag.value}
+										checked={($form.formatTags as string[] | undefined)?.includes(tag.value)}
+										on:change={(e) => {
+											const currentTags = ($form.formatTags as string[] | undefined) || [];
+											if (e.currentTarget.checked) {
+												$form.formatTags = [...currentTags, tag.value];
+											} else {
+												$form.formatTags = currentTags.filter((t: string) => t !== tag.value);
+											}
+										}}
+										class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+									/>
+									<span class="ml-3 text-sm font-medium text-gray-700">{tag.label}</span>
+								</label>
+							{/each}
+						</div>
+						{#if $errors.formatTags && Array.isArray($errors.formatTags)}
+							<p class="mt-2 text-sm text-red-600" role="alert">
+								{$errors.formatTags[0] ?? ''}
+							</p>
+						{/if}
+					</fieldset>
+				</div>
+
+				<!-- Accessibility Tags (Optional) -->
+				<div>
+					<fieldset>
+						<legend class="block text-sm font-medium text-gray-700 mb-3">
+							Accessibility & Welcome (Optional)
+						</legend>
+						<p class="text-sm text-gray-600 mb-3">
+							Help newcomers and anxious attendees feel welcome.
+						</p>
+						<div class="space-y-3">
+							{#each [{ value: 'first_timer_friendly', label: 'First-Timer Friendly', description: 'Great for people attending their first event' }, { value: 'structured_activity', label: 'Structured Activity', description: 'Has a clear agenda or planned activities' }, { value: 'low_pressure', label: 'Low-Pressure', description: 'Casual and relaxed atmosphere' }, { value: 'beginner_welcome', label: 'Beginner Welcome', description: 'No prior experience needed' }] as tag}
+								<label
+									class="flex items-start p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition"
+								>
+									<input
+										type="checkbox"
+										name="accessibilityTags"
+										value={tag.value}
+										checked={($form.accessibilityTags as string[] | undefined)?.includes(tag.value)}
+										on:change={(e) => {
+											const currentTags = ($form.accessibilityTags as string[] | undefined) || [];
+											if (e.currentTarget.checked) {
+												$form.accessibilityTags = [...currentTags, tag.value];
+											} else {
+												$form.accessibilityTags = currentTags.filter(
+													(t: string) => t !== tag.value
+												);
+											}
+										}}
+										class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"
+									/>
+									<div class="ml-3">
+										<span class="text-sm font-medium text-gray-700">{tag.label}</span>
+										<p class="text-xs text-gray-500 mt-0.5">{tag.description}</p>
+									</div>
+								</label>
+							{/each}
+						</div>
+						{#if $errors.accessibilityTags && Array.isArray($errors.accessibilityTags)}
+							<p class="mt-2 text-sm text-red-600" role="alert">
+								{$errors.accessibilityTags[0] ?? ''}
+							</p>
+						{/if}
+					</fieldset>
 				</div>
 
 				<!-- General form errors -->
