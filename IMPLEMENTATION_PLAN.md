@@ -464,19 +464,31 @@
   - Implementation: Host actions section on event detail page with link to check-in
   - Implementation: Check-in and uncheck-in actions with permission validation
   - Coverage: 100% on check-in logic (35 new tests: 19 server-side + 16 schema tests)
-  - Commit: (next commit)
+  - Commit: d5e056e
 
-- [ ] Design format tag system [P1]
-  - AC: Categories: Speaker, Workshop, Activity, etc.
-  - AC: Multiple tags allowed
+- [x] Design format tag system [P1] ✓
+  - AC: Categories: Speaker, Workshop, Activity, etc. ✓
+  - AC: Multiple tags allowed ✓
+  - Implementation: Created event_format_tag enum with 6 tag types
+  - Implementation: Added format_tags array column to events table with GIN index
+  - Implementation: Event creation form includes checkbox selectors for tag selection
+  - Implementation: Event detail page displays tags with color-coded badges (indigo)
+  - Coverage: 100% on new event schema code (19 new test cases for format tags)
+
+- [x] Build accessibility indicators [P1] ✓
+  - AC: "First-timer friendly", "Structured activity" ✓
+  - AC: "Low-pressure", "Beginner welcome" ✓
+  - Implementation: Created event_accessibility_tag enum with 4 indicator types
+  - Implementation: Added accessibility_tags array column to events table with GIN index
+  - Implementation: Event creation form includes checkbox selectors with descriptions
+  - Implementation: Event detail page displays tags with color-coded badges (green)
+  - Implementation: Mobile-responsive list layout with descriptive text
+  - Coverage: 100% on new event schema code (19 new test cases total for both tag types)
+  - Commit: d43e473
 
 - [ ] Implement event size indicators [P1]
   - AC: Intimate (<10), Small (10-20), Medium (20-50), Large (50+)
   - AC: Size badge on event cards
-
-- [ ] Build accessibility indicators [P1]
-  - AC: "First-timer friendly", "Structured activity"
-  - AC: "Low-pressure", "Beginner welcome"
 
 ---
 
