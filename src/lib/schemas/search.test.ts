@@ -2,7 +2,13 @@
 // Validates search query validation rules
 
 import { describe, it, expect } from 'vitest';
-import { searchQuerySchema } from './search';
+import {
+	searchQuerySchema,
+	searchFiltersSchema,
+	searchWithFiltersSchema,
+	eventTypeEnum,
+	eventSizeEnum
+} from './search';
 
 describe('Search Schema Validation', () => {
 	describe('searchQuerySchema', () => {
@@ -123,6 +129,131 @@ describe('Search Schema Validation', () => {
 			});
 
 			expect(result.query).toBe('web3 blockchain');
+		});
+	});
+
+	describe('eventTypeEnum', () => {
+		it('should accept valid event types', () => {
+			expect(eventTypeEnum.parse('in_person')).toBe('in_person');
+			expect(eventTypeEnum.parse('online')).toBe('online');
+			expect(eventTypeEnum.parse('hybrid')).toBe('hybrid');
+		});
+
+		it('should reject invalid event types', () => {
+			expect(() => eventTypeEnum.parse('invalid')).toThrow();
+		});
+	});
+
+	describe('eventSizeEnum', () => {
+		it('should accept valid event sizes', () => {
+			expect(eventSizeEnum.parse('intimate')).toBe('intimate');
+			expect(eventSizeEnum.parse('small')).toBe('small');
+			expect(eventSizeEnum.parse('medium')).toBe('medium');
+			expect(eventSizeEnum.parse('large')).toBe('large');
+		});
+
+		it('should reject invalid event sizes', () => {
+			expect(() => eventSizeEnum.parse('huge')).toThrow();
+		});
+	});
+
+	describe('searchFiltersSchema', () => {
+		it('should accept valid event type filter', () => {
+			const result = searchFiltersSchema.parse({
+				eventType: 'online'
+			});
+
+			expect(result.eventType).toBe('online');
+		});
+
+		it('should accept valid date range filter', () => {
+			const result = searchFiltersSchema.parse({
+				startDate: '2026-02-01T00:00:00Z',
+				endDate: '2026-02-28T23:59:59Z'
+			});
+
+			expect(result.startDate).toBe('2026-02-01T00:00:00Z');
+			expect(result.endDate).toBe('2026-02-28T23:59:59Z');
+		});
+
+		it('should accept valid event size filter', () => {
+			const result = searchFiltersSchema.parse({
+				eventSize: 'small'
+			});
+
+			expect(result.eventSize).toBe('small');
+		});
+
+		it('should accept all filters together', () => {
+			const result = searchFiltersSchema.parse({
+				eventType: 'hybrid',
+				startDate: '2026-03-01T00:00:00Z',
+				endDate: '2026-03-31T23:59:59Z',
+				eventSize: 'medium'
+			});
+
+			expect(result.eventType).toBe('hybrid');
+			expect(result.startDate).toBe('2026-03-01T00:00:00Z');
+			expect(result.endDate).toBe('2026-03-31T23:59:59Z');
+			expect(result.eventSize).toBe('medium');
+		});
+
+		it('should accept empty filters object', () => {
+			const result = searchFiltersSchema.parse({});
+			expect(result).toEqual({});
+		});
+
+		it('should reject invalid date format for startDate', () => {
+			expect(() =>
+				searchFiltersSchema.parse({
+					startDate: 'not-a-date'
+				})
+			).toThrow();
+		});
+
+		it('should reject invalid date format for endDate', () => {
+			expect(() =>
+				searchFiltersSchema.parse({
+					endDate: '2026-02-30' // Missing time component
+				})
+			).toThrow();
+		});
+	});
+
+	describe('searchWithFiltersSchema', () => {
+		it('should accept search query with filters', () => {
+			const result = searchWithFiltersSchema.parse({
+				query: 'yoga',
+				type: 'events',
+				eventType: 'in_person',
+				eventSize: 'intimate'
+			});
+
+			expect(result.query).toBe('yoga');
+			expect(result.type).toBe('events');
+			expect(result.eventType).toBe('in_person');
+			expect(result.eventSize).toBe('intimate');
+		});
+
+		it('should accept search query without filters', () => {
+			const result = searchWithFiltersSchema.parse({
+				query: 'book club',
+				type: 'all'
+			});
+
+			expect(result.query).toBe('book club');
+			expect(result.type).toBe('all');
+			expect(result.eventType).toBeUndefined();
+		});
+
+		it('should apply default type when not provided', () => {
+			const result = searchWithFiltersSchema.parse({
+				query: 'hiking',
+				eventType: 'online'
+			});
+
+			expect(result.type).toBe('all');
+			expect(result.eventType).toBe('online');
 		});
 	});
 });
