@@ -576,6 +576,34 @@
 					</fieldset>
 				</div>
 
+				<!-- Event Size (Optional) -->
+				<div>
+					<label for="eventSize" class="block text-sm font-medium text-gray-700 mb-2">
+						Event Size (Optional)
+					</label>
+					<select
+						id="eventSize"
+						name="eventSize"
+						bind:value={$form.eventSize}
+						class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+					>
+						<option value="">Auto-calculate from capacity</option>
+						<option value="intimate">Intimate (Under 10 people)</option>
+						<option value="small">Small (10-20 people)</option>
+						<option value="medium">Medium (20-50 people)</option>
+						<option value="large">Large (50+ people)</option>
+					</select>
+					{#if $errors.eventSize && Array.isArray($errors.eventSize)}
+						<p class="mt-2 text-sm text-red-600" role="alert">
+							{$errors.eventSize[0] ?? ''}
+						</p>
+					{/if}
+					<p class="mt-1 text-xs text-gray-500">
+						If not specified, the event size will be automatically calculated based on the
+						capacity. Small events help anxious attendees feel more comfortable.
+					</p>
+				</div>
+
 				<!-- General form errors -->
 				{#if $errors._errors && Array.isArray($errors._errors)}
 					<div class="rounded-lg bg-red-50 p-4" role="alert">

@@ -4,7 +4,8 @@ import {
 	eventTypeEnum,
 	eventVisibilityEnum,
 	eventFormatTagEnum,
-	eventAccessibilityTagEnum
+	eventAccessibilityTagEnum,
+	eventSizeEnum
 } from './events';
 
 describe('eventTypeEnum', () => {
@@ -902,6 +903,88 @@ describe('eventCreationSchema - visibility validation', () => {
 			expect(result.accessibilityTags).toEqual(['low_pressure']);
 		});
 	});
+
+	describe('event size validation', () => {
+		it('should accept valid event sizes', () => {
+			const validSizes: Array<'intimate' | 'small' | 'medium' | 'large'> = [
+				'intimate',
+				'small',
+				'medium',
+				'large'
+			];
+
+			for (const size of validSizes) {
+				const event = {
+					...createValidEvent(),
+					eventSize: size
+				};
+				expect(() => eventCreationSchema.parse(event)).not.toThrow();
+			}
+		});
+
+		it('should reject invalid event sizes', () => {
+			const event = {
+				...createValidEvent(),
+				eventSize: 'invalid' // Invalid size for runtime validation
+			};
+			expect(() => eventCreationSchema.parse(event)).toThrow();
+		});
+
+		it('should accept null event size', () => {
+			const event = {
+				...createValidEvent(),
+				eventSize: null
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should accept undefined event size (optional field)', () => {
+			const event = {
+				...createValidEvent()
+				// eventSize not provided
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should properly parse event size when provided', () => {
+			const event = {
+				...createValidEvent(),
+				eventSize: 'small' as const
+			};
+			const result = eventCreationSchema.parse(event);
+			expect(result.eventSize).toBe('small');
+		});
+
+		it('should allow event size without capacity', () => {
+			const event = {
+				...createValidEvent(),
+				eventSize: 'medium' as const,
+				capacity: null
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should allow capacity without event size', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: 50,
+				eventSize: null
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+		});
+
+		it('should allow both capacity and event size', () => {
+			const event = {
+				...createValidEvent(),
+				capacity: 100,
+				eventSize: 'large' as const
+			};
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
+			const result = eventCreationSchema.parse(event);
+			expect(result.capacity).toBe(100);
+			expect(result.eventSize).toBe('large');
+		});
+	});
 });
 
 describe('eventFormatTagEnum', () => {
@@ -933,5 +1016,22 @@ describe('eventAccessibilityTagEnum', () => {
 		expect(() => eventAccessibilityTagEnum.parse('invalid')).toThrow();
 		expect(() => eventAccessibilityTagEnum.parse('')).toThrow();
 		expect(() => eventAccessibilityTagEnum.parse('First-Timer Friendly')).toThrow();
+	});
+});
+
+describe('eventSizeEnum', () => {
+	it('should accept valid event sizes', () => {
+		expect(eventSizeEnum.parse('intimate')).toBe('intimate');
+		expect(eventSizeEnum.parse('small')).toBe('small');
+		expect(eventSizeEnum.parse('medium')).toBe('medium');
+		expect(eventSizeEnum.parse('large')).toBe('large');
+	});
+
+	it('should reject invalid event sizes', () => {
+		expect(() => eventSizeEnum.parse('invalid')).toThrow();
+		expect(() => eventSizeEnum.parse('')).toThrow();
+		expect(() => eventSizeEnum.parse('Intimate')).toThrow();
+		expect(() => eventSizeEnum.parse('tiny')).toThrow();
+		expect(() => eventSizeEnum.parse('huge')).toThrow();
 	});
 });

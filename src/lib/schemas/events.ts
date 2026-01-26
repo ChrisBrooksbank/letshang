@@ -37,6 +37,12 @@ export const eventAccessibilityTagEnum = z.enum([
 ]);
 
 /**
+ * Event size enum for validation
+ * Must match the event_size enum in the database
+ */
+export const eventSizeEnum = z.enum(['intimate', 'small', 'medium', 'large']);
+
+/**
  * Event creation schema
  * Validates basic event creation form data
  */
@@ -119,7 +125,10 @@ export const eventCreationSchema = z
 		formatTags: z.array(eventFormatTagEnum).default([]),
 
 		// Accessibility tags: multiple allowed
-		accessibilityTags: z.array(eventAccessibilityTagEnum).default([])
+		accessibilityTags: z.array(eventAccessibilityTagEnum).default([]),
+
+		// Event size: optional, can be auto-calculated from capacity
+		eventSize: eventSizeEnum.optional().nullable()
 	})
 	.superRefine((data, ctx) => {
 		// Validate that in-person events have venue information

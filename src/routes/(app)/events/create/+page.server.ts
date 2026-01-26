@@ -3,6 +3,7 @@ import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { eventCreationSchema } from '$lib/schemas/events';
+import { calculateEventSize } from '$lib/utils/event-size';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Ensure user is authenticated
@@ -67,7 +68,8 @@ export const actions: Actions = {
 			visibility,
 			capacity,
 			formatTags,
-			accessibilityTags
+			accessibilityTags,
+			eventSize
 		} = form.data as {
 			title: string;
 			description: string;
@@ -87,6 +89,7 @@ export const actions: Actions = {
 			accessibilityTags?: Array<
 				'first_timer_friendly' | 'structured_activity' | 'low_pressure' | 'beginner_welcome'
 			>;
+			eventSize?: 'intimate' | 'small' | 'medium' | 'large' | null;
 		};
 
 		// Calculate end time if duration is provided instead
@@ -96,6 +99,9 @@ export const actions: Actions = {
 			const endDate = new Date(startDate.getTime() + durationMinutes * 60000);
 			calculatedEndTime = endDate.toISOString();
 		}
+
+		// Auto-calculate event size from capacity if not manually set
+		const finalEventSize = eventSize || calculateEventSize(capacity || null);
 
 		// Insert event into database
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -117,7 +123,8 @@ export const actions: Actions = {
 				video_link: videoLink || null,
 				capacity: capacity || null,
 				format_tags: formatTags || [],
-				accessibility_tags: accessibilityTags || []
+				accessibility_tags: accessibilityTags || [],
+				event_size: finalEventSize || null
 			})
 			.select()
 			.single();

@@ -70,13 +70,12 @@ while true; do
     echo "Iteration $ITERATION - $(date '+%Y-%m-%d %H:%M:%S')"
     echo "============================================"
 
-    # Run Claude with the prompt
+    # Run Claude with the prompt (capture exit code without triggering set -e)
+    EXIT_CODE=0
     cat "$PROMPT_FILE" | claude -p \
         --dangerously-skip-permissions \
         --model sonnet \
-        --verbose
-
-    EXIT_CODE=$?
+        --verbose || EXIT_CODE=$?
 
     if [[ $EXIT_CODE -ne 0 ]]; then
         echo "Claude exited with code $EXIT_CODE"
@@ -85,8 +84,9 @@ while true; do
     fi
 
     # Push changes after each iteration (build mode only)
+    # Use < /dev/null to prevent waiting for input (e.g. credentials)
     if [[ "$MODE" == "build" ]]; then
-        git push 2>/dev/null || true
+        git push < /dev/null 2>&1 || true
     fi
 
     # Check iteration limit

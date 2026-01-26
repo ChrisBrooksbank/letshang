@@ -5,6 +5,11 @@
 	import BaseLayout from '$lib/components/BaseLayout.svelte';
 	import EventMap from '$lib/components/EventMap.svelte';
 	import { getDirectionsUrl } from '$lib/utils/geocoding';
+	import {
+		calculateEventSize,
+		getEventSizeLabel,
+		getEventSizeDescription
+	} from '$lib/utils/event-size';
 
 	export let data: PageData;
 
@@ -42,6 +47,11 @@
 		if (type === 'hybrid') return 'Hybrid';
 		return type;
 	}
+
+	// Calculate or use existing event size
+	$: eventSize = event.event_size || calculateEventSize(event.capacity);
+	$: eventSizeLabel = getEventSizeLabel(eventSize);
+	$: eventSizeDesc = getEventSizeDescription(eventSize);
 </script>
 
 <BaseLayout>
@@ -87,13 +97,21 @@
 			</div>
 		</div>
 
-		<!-- Event Type Badge -->
-		<div class="mb-6">
+		<!-- Event Type Badge & Size Badge -->
+		<div class="mb-6 flex flex-wrap gap-2">
 			<span
 				class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
 			>
 				{getEventTypeLabel(event.event_type)}
 			</span>
+			{#if eventSizeLabel}
+				<span
+					class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800"
+					title={eventSizeDesc || ''}
+				>
+					{eventSizeLabel} Group
+				</span>
+			{/if}
 		</div>
 
 		<!-- Format Tags -->
