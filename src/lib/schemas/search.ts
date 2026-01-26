@@ -12,5 +12,3 @@ export const searchQuerySchema = z.object({
 		.max(100, 'Search query must be 100 characters or less'),
 	type: z.enum(['all', 'events', 'groups']).default('all')
 });
-
-export type SearchQuery = z.infer<typeof searchQuerySchema>;

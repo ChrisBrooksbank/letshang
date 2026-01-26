@@ -1,16 +1,45 @@
 // Tests for search functionality
-// Validates search logic for events and groups
+// Validates search logic for events and groups with relevance ranking
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { searchEvents, searchGroups, search } from './search';
 import { supabaseAdmin } from './supabase';
+import type { PostgrestSingleResponse, PostgrestError } from '@supabase/supabase-js';
 
 // Mock supabaseAdmin
 vi.mock('./supabase', () => ({
 	supabaseAdmin: {
-		from: vi.fn()
+		rpc: vi.fn()
 	}
 }));
+
+// Helper function to create proper mock responses
+function mockSuccess<T>(data: T): PostgrestSingleResponse<T> {
+	return {
+		data,
+		error: null,
+		count: null,
+		status: 200,
+		statusText: 'OK'
+	};
+}
+
+function mockError(message: string): PostgrestSingleResponse<null> {
+	const error: PostgrestError = {
+		message,
+		details: '',
+		hint: '',
+		code: 'PGRST000',
+		name: 'PostgrestError'
+	};
+	return {
+		data: null,
+		error,
+		count: null,
+		status: 400,
+		statusText: 'Bad Request'
+	};
+}
 
 describe('Search Functionality', () => {
 	beforeEach(() => {
@@ -18,7 +47,7 @@ describe('Search Functionality', () => {
 	});
 
 	describe('searchEvents', () => {
-		it('should return public events matching query', async () => {
+		it('should return relevance-ranked events matching query', async () => {
 			const mockEvents = [
 				{
 					id: 'event-1',
@@ -32,28 +61,45 @@ describe('Search Functionality', () => {
 					cover_image_url: null,
 					visibility: 'public',
 					creator_id: 'user-1',
-					group_id: null
+					group_id: null,
+					rank: 0.95
 				}
 			];
 
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				gte: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: mockEvents, error: null })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess(mockEvents));
 
 			const results = await searchEvents('yoga', 'user-1');
 
 			expect(results).toHaveLength(1);
 			expect(results[0].title).toBe('Yoga in the Park');
-			expect(supabaseAdmin.from).toHaveBeenCalledWith('events');
+			expect(results[0].rank).toBe(0.95);
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'yoga',
+				max_results: 20,
+				current_user_id: 'user-1'
+			});
 		});
 
-		it('should filter out non-public events for unauthenticated users', async () => {
+		it('should handle special characters in query', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
+
+			await searchEvents('yoga & meditation!', 'user-1');
+
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'yoga   meditation',
+				max_results: 20,
+				current_user_id: 'user-1'
+			});
+		});
+
+		it('should return empty array for empty query', async () => {
+			const results = await searchEvents('   ', 'user-1');
+
+			expect(results).toEqual([]);
+			expect(supabaseAdmin.rpc).not.toHaveBeenCalled();
+		});
+
+		it('should work with null userId', async () => {
 			const mockEvents = [
 				{
 					id: 'event-1',
@@ -67,125 +113,86 @@ describe('Search Functionality', () => {
 					cover_image_url: null,
 					visibility: 'public',
 					creator_id: 'user-1',
-					group_id: null
-				},
-				{
-					id: 'event-2',
-					title: 'Private Event',
-					description: 'Members only',
-					event_type: 'online',
-					start_time: '2026-02-01T10:00:00Z',
-					venue_name: null,
-					venue_address: null,
-					capacity: null,
-					cover_image_url: null,
-					visibility: 'group_only',
-					creator_id: 'user-2',
-					group_id: 'group-1'
+					group_id: null,
+					rank: 0.8
 				}
 			];
 
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				gte: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: mockEvents, error: null })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess(mockEvents));
 
 			const results = await searchEvents('event', null);
 
 			expect(results).toHaveLength(1);
-			expect(results[0].title).toBe('Public Event');
-		});
-
-		it('should include creator own events regardless of visibility', async () => {
-			const mockEvents = [
-				{
-					id: 'event-1',
-					title: 'My Hidden Event',
-					description: 'Private event',
-					event_type: 'online',
-					start_time: '2026-02-01T10:00:00Z',
-					venue_name: null,
-					venue_address: null,
-					capacity: null,
-					cover_image_url: null,
-					visibility: 'hidden',
-					creator_id: 'user-1',
-					group_id: null
-				}
-			];
-
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				gte: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: mockEvents, error: null })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
-
-			const results = await searchEvents('event', 'user-1');
-
-			expect(results).toHaveLength(1);
-			expect(results[0].title).toBe('My Hidden Event');
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'event',
+				max_results: 20,
+				current_user_id: null
+			});
 		});
 
 		it('should return empty array on database error', async () => {
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				gte: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockError('DB error'));
 
 			const results = await searchEvents('yoga', 'user-1');
 
 			expect(results).toEqual([]);
 		});
 
-		it('should limit results to specified number', async () => {
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				gte: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: [], error: null })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+		it('should handle limit parameter', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
 
 			await searchEvents('test', 'user-1', 10);
 
-			expect(mockQuery.limit).toHaveBeenCalledWith(10);
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'test',
+				max_results: 10,
+				current_user_id: 'user-1'
+			});
 		});
 
 		it('should use default limit of 20', async () => {
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				gte: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: [], error: null })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
 
 			await searchEvents('test', 'user-1');
 
-			expect(mockQuery.limit).toHaveBeenCalledWith(20);
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'test',
+				max_results: 20,
+				current_user_id: 'user-1'
+			});
+		});
+
+		it('should handle null data response', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess(null));
+
+			const results = await searchEvents('test', 'user-1');
+
+			expect(results).toEqual([]);
+		});
+
+		it('should trim whitespace from query', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
+
+			await searchEvents('  yoga class  ', 'user-1');
+
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_events_ranked', {
+				search_query: 'yoga class',
+				max_results: 20,
+				current_user_id: 'user-1'
+			});
+		});
+
+		it('should handle exception during RPC call', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockRejectedValue(new Error('Network error'));
+
+			const results = await searchEvents('test', 'user-1');
+
+			expect(results).toEqual([]);
 		});
 	});
 
 	describe('searchGroups', () => {
-		it('should return public groups matching query', async () => {
+		it('should return relevance-ranked groups matching query', async () => {
 			const mockGroups = [
 				{
 					id: 'group-1',
@@ -194,89 +201,114 @@ describe('Search Functionality', () => {
 					cover_image_url: null,
 					group_type: 'public',
 					location: 'Seattle, WA',
-					organizer_id: 'user-1'
+					organizer_id: 'user-1',
+					rank: 0.92
 				}
 			];
 
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				eq: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: mockGroups, error: null })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess(mockGroups));
 
 			const results = await searchGroups('yoga', 'user-1');
 
 			expect(results).toHaveLength(1);
 			expect(results[0].name).toBe('Yoga Enthusiasts');
-			expect(supabaseAdmin.from).toHaveBeenCalledWith('groups');
+			expect(results[0].rank).toBe(0.92);
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_groups_ranked', {
+				search_query: 'yoga',
+				max_results: 20,
+				current_user_id: 'user-1'
+			});
 		});
 
-		it('should only search public groups', async () => {
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				eq: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: [], error: null })
-			};
+		it('should handle special characters in query', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
 
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+			await searchGroups('tech & startups!', 'user-1');
 
-			await searchGroups('test', 'user-1');
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_groups_ranked', {
+				search_query: 'tech   startups',
+				max_results: 20,
+				current_user_id: 'user-1'
+			});
+		});
 
-			expect(mockQuery.eq).toHaveBeenCalledWith('group_type', 'public');
+		it('should return empty array for empty query', async () => {
+			const results = await searchGroups('   ', 'user-1');
+
+			expect(results).toEqual([]);
+			expect(supabaseAdmin.rpc).not.toHaveBeenCalled();
 		});
 
 		it('should return empty array on database error', async () => {
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				eq: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: null, error: { message: 'DB error' } })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockError('DB error'));
 
 			const results = await searchGroups('yoga', 'user-1');
 
 			expect(results).toEqual([]);
 		});
 
-		it('should limit results to specified number', async () => {
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				eq: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: [], error: null })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+		it('should handle limit parameter', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
 
 			await searchGroups('test', 'user-1', 5);
 
-			expect(mockQuery.limit).toHaveBeenCalledWith(5);
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_groups_ranked', {
+				search_query: 'test',
+				max_results: 5,
+				current_user_id: 'user-1'
+			});
 		});
 
 		it('should use default limit of 20', async () => {
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				eq: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: [], error: null })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
 
 			await searchGroups('test', 'user-1');
 
-			expect(mockQuery.limit).toHaveBeenCalledWith(20);
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_groups_ranked', {
+				search_query: 'test',
+				max_results: 20,
+				current_user_id: 'user-1'
+			});
+		});
+
+		it('should handle null data response', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess(null));
+
+			const results = await searchGroups('test', 'user-1');
+
+			expect(results).toEqual([]);
+		});
+
+		it('should trim whitespace from query', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
+
+			await searchGroups('  tech community  ', 'user-1');
+
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_groups_ranked', {
+				search_query: 'tech community',
+				max_results: 20,
+				current_user_id: 'user-1'
+			});
+		});
+
+		it('should handle exception during RPC call', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockRejectedValue(new Error('Network error'));
+
+			const results = await searchGroups('test', 'user-1');
+
+			expect(results).toEqual([]);
+		});
+
+		it('should work with null userId', async () => {
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
+
+			await searchGroups('test', null);
+
+			expect(supabaseAdmin.rpc).toHaveBeenCalledWith('search_groups_ranked', {
+				search_query: 'test',
+				max_results: 20,
+				current_user_id: null
+			});
 		});
 	});
 
@@ -295,7 +327,8 @@ describe('Search Functionality', () => {
 					cover_image_url: null,
 					visibility: 'public',
 					creator_id: 'user-1',
-					group_id: null
+					group_id: null,
+					rank: 0.9
 				}
 			];
 
@@ -307,23 +340,14 @@ describe('Search Functionality', () => {
 					cover_image_url: null,
 					group_type: 'public',
 					location: 'Seattle',
-					organizer_id: 'user-1'
+					organizer_id: 'user-1',
+					rank: 0.85
 				}
 			];
 
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				eq: vi.fn().mockReturnThis(),
-				gte: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi
-					.fn()
-					.mockResolvedValueOnce({ data: mockEvents, error: null })
-					.mockResolvedValueOnce({ data: mockGroups, error: null })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+			vi.mocked(supabaseAdmin.rpc)
+				.mockResolvedValueOnce(mockSuccess(mockEvents))
+				.mockResolvedValueOnce(mockSuccess(mockGroups));
 
 			const results = await search('yoga', 'user-1');
 
@@ -334,16 +358,7 @@ describe('Search Functionality', () => {
 		});
 
 		it('should work with null userId', async () => {
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				eq: vi.fn().mockReturnThis(),
-				gte: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: [], error: null })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
 
 			const results = await search('test', null);
 
@@ -354,16 +369,7 @@ describe('Search Functionality', () => {
 		});
 
 		it('should handle empty results', async () => {
-			const mockQuery = {
-				select: vi.fn().mockReturnThis(),
-				eq: vi.fn().mockReturnThis(),
-				gte: vi.fn().mockReturnThis(),
-				order: vi.fn().mockReturnThis(),
-				limit: vi.fn().mockReturnThis(),
-				textSearch: vi.fn().mockResolvedValue({ data: [], error: null })
-			};
-
-			vi.mocked(supabaseAdmin.from).mockReturnValue(mockQuery as never);
+			vi.mocked(supabaseAdmin.rpc).mockResolvedValue(mockSuccess([]));
 
 			const results = await search('nonexistent', 'user-1');
 
@@ -371,6 +377,43 @@ describe('Search Functionality', () => {
 			expect(results.groups).toEqual([]);
 			expect(results.eventsCount).toBe(0);
 			expect(results.groupsCount).toBe(0);
+		});
+
+		it('should handle errors gracefully', async () => {
+			vi.mocked(supabaseAdmin.rpc)
+				.mockResolvedValueOnce(mockError('DB error'))
+				.mockResolvedValueOnce(mockSuccess([]));
+
+			const results = await search('test', 'user-1');
+
+			expect(results.events).toEqual([]);
+			expect(results.groups).toEqual([]);
+		});
+
+		it('should handle partial failures', async () => {
+			const mockGroups = [
+				{
+					id: 'group-1',
+					name: 'Tech Group',
+					description: 'Tech community',
+					cover_image_url: null,
+					group_type: 'public',
+					location: 'Seattle',
+					organizer_id: 'user-1',
+					rank: 0.75
+				}
+			];
+
+			vi.mocked(supabaseAdmin.rpc)
+				.mockResolvedValueOnce(mockError('DB error'))
+				.mockResolvedValueOnce(mockSuccess(mockGroups));
+
+			const results = await search('tech', 'user-1');
+
+			expect(results.events).toEqual([]);
+			expect(results.groups).toHaveLength(1);
+			expect(results.eventsCount).toBe(0);
+			expect(results.groupsCount).toBe(1);
 		});
 	});
 });

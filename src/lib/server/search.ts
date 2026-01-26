@@ -16,6 +16,7 @@ export interface SearchEventResult {
 	visibility: string;
 	creator_id: string;
 	group_id: string | null;
+	rank?: number; // Relevance ranking score
 }
 
 export interface SearchGroupResult {
@@ -26,6 +27,7 @@ export interface SearchGroupResult {
 	group_type: string;
 	location: string | null;
 	organizer_id: string;
+	rank?: number; // Relevance ranking score
 }
 
 export interface SearchResults {
@@ -36,11 +38,11 @@ export interface SearchResults {
 }
 
 /**
- * Search for events using full-text search
+ * Search for events using relevance-ranked full-text search
  * @param query - Search query string
  * @param userId - Current user ID (for RLS)
  * @param limit - Maximum number of results (default: 20)
- * @returns Array of matching events
+ * @returns Array of matching events, ordered by relevance
  */
 export async function searchEvents(
 	query: string,
@@ -48,67 +50,31 @@ export async function searchEvents(
 	limit = 20
 ): Promise<SearchEventResult[]> {
 	try {
-		// Build the query
-		let dbQuery = supabaseAdmin
-			.from('events')
-			.select(
-				`
-				id,
-				title,
-				description,
-				event_type,
-				start_time,
-				venue_name,
-				venue_address,
-				capacity,
-				cover_image_url,
-				visibility,
-				creator_id,
-				group_id
-			`
-			)
-			// Only search public events and future events
-			.gte('start_time', new Date().toISOString())
-			.order('start_time', { ascending: true })
-			.limit(limit);
+		// Prepare search query with typo tolerance
+		// websearch_to_tsquery provides better fuzzy matching and handles typos
+		const searchTerm = query
+			.trim()
+			.replace(/[^\w\s]/g, ' ')
+			.trim();
 
-		// Apply full-text search using to_tsvector
-		const searchQuery = query.trim().split(/\s+/).join(' & ');
-		dbQuery = dbQuery.textSearch('title,description', searchQuery, {
-			type: 'websearch',
-			config: 'english'
+		if (!searchTerm) {
+			return [];
+		}
+
+		// Use RPC call for relevance-ranked search with typo tolerance
+		// This uses ts_rank_cd for relevance scoring and websearch_to_tsquery for fuzzy matching
+		const { data, error } = await supabaseAdmin.rpc('search_events_ranked', {
+			search_query: searchTerm,
+			max_results: limit,
+			current_user_id: userId
 		});
-
-		const { data, error } = await dbQuery;
 
 		if (error) {
 			// Log error for debugging but don't expose details to client
 			throw error;
 		}
 
-		// Filter based on visibility and user
-		const filteredData = (data || []).filter((event) => {
-			// Public events are always visible
-			if (event.visibility === 'public') {
-				return true;
-			}
-
-			// If no user, only show public events
-			if (!userId) {
-				return false;
-			}
-
-			// Creator can always see their own events
-			if (event.creator_id === userId) {
-				return true;
-			}
-
-			// For group_only and hidden events, additional checks would be needed
-			// For now, we'll only show public events in search results
-			return false;
-		});
-
-		return filteredData as SearchEventResult[];
+		return (data || []) as SearchEventResult[];
 	} catch {
 		// Return empty array on error to prevent search from failing
 		return [];
@@ -116,41 +82,34 @@ export async function searchEvents(
 }
 
 /**
- * Search for groups using full-text search
+ * Search for groups using relevance-ranked full-text search
  * @param query - Search query string
- * @param _userId - Current user ID (reserved for future RLS implementation)
+ * @param userId - Current user ID (for future private group access)
  * @param limit - Maximum number of results (default: 20)
- * @returns Array of matching groups
+ * @returns Array of matching groups, ordered by relevance
  */
 export async function searchGroups(
 	query: string,
-	_userId: string | null = null,
+	userId: string | null = null,
 	limit = 20
 ): Promise<SearchGroupResult[]> {
 	try {
-		// Build the query - only search public groups for now
-		const dbQuery = supabaseAdmin
-			.from('groups')
-			.select(
-				`
-				id,
-				name,
-				description,
-				cover_image_url,
-				group_type,
-				location,
-				organizer_id
-			`
-			)
-			.eq('group_type', 'public')
-			.order('created_at', { ascending: false })
-			.limit(limit);
+		// Prepare search query with typo tolerance
+		const searchTerm = query
+			.trim()
+			.replace(/[^\w\s]/g, ' ')
+			.trim();
 
-		// Apply full-text search using to_tsvector
-		const searchQuery = query.trim().split(/\s+/).join(' & ');
-		const { data, error } = await dbQuery.textSearch('name,description', searchQuery, {
-			type: 'websearch',
-			config: 'english'
+		if (!searchTerm) {
+			return [];
+		}
+
+		// Use RPC call for relevance-ranked search with typo tolerance
+		// This uses ts_rank_cd for relevance scoring and websearch_to_tsquery for fuzzy matching
+		const { data, error } = await supabaseAdmin.rpc('search_groups_ranked', {
+			search_query: searchTerm,
+			max_results: limit,
+			current_user_id: userId
 		});
 
 		if (error) {
