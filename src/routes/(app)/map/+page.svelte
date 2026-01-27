@@ -1,5 +1,4 @@
 <script lang="ts">
-	/* eslint-disable no-undef */
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { env } from '$env/dynamic/public';

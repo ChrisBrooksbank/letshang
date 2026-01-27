@@ -157,7 +157,9 @@
 	<div class="calendar-grid p-4">
 		<!-- Day headers -->
 		<div
-			class="grid {view === 'month' ? 'grid-cols-7' : 'grid-cols-7'} gap-2 mb-2 text-center text-sm font-medium text-gray-600"
+			class="grid {view === 'month'
+				? 'grid-cols-7'
+				: 'grid-cols-7'} gap-2 mb-2 text-center text-sm font-medium text-gray-600"
 		>
 			{#each Array(7) as _, i}
 				<div>{getDayName(i, true)}</div>
@@ -175,7 +177,11 @@
 				{@const isDayToday = isToday(day)}
 
 				<div
-					class="calendar-day border rounded p-2 {isDayToday ? 'bg-blue-50 border-blue-300' : 'border-gray-200'} {!isCurrentMonth && view === 'month' ? 'opacity-40' : ''} hover:bg-gray-50 cursor-pointer"
+					class="calendar-day border rounded p-2 {isDayToday
+						? 'bg-blue-50 border-blue-300'
+						: 'border-gray-200'} {!isCurrentMonth && view === 'month'
+						? 'opacity-40'
+						: ''} hover:bg-gray-50 cursor-pointer"
 					role="button"
 					tabindex="0"
 				>
@@ -188,7 +194,9 @@
 							{#each dayEvents.slice(0, 3) as event}
 								<a
 									href="/events/{event.id}"
-									class="block text-xs px-2 py-1 rounded border {getRsvpStatusColor(event.rsvp_status)} truncate hover:shadow-sm"
+									class="block text-xs px-2 py-1 rounded border {getRsvpStatusColor(
+										event.rsvp_status
+									)} truncate hover:shadow-sm"
 									title="{event.title} at {formatTime(event.start_time)}"
 								>
 									<div class="font-medium truncate">{formatTime(event.start_time)}</div>

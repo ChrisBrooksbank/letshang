@@ -749,10 +749,18 @@
 
 > Notification system (spec: 07-communication.md)
 
-- [ ] Implement notification preferences [P1]
-  - AC: Per-type toggles (events, messages, etc.)
-  - AC: Per-channel toggles (push, email, in-app)
-  - AC: Saved per user
+- [x] Implement notification preferences [P1] ✓
+  - AC: Per-type channel toggles ✓
+  - AC: Saved per user ✓
+  - AC: Accessible from settings ✓
+  - Implementation: Created notification_preferences table with 7 notification types
+  - Implementation: Database trigger auto-initializes default preferences on user signup
+  - Implementation: /settings page with toggle table for managing preferences
+  - Implementation: Real-time updates with optimistic UI and error handling
+  - Schema: notificationTypeEnum and notificationPreferenceSchema with validation
+  - Server: fetchUserNotificationPreferences() and updateNotificationPreference() functions
+  - Coverage: 100% on new code (12 schema + 22 server + 8 page server = 42 tests)
+  - Commit: [next]
 
 - [ ] Build email notification templates [P1]
   - AC: Branded, mobile-friendly

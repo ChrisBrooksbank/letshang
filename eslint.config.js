@@ -33,8 +33,10 @@ export default [
 				clearTimeout: 'readonly',
 				Event: 'readonly',
 				confirm: 'readonly',
+				window: 'readonly',
 				HTMLDivElement: 'readonly',
 				HTMLSelectElement: 'readonly',
+				HTMLInputElement: 'readonly',
 				// SvelteKit App namespace
 				App: 'readonly'
 			}
