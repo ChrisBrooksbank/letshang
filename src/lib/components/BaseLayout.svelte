@@ -23,18 +23,20 @@
 		children,
 		header,
 		footer,
-		showNav = true
+		showNav = true,
+		unreadNotificationCount = 0
 	} = $props<{
 		children: import('svelte').Snippet;
 		header?: import('svelte').Snippet;
 		footer?: import('svelte').Snippet;
 		showNav?: boolean;
+		unreadNotificationCount?: number;
 	}>();
 </script>
 
 <div class="base-layout">
 	{#if showNav}
-		<AppNavigation />
+		<AppNavigation unreadCount={unreadNotificationCount} />
 	{/if}
 
 	{#if header}

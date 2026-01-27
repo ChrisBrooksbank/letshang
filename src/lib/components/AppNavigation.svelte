@@ -8,7 +8,14 @@
 	 * - Touch-friendly targets (44px minimum)
 	 * - Active route highlighting
 	 * - Responsive layout (bottom on mobile, top on desktop)
+	 * - Unread notification badge
 	 */
+
+	interface Props {
+		unreadCount?: number;
+	}
+
+	let { unreadCount = 0 }: Props = $props();
 
 	// Navigation items
 	const navItems = [
@@ -16,6 +23,7 @@
 		{ href: '/map', label: 'Map', icon: '🗺️' },
 		{ href: '/search', label: 'Search', icon: '🔍' },
 		{ href: '/calendar', label: 'Calendar', icon: '📅' },
+		{ href: '/notifications', label: 'Alerts', icon: '🔔', badge: true },
 		{ href: '/categories', label: 'Browse', icon: '📂' }
 	];
 
@@ -35,7 +43,14 @@
 					class:app-nav__link--active={isActive(item.href)}
 					aria-current={isActive(item.href) ? 'page' : undefined}
 				>
-					<span class="app-nav__icon">{item.icon}</span>
+					<span class="app-nav__icon-wrapper">
+						<span class="app-nav__icon">{item.icon}</span>
+						{#if item.badge && unreadCount > 0}
+							<span class="app-nav__badge" aria-label="{unreadCount} unread notifications">
+								{unreadCount > 99 ? '99+' : unreadCount}
+							</span>
+						{/if}
+					</span>
 					<span class="app-nav__label">{item.label}</span>
 				</a>
 			</li>
@@ -92,9 +107,29 @@
 		font-weight: 600;
 	}
 
+	.app-nav__icon-wrapper {
+		position: relative;
+		display: inline-block;
+	}
+
 	.app-nav__icon {
 		font-size: 1.5rem;
 		line-height: 1;
+	}
+
+	.app-nav__badge {
+		position: absolute;
+		top: -4px;
+		right: -8px;
+		background: #dc2626;
+		color: white;
+		font-size: 0.625rem;
+		font-weight: 700;
+		line-height: 1;
+		padding: 0.125rem 0.25rem;
+		border-radius: 9999px;
+		min-width: 1rem;
+		text-align: center;
 	}
 
 	.app-nav__label {

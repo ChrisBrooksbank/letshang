@@ -26,7 +26,24 @@ export const notificationPreferenceSchema = z.object({
 });
 
 /**
+ * Notification schema
+ * Represents an individual notification in the notification center
+ */
+export const notificationSchema = z.object({
+	id: z.string().uuid(),
+	userId: z.string().uuid(),
+	notificationType: notificationTypeEnum,
+	title: z.string().min(1).max(100),
+	message: z.string().min(1).max(500),
+	link: z.string().nullable(),
+	isRead: z.boolean(),
+	createdAt: z.string().datetime(),
+	readAt: z.string().datetime().nullable()
+});
+
+/**
  * Type exports
  */
 export type NotificationType = z.infer<typeof notificationTypeEnum>;
 export type NotificationPreference = z.infer<typeof notificationPreferenceSchema>;
+export type Notification = z.infer<typeof notificationSchema>;

@@ -3,7 +3,11 @@ import {
 	fetchUserNotificationPreferences,
 	updateNotificationPreference,
 	updateMultipleNotificationPreferences,
-	initializeNotificationPreferences
+	initializeNotificationPreferences,
+	fetchNotifications,
+	getUnreadNotificationCount,
+	markNotificationRead,
+	markAllNotificationsRead
 } from './notifications';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -288,6 +292,225 @@ describe('initializeNotificationPreferences', () => {
 
 		await expect(initializeNotificationPreferences(mockSupabase, 'user-123')).rejects.toThrow(
 			'Failed to initialize notification preferences'
+		);
+	});
+});
+
+describe('fetchNotifications', () => {
+	let mockSupabase: SupabaseClient;
+
+	beforeEach(() => {
+		mockSupabase = createMockSupabaseClient();
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
+	it('fetches and transforms notifications', async () => {
+		const mockData = [
+			{
+				id: 'notif-1',
+				user_id: 'user-1',
+				notification_type: 'event_reminder',
+				title: 'Event starting soon',
+				message: 'Your event starts in 1 hour',
+				link: '/events/123',
+				is_read: false,
+				created_at: '2026-01-27T10:00:00Z',
+				read_at: null
+			},
+			{
+				id: 'notif-2',
+				user_id: 'user-1',
+				notification_type: 'rsvp_confirmation',
+				title: 'RSVP confirmed',
+				message: 'You are going to Test Event',
+				link: '/events/456',
+				is_read: true,
+				created_at: '2026-01-26T15:00:00Z',
+				read_at: '2026-01-26T16:00:00Z'
+			}
+		];
+
+		const mockFrom = vi.fn().mockReturnValue({
+			select: vi.fn().mockReturnValue({
+				order: vi.fn().mockReturnValue({
+					range: vi.fn().mockResolvedValue({
+						data: mockData,
+						error: null
+					})
+				})
+			})
+		});
+
+		(mockSupabase.from as ReturnType<typeof vi.fn>) = mockFrom;
+
+		const result = await fetchNotifications(mockSupabase, 50, 0);
+
+		expect(mockFrom).toHaveBeenCalledWith('notifications');
+		expect(result).toHaveLength(2);
+		expect(result[0]).toEqual({
+			id: 'notif-1',
+			userId: 'user-1',
+			notificationType: 'event_reminder',
+			title: 'Event starting soon',
+			message: 'Your event starts in 1 hour',
+			link: '/events/123',
+			isRead: false,
+			createdAt: '2026-01-27T10:00:00Z',
+			readAt: null
+		});
+		expect(result[1].isRead).toBe(true);
+	});
+
+	it('returns empty array when no notifications exist', async () => {
+		const mockFrom = vi.fn().mockReturnValue({
+			select: vi.fn().mockReturnValue({
+				order: vi.fn().mockReturnValue({
+					range: vi.fn().mockResolvedValue({
+						data: [],
+						error: null
+					})
+				})
+			})
+		});
+
+		(mockSupabase.from as ReturnType<typeof vi.fn>) = mockFrom;
+
+		const result = await fetchNotifications(mockSupabase);
+
+		expect(result).toEqual([]);
+	});
+
+	it('throws error when database query fails', async () => {
+		const mockFrom = vi.fn().mockReturnValue({
+			select: vi.fn().mockReturnValue({
+				order: vi.fn().mockReturnValue({
+					range: vi.fn().mockResolvedValue({
+						data: null,
+						error: { message: 'Database error' }
+					})
+				})
+			})
+		});
+
+		(mockSupabase.from as ReturnType<typeof vi.fn>) = mockFrom;
+
+		await expect(fetchNotifications(mockSupabase)).rejects.toThrow('Failed to fetch notifications');
+	});
+});
+
+describe('getUnreadNotificationCount', () => {
+	let mockSupabase: SupabaseClient;
+
+	beforeEach(() => {
+		mockSupabase = createMockSupabaseClient();
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
+	it('returns unread count from RPC', async () => {
+		const mockRpc = vi.fn().mockResolvedValue({
+			data: 5,
+			error: null
+		});
+
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>) = mockRpc;
+
+		const result = await getUnreadNotificationCount(mockSupabase);
+
+		expect(mockRpc).toHaveBeenCalledWith('get_unread_notification_count');
+		expect(result).toBe(5);
+	});
+
+	it('returns 0 when no unread notifications', async () => {
+		const mockRpc = vi.fn().mockResolvedValue({
+			data: 0,
+			error: null
+		});
+
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>) = mockRpc;
+
+		const result = await getUnreadNotificationCount(mockSupabase);
+
+		expect(result).toBe(0);
+	});
+
+	it('throws error when RPC fails', async () => {
+		const mockRpc = vi.fn().mockResolvedValue({
+			data: null,
+			error: { message: 'RPC error' }
+		});
+
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>) = mockRpc;
+
+		await expect(getUnreadNotificationCount(mockSupabase)).rejects.toThrow(
+			'Failed to get unread notification count'
+		);
+	});
+});
+
+describe('markNotificationRead', () => {
+	let mockSupabase: SupabaseClient;
+
+	beforeEach(() => {
+		mockSupabase = createMockSupabaseClient();
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
+	it('marks notification as read successfully', async () => {
+		const mockRpc = vi.fn().mockResolvedValue({
+			error: null
+		});
+
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>) = mockRpc;
+
+		await markNotificationRead(mockSupabase, 'notif-123');
+
+		expect(mockRpc).toHaveBeenCalledWith('mark_notification_read', {
+			p_notification_id: 'notif-123'
+		});
+	});
+
+	it('throws error when RPC fails', async () => {
+		const mockRpc = vi.fn().mockResolvedValue({
+			error: { message: 'RPC error' }
+		});
+
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>) = mockRpc;
+
+		await expect(markNotificationRead(mockSupabase, 'notif-123')).rejects.toThrow(
+			'Failed to mark notification as read'
+		);
+	});
+});
+
+describe('markAllNotificationsRead', () => {
+	let mockSupabase: SupabaseClient;
+
+	beforeEach(() => {
+		mockSupabase = createMockSupabaseClient();
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
+	it('marks all notifications as read successfully', async () => {
+		const mockRpc = vi.fn().mockResolvedValue({
+			error: null
+		});
+
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>) = mockRpc;
+
+		await markAllNotificationsRead(mockSupabase);
+
+		expect(mockRpc).toHaveBeenCalledWith('mark_all_notifications_read');
+	});
+
+	it('throws error when RPC fails', async () => {
+		const mockRpc = vi.fn().mockResolvedValue({
+			error: { message: 'RPC error' }
+		});
+
+		(mockSupabase.rpc as ReturnType<typeof vi.fn>) = mockRpc;
+
+		await expect(markAllNotificationsRead(mockSupabase)).rejects.toThrow(
+			'Failed to mark all notifications as read'
 		);
 	});
 });

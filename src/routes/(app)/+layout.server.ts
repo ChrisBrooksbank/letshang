@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
+import { getUnreadNotificationCount } from '$lib/server/notifications';
 
 /**
  * Protected route layout.
@@ -13,8 +14,18 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 		throw redirect(303, `/login?redirectTo=${encodeURIComponent(redirectTo)}`);
 	}
 
+	// Fetch unread notification count for navigation badge
+	let unreadNotificationCount = 0;
+	try {
+		unreadNotificationCount = await getUnreadNotificationCount(locals.supabase);
+	} catch (error) {
+		console.error('Error fetching unread notification count:', error);
+		// Don't fail the page load if notification count fails
+	}
+
 	return {
 		session: locals.session,
-		user: locals.user
+		user: locals.user,
+		unreadNotificationCount
 	};
 };

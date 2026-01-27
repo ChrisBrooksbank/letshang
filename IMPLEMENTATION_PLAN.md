@@ -762,10 +762,15 @@
   - Coverage: 100% on new code (12 schema + 22 server + 8 page server = 42 tests)
   - Commit: [next]
 
-- [ ] Build email notification templates [P1]
-  - AC: Branded, mobile-friendly
-  - AC: Unsubscribe link
-  - AC: Event reminders, RSVP confirmations
+- [x] Build email notification templates [P1] ✓
+  - AC: Branded, mobile-friendly ✓
+  - AC: Unsubscribe link ✓
+  - AC: Event reminders, RSVP confirmations ✓
+  - Implementation: Created comprehensive HTML email templates for all 7 notification types
+  - Templates: Event reminders (7-day/2-day/day-of), RSVP confirmations, waitlist promotions, new events, announcements, updates/cancellations, messages
+  - Features: Mobile-responsive design, LetsHang branding, XSS protection, manage preferences link
+  - Coverage: 25 tests (100% on new code)
+  - Commit: ad7b231
 
 - [ ] Implement in-app notification center [P1]
   - AC: Bell icon with unread count
