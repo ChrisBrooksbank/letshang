@@ -772,10 +772,20 @@
   - Coverage: 25 tests (100% on new code)
   - Commit: ad7b231
 
-- [ ] Implement in-app notification center [P1]
-  - AC: Bell icon with unread count
-  - AC: Notification list with actions
-  - AC: Mark read/all read
+- [x] Implement in-app notification center [P1] ✓
+  - AC: Bell icon with unread count ✓
+  - AC: Notification list with actions ✓
+  - AC: Mark read/all read ✓
+  - Implementation: Created notifications database table with RLS policies
+  - Database: Functions for mark_notification_read(), mark_all_notifications_read(), get_unread_notification_count()
+  - Server: fetchNotifications(), getUnreadNotificationCount(), markNotificationRead(), markAllNotificationsRead()
+  - UI: /notifications route with mobile-responsive notification list
+  - Navigation: Bell icon in AppNavigation with red badge showing unread count
+  - Features: Tap-to-mark-read, empty state, relative time formatting, icon mapping per type
+  - Schema: notificationSchema with Zod validation (title 1-100 chars, message 1-500 chars)
+  - Layout: (app) layout loads unreadNotificationCount, BaseLayout passes to AppNavigation
+  - Coverage: 24 new tests (13 server + 7 schema + 4 page server), 100% on new code
+  - Commit: 8f2670b
 
 - [ ] Create push notification system [P1]
   - AC: Web Push API integration
