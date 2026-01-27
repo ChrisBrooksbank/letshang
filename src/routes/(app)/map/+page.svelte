@@ -12,6 +12,16 @@
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let map: any | null = null;
 	let isFullscreen = $state(false);
+	let showSearchButton = $state(false);
+	let isSearching = $state(false);
+	// Create mutable state from initial data
+	let events = $state<typeof data.events>([]);
+	let initialCenter: [number, number] | null = null;
+
+	// Initialize events from data
+	$effect(() => {
+		events = data.events;
+	});
 
 	/**
 	 * Toggle fullscreen map mode
@@ -62,6 +72,79 @@
 		goto(`/events/${eventId}`);
 	}
 
+	/**
+	 * Update map with new events data
+	 */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	function updateMapData(newEvents: any[]) {
+		if (!map) return;
+
+		// Create GeoJSON feature collection from events
+		const geojson = {
+			type: 'FeatureCollection',
+			features: newEvents
+				.filter((event) => event.venue_lat && event.venue_lng)
+				.map((event) => ({
+					type: 'Feature',
+					geometry: {
+						type: 'Point',
+						coordinates: [event.venue_lng, event.venue_lat]
+					},
+					properties: {
+						event_id: event.event_id,
+						title: event.title,
+						start_time: event.start_time,
+						venue_name: event.venue_name || 'Venue TBD',
+						goingCount: event.goingCount,
+						interestedCount: event.interestedCount
+					}
+				}))
+		};
+
+		// Update the source data
+		const source = map.getSource('events');
+		if (source) {
+			source.setData(geojson);
+		}
+
+		// Update events state
+		events = newEvents;
+	}
+
+	/**
+	 * Search for events in the current map area
+	 */
+	async function searchThisArea() {
+		if (!map) return;
+
+		isSearching = true;
+
+		try {
+			const bounds = map.getBounds();
+			const formData = new FormData();
+			formData.append('southWestLng', bounds.getWest().toString());
+			formData.append('southWestLat', bounds.getSouth().toString());
+			formData.append('northEastLng', bounds.getEast().toString());
+			formData.append('northEastLat', bounds.getNorth().toString());
+
+			const response = await fetch('?/searchArea', {
+				method: 'POST',
+				body: formData
+			});
+
+			const result = await response.json();
+			if (result.type === 'success' && result.data?.events) {
+				updateMapData(result.data.events);
+				showSearchButton = false;
+			}
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			console.error('Error searching area:', error);
+		} finally {
+			isSearching = false;
+		}
+	}
+
 	onMount(async () => {
 		// Dynamically import to avoid SSR issues
 		const mapboxgl = (await import('mapbox-gl')).default;
@@ -74,12 +157,15 @@
 		let centerLng = -122.4194; // Default to San Francisco
 		let centerLat = 37.7749;
 
-		if (data.events.length > 0) {
-			const sumLng = data.events.reduce((sum, e) => sum + (e.venue_lng || 0), 0);
-			const sumLat = data.events.reduce((sum, e) => sum + (e.venue_lat || 0), 0);
-			centerLng = sumLng / data.events.length;
-			centerLat = sumLat / data.events.length;
+		if (events.length > 0) {
+			const sumLng = events.reduce((sum, e) => sum + (e.venue_lng || 0), 0);
+			const sumLat = events.reduce((sum, e) => sum + (e.venue_lat || 0), 0);
+			centerLng = sumLng / events.length;
+			centerLat = sumLat / events.length;
 		}
+
+		// Store initial center for detecting map moves
+		initialCenter = [centerLng, centerLat];
 
 		// Initialize map
 		map = new mapboxgl.Map({
@@ -101,7 +187,7 @@
 			// Create GeoJSON feature collection from events
 			const geojson = {
 				type: 'FeatureCollection',
-				features: data.events
+				features: events
 					.filter((event) => event.venue_lat && event.venue_lng)
 					.map((event) => ({
 						type: 'Feature',
@@ -285,9 +371,9 @@
 			});
 
 			// Fit map to show all markers if we have events
-			if (data.events.length > 0 && data.events.length < 50) {
+			if (events.length > 0 && events.length < 50) {
 				const bounds = new mapboxgl.LngLatBounds();
-				data.events.forEach((event) => {
+				events.forEach((event) => {
 					if (event.venue_lat && event.venue_lng) {
 						bounds.extend([event.venue_lng, event.venue_lat]);
 					}
@@ -295,11 +381,24 @@
 				map.fitBounds(bounds, { padding: 50, maxZoom: 13 });
 			}
 		});
+
+		// Show search button when map is moved
+		map.on('moveend', () => {
+			if (!initialCenter) return;
+
+			const center = map.getCenter();
+			const movedDistance = Math.sqrt(
+				Math.pow(center.lng - initialCenter[0], 2) + Math.pow(center.lat - initialCenter[1], 2)
+			);
+
+			// Show button if moved more than ~0.01 degrees (~1km)
+			showSearchButton = movedDistance > 0.01;
+		});
 	});
 
 	onDestroy(() => {
 		// Cleanup event handlers attached to window
-		data.events.forEach((event) => {
+		events.forEach((event) => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			delete (window as any)[`viewEvent_${event.event_id}`];
 		});
@@ -320,7 +419,7 @@
 		<div class="map-header">
 			<h1 class="map-header__title">Discover Events</h1>
 			<div class="map-header__controls">
-				<span class="map-header__count">{data.events.length} events</span>
+				<span class="map-header__count">{events.length} events</span>
 				<button class="map-header__button" onclick={toggleFullscreen}>
 					{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
 				</button>
@@ -329,9 +428,20 @@
 
 		<div class="map-container" class:map-container--fullscreen={isFullscreen}>
 			<div bind:this={mapContainer} class="map"></div>
+
+			{#if showSearchButton}
+				<button
+					class="search-area-button"
+					onclick={searchThisArea}
+					disabled={isSearching}
+					aria-label="Search this area for events"
+				>
+					{isSearching ? 'Searching...' : 'Search this area'}
+				</button>
+			{/if}
 		</div>
 
-		{#if data.events.length === 0}
+		{#if events.length === 0}
 			<div class="map-empty">
 				<p class="map-empty__text">No upcoming events with locations found.</p>
 				<a href="/events/create" class="map-empty__button">Create an Event</a>
@@ -449,6 +559,39 @@
 
 	.map-empty__button:hover {
 		background: #1d4ed8;
+	}
+
+	/* Search area button */
+	.search-area-button {
+		position: absolute;
+		top: 1rem;
+		left: 50%;
+		transform: translateX(-50%);
+		padding: 0.75rem 1.5rem;
+		background: #2563eb;
+		color: white;
+		border: none;
+		border-radius: 2rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		cursor: pointer;
+		box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+		z-index: 10;
+		min-height: 44px;
+		transition:
+			background 0.2s,
+			transform 0.2s;
+	}
+
+	.search-area-button:hover:not(:disabled) {
+		background: #1d4ed8;
+		transform: translateX(-50%) translateY(-2px);
+		box-shadow: 0 6px 8px -1px rgb(0 0 0 / 0.15);
+	}
+
+	.search-area-button:disabled {
+		opacity: 0.7;
+		cursor: not-allowed;
 	}
 
 	/* Popup styles */
