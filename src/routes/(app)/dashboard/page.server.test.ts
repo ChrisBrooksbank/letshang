@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { PageServerLoad } from './$types';
 import * as happeningNowModule from '$lib/server/happening-now';
 import * as happeningTodayModule from '$lib/server/happening-today';
+import * as nearbyEventsModule from '$lib/server/nearby-events';
 
 // Mock the modules
 vi.mock('$lib/server/happening-now', () => ({
@@ -10,6 +11,11 @@ vi.mock('$lib/server/happening-now', () => ({
 
 vi.mock('$lib/server/happening-today', () => ({
 	fetchHappeningTodayEvents: vi.fn()
+}));
+
+vi.mock('$lib/server/nearby-events', () => ({
+	fetchNearbyEvents: vi.fn(),
+	fetchUserLocation: vi.fn()
 }));
 
 // Import load function after mocking
@@ -64,14 +70,28 @@ describe('Dashboard Page Server', () => {
 
 		vi.mocked(happeningNowModule.fetchHappeningNowEvents).mockResolvedValue(mockNowEvents);
 		vi.mocked(happeningTodayModule.fetchHappeningTodayEvents).mockResolvedValue(mockTodayEvents);
+		vi.mocked(nearbyEventsModule.fetchUserLocation).mockResolvedValue(null); // No user location
 
-		const result = (await load({} as never)) as {
+		const mockLocals = {
+			supabase: {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: { session: null },
+						error: null
+					})
+				}
+			}
+		};
+
+		const result = (await load({ locals: mockLocals } as never)) as {
 			happeningNowEvents: typeof mockNowEvents;
 			happeningTodayEvents: typeof mockTodayEvents;
+			nearbyEvents: unknown[];
 		};
 
 		expect(result.happeningNowEvents).toEqual(mockNowEvents);
 		expect(result.happeningTodayEvents).toEqual(mockTodayEvents);
+		expect(result.nearbyEvents).toEqual([]);
 		expect(happeningNowModule.fetchHappeningNowEvents).toHaveBeenCalledWith(expect.anything(), 10);
 		expect(happeningTodayModule.fetchHappeningTodayEvents).toHaveBeenCalledWith(
 			expect.anything(),
@@ -87,20 +107,45 @@ describe('Dashboard Page Server', () => {
 			new Error('Database error')
 		);
 
-		const result = (await load({} as never)) as {
+		const mockLocals = {
+			supabase: {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: { session: null },
+						error: null
+					})
+				}
+			}
+		};
+
+		const result = (await load({ locals: mockLocals } as never)) as {
 			happeningNowEvents: unknown[];
 			happeningTodayEvents: unknown[];
+			nearbyEvents: unknown[];
 		};
 
 		expect(result.happeningNowEvents).toEqual([]);
 		expect(result.happeningTodayEvents).toEqual([]);
+		expect(result.nearbyEvents).toEqual([]);
 	});
 
 	it('should limit happening now results to 10 events', async () => {
 		vi.mocked(happeningNowModule.fetchHappeningNowEvents).mockResolvedValue([]);
 		vi.mocked(happeningTodayModule.fetchHappeningTodayEvents).mockResolvedValue([]);
+		vi.mocked(nearbyEventsModule.fetchUserLocation).mockResolvedValue(null);
 
-		await load({} as never);
+		const mockLocals = {
+			supabase: {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: { session: null },
+						error: null
+					})
+				}
+			}
+		};
+
+		await load({ locals: mockLocals } as never);
 
 		expect(happeningNowModule.fetchHappeningNowEvents).toHaveBeenCalledWith(expect.anything(), 10);
 	});
@@ -108,8 +153,20 @@ describe('Dashboard Page Server', () => {
 	it('should limit happening today results to 20 events', async () => {
 		vi.mocked(happeningNowModule.fetchHappeningNowEvents).mockResolvedValue([]);
 		vi.mocked(happeningTodayModule.fetchHappeningTodayEvents).mockResolvedValue([]);
+		vi.mocked(nearbyEventsModule.fetchUserLocation).mockResolvedValue(null);
 
-		await load({} as never);
+		const mockLocals = {
+			supabase: {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: { session: null },
+						error: null
+					})
+				}
+			}
+		};
+
+		await load({ locals: mockLocals } as never);
 
 		expect(happeningTodayModule.fetchHappeningTodayEvents).toHaveBeenCalledWith(
 			expect.anything(),
@@ -120,8 +177,20 @@ describe('Dashboard Page Server', () => {
 	it('should fetch both event types in parallel', async () => {
 		vi.mocked(happeningNowModule.fetchHappeningNowEvents).mockResolvedValue([]);
 		vi.mocked(happeningTodayModule.fetchHappeningTodayEvents).mockResolvedValue([]);
+		vi.mocked(nearbyEventsModule.fetchUserLocation).mockResolvedValue(null);
 
-		await load({} as never);
+		const mockLocals = {
+			supabase: {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: { session: null },
+						error: null
+					})
+				}
+			}
+		};
+
+		await load({ locals: mockLocals } as never);
 
 		// Both functions should be called
 		expect(happeningNowModule.fetchHappeningNowEvents).toHaveBeenCalled();

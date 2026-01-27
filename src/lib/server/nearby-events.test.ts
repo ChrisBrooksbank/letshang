@@ -8,28 +8,10 @@ describe('Nearby Events Server Functions', () => {
 	beforeEach(() => {
 		mockSupabase = {
 			from: vi.fn(),
-			select: vi.fn(),
-			in: vi.fn(),
-			not: vi.fn(),
-			gte: vi.fn(),
-			lte: vi.fn(),
-			eq: vi.fn(),
-			order: vi.fn(),
-			limit: vi.fn(),
-			single: vi.fn()
+			auth: {
+				getSession: vi.fn()
+			}
 		};
-
-		// Make all methods chainable
-		mockSupabase.from.mockReturnValue(mockSupabase);
-		mockSupabase.select.mockReturnValue(mockSupabase);
-		mockSupabase.in.mockReturnValue(mockSupabase);
-		mockSupabase.not.mockReturnValue(mockSupabase);
-		mockSupabase.gte.mockReturnValue(mockSupabase);
-		mockSupabase.lte.mockReturnValue(mockSupabase);
-		mockSupabase.eq.mockReturnValue(mockSupabase);
-		mockSupabase.order.mockReturnValue(mockSupabase);
-		mockSupabase.limit.mockReturnValue(mockSupabase);
-		mockSupabase.single.mockReturnValue(mockSupabase);
 	});
 
 	describe('fetchNearbyEvents', () => {
@@ -50,7 +32,10 @@ describe('Nearby Events Server Functions', () => {
 					venue_lng: -122.4094,
 					visibility: 'public',
 					group_id: null,
-					capacity: 50
+					capacity: 50,
+					cover_image_url: null,
+					creator_id: 'user-1',
+					event_size: 'medium'
 				},
 				{
 					id: 'event-2',
@@ -65,7 +50,10 @@ describe('Nearby Events Server Functions', () => {
 					venue_lng: -122.4294,
 					visibility: 'public',
 					group_id: 'group-1',
-					capacity: 30
+					capacity: 30,
+					cover_image_url: null,
+					creator_id: 'user-2',
+					event_size: 'small'
 				}
 			];
 
@@ -76,11 +64,39 @@ describe('Nearby Events Server Functions', () => {
 				{ event_id: 'event-2', status: 'going' }
 			];
 
-			// Setup mock for first events query
-			mockSupabase.limit.mockResolvedValueOnce({ data: mockEvents, error: null });
+			// Mock first query chain (events)
+			mockSupabase.from.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockReturnValue({
+						not: vi.fn().mockReturnValue({
+							not: vi.fn().mockReturnValue({
+								gte: vi.fn().mockReturnValue({
+									lte: vi.fn().mockReturnValue({
+										gte: vi.fn().mockReturnValue({
+											lte: vi.fn().mockReturnValue({
+												gte: vi.fn().mockReturnValue({
+													eq: vi.fn().mockReturnValue({
+														order: vi.fn().mockReturnValue({
+															limit: vi.fn().mockResolvedValue({ data: mockEvents, error: null })
+														})
+													})
+												})
+											})
+										})
+									})
+								})
+							})
+						})
+					})
+				})
+			});
 
-			// Setup mock for RSVP counts query
-			mockSupabase.in.mockResolvedValueOnce({ data: mockRsvps, error: null });
+			// Mock second query chain (RSVPs)
+			mockSupabase.from.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockResolvedValue({ data: mockRsvps, error: null })
+				})
+			});
 
 			const results = await fetchNearbyEvents(mockSupabase, userCoords, 25, 20);
 
@@ -116,7 +132,10 @@ describe('Nearby Events Server Functions', () => {
 					venue_lng: -122.4094,
 					visibility: 'public',
 					group_id: null,
-					capacity: 50
+					capacity: 50,
+					cover_image_url: null,
+					creator_id: 'user-1',
+					event_size: 'medium'
 				},
 				{
 					id: 'event-far',
@@ -131,12 +150,46 @@ describe('Nearby Events Server Functions', () => {
 					venue_lng: -122.0,
 					visibility: 'public',
 					group_id: null,
-					capacity: 50
+					capacity: 50,
+					cover_image_url: null,
+					creator_id: 'user-1',
+					event_size: 'medium'
 				}
 			];
 
-			mockSupabase.limit.mockResolvedValueOnce({ data: mockEvents, error: null });
-			mockSupabase.in.mockResolvedValueOnce({ data: [], error: null });
+			// Mock first query chain (events)
+			mockSupabase.from.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockReturnValue({
+						not: vi.fn().mockReturnValue({
+							not: vi.fn().mockReturnValue({
+								gte: vi.fn().mockReturnValue({
+									lte: vi.fn().mockReturnValue({
+										gte: vi.fn().mockReturnValue({
+											lte: vi.fn().mockReturnValue({
+												gte: vi.fn().mockReturnValue({
+													eq: vi.fn().mockReturnValue({
+														order: vi.fn().mockReturnValue({
+															limit: vi.fn().mockResolvedValue({ data: mockEvents, error: null })
+														})
+													})
+												})
+											})
+										})
+									})
+								})
+							})
+						})
+					})
+				})
+			});
+
+			// Mock second query chain (RSVPs)
+			mockSupabase.from.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockResolvedValue({ data: [], error: null })
+				})
+			});
 
 			const results = await fetchNearbyEvents(mockSupabase, userCoords, 5, 20);
 
@@ -148,7 +201,32 @@ describe('Nearby Events Server Functions', () => {
 		it('should return empty array when no events found', async () => {
 			const userCoords: Coordinates = { lat: 37.7749, lng: -122.4194 };
 
-			mockSupabase.limit.mockResolvedValueOnce({ data: [], error: null });
+			// Mock first query chain (events) - returns empty array
+			mockSupabase.from.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockReturnValue({
+						not: vi.fn().mockReturnValue({
+							not: vi.fn().mockReturnValue({
+								gte: vi.fn().mockReturnValue({
+									lte: vi.fn().mockReturnValue({
+										gte: vi.fn().mockReturnValue({
+											lte: vi.fn().mockReturnValue({
+												gte: vi.fn().mockReturnValue({
+													eq: vi.fn().mockReturnValue({
+														order: vi.fn().mockReturnValue({
+															limit: vi.fn().mockResolvedValue({ data: [], error: null })
+														})
+													})
+												})
+											})
+										})
+									})
+								})
+							})
+						})
+					})
+				})
+			});
 
 			const results = await fetchNearbyEvents(mockSupabase, userCoords);
 
@@ -158,9 +236,34 @@ describe('Nearby Events Server Functions', () => {
 		it('should handle database errors', async () => {
 			const userCoords: Coordinates = { lat: 37.7749, lng: -122.4194 };
 
-			mockSupabase.limit.mockResolvedValueOnce({
-				data: null,
-				error: { message: 'Database error' }
+			// Mock first query chain (events) - returns error
+			mockSupabase.from.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockReturnValue({
+						not: vi.fn().mockReturnValue({
+							not: vi.fn().mockReturnValue({
+								gte: vi.fn().mockReturnValue({
+									lte: vi.fn().mockReturnValue({
+										gte: vi.fn().mockReturnValue({
+											lte: vi.fn().mockReturnValue({
+												gte: vi.fn().mockReturnValue({
+													eq: vi.fn().mockReturnValue({
+														order: vi.fn().mockReturnValue({
+															limit: vi.fn().mockResolvedValue({
+																data: null,
+																error: { message: 'Database error' }
+															})
+														})
+													})
+												})
+											})
+										})
+									})
+								})
+							})
+						})
+					})
+				})
 			});
 
 			await expect(fetchNearbyEvents(mockSupabase, userCoords)).rejects.toThrow(
@@ -177,18 +280,52 @@ describe('Nearby Events Server Functions', () => {
 				description: `Description ${i}`,
 				start_time: '2026-02-01T10:00:00Z',
 				end_time: '2026-02-01T12:00:00Z',
-				event_type: 'in_person',
+				event_type: 'in_person' as const,
 				venue_name: `Venue ${i}`,
 				venue_address: `${i} Main St`,
 				venue_lat: 37.7749 + i * 0.01,
 				venue_lng: -122.4194 + i * 0.01,
-				visibility: 'public',
+				visibility: 'public' as const,
 				group_id: null,
-				capacity: 50
+				capacity: 50,
+				cover_image_url: null,
+				creator_id: 'user-1',
+				event_size: 'medium' as const
 			}));
 
-			mockSupabase.limit.mockResolvedValueOnce({ data: mockEvents, error: null });
-			mockSupabase.in.mockResolvedValueOnce({ data: [], error: null });
+			// Mock first query chain (events)
+			mockSupabase.from.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockReturnValue({
+						not: vi.fn().mockReturnValue({
+							not: vi.fn().mockReturnValue({
+								gte: vi.fn().mockReturnValue({
+									lte: vi.fn().mockReturnValue({
+										gte: vi.fn().mockReturnValue({
+											lte: vi.fn().mockReturnValue({
+												gte: vi.fn().mockReturnValue({
+													eq: vi.fn().mockReturnValue({
+														order: vi.fn().mockReturnValue({
+															limit: vi.fn().mockResolvedValue({ data: mockEvents, error: null })
+														})
+													})
+												})
+											})
+										})
+									})
+								})
+							})
+						})
+					})
+				})
+			});
+
+			// Mock second query chain (RSVPs)
+			mockSupabase.from.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockResolvedValue({ data: [], error: null })
+				})
+			});
 
 			const results = await fetchNearbyEvents(mockSupabase, userCoords, 25, 5);
 
@@ -212,12 +349,46 @@ describe('Nearby Events Server Functions', () => {
 					venue_lng: -122.4094,
 					visibility: 'public',
 					group_id: null,
-					capacity: 50
+					capacity: 50,
+					cover_image_url: null,
+					creator_id: 'user-1',
+					event_size: 'medium'
 				}
 			];
 
-			mockSupabase.limit.mockResolvedValueOnce({ data: mockEvents, error: null });
-			mockSupabase.in.mockResolvedValueOnce({ data: null, error: null });
+			// Mock first query chain (events)
+			mockSupabase.from.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockReturnValue({
+						not: vi.fn().mockReturnValue({
+							not: vi.fn().mockReturnValue({
+								gte: vi.fn().mockReturnValue({
+									lte: vi.fn().mockReturnValue({
+										gte: vi.fn().mockReturnValue({
+											lte: vi.fn().mockReturnValue({
+												gte: vi.fn().mockReturnValue({
+													eq: vi.fn().mockReturnValue({
+														order: vi.fn().mockReturnValue({
+															limit: vi.fn().mockResolvedValue({ data: mockEvents, error: null })
+														})
+													})
+												})
+											})
+										})
+									})
+								})
+							})
+						})
+					})
+				})
+			});
+
+			// Mock second query chain (RSVPs) - returns null
+			mockSupabase.from.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockResolvedValue({ data: null, error: null })
+				})
+			});
 
 			const results = await fetchNearbyEvents(mockSupabase, userCoords);
 
@@ -229,12 +400,39 @@ describe('Nearby Events Server Functions', () => {
 		it('should use default radius and limit', async () => {
 			const userCoords: Coordinates = { lat: 37.7749, lng: -122.4194 };
 
-			mockSupabase.limit.mockResolvedValueOnce({ data: [], error: null });
+			const limitMock = vi.fn().mockResolvedValue({ data: [], error: null });
+
+			// Mock first query chain (events)
+			mockSupabase.from.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					in: vi.fn().mockReturnValue({
+						not: vi.fn().mockReturnValue({
+							not: vi.fn().mockReturnValue({
+								gte: vi.fn().mockReturnValue({
+									lte: vi.fn().mockReturnValue({
+										gte: vi.fn().mockReturnValue({
+											lte: vi.fn().mockReturnValue({
+												gte: vi.fn().mockReturnValue({
+													eq: vi.fn().mockReturnValue({
+														order: vi.fn().mockReturnValue({
+															limit: limitMock
+														})
+													})
+												})
+											})
+										})
+									})
+								})
+							})
+						})
+					})
+				})
+			});
 
 			await fetchNearbyEvents(mockSupabase, userCoords);
 
 			// Verify limit was called with default * 2
-			expect(mockSupabase.limit).toHaveBeenCalledWith(40); // default 20 * 2
+			expect(limitMock).toHaveBeenCalledWith(40); // default 20 * 2
 		});
 	});
 
@@ -245,7 +443,13 @@ describe('Nearby Events Server Functions', () => {
 				location_lng: -122.4194
 			};
 
-			mockSupabase.single.mockResolvedValueOnce({ data: mockUser, error: null });
+			mockSupabase.from.mockReturnValue({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({ data: mockUser, error: null })
+					})
+				})
+			});
 
 			const result = await fetchUserLocation(mockSupabase, 'user-123');
 
@@ -258,7 +462,13 @@ describe('Nearby Events Server Functions', () => {
 				location_lng: null
 			};
 
-			mockSupabase.single.mockResolvedValueOnce({ data: mockUser, error: null });
+			mockSupabase.from.mockReturnValue({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({ data: mockUser, error: null })
+					})
+				})
+			});
 
 			const result = await fetchUserLocation(mockSupabase, 'user-123');
 
@@ -266,9 +476,12 @@ describe('Nearby Events Server Functions', () => {
 		});
 
 		it('should return null when database error occurs', async () => {
-			mockSupabase.single.mockResolvedValueOnce({
-				data: null,
-				error: { message: 'User not found' }
+			mockSupabase.from.mockReturnValue({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({ data: null, error: { message: 'User not found' } })
+					})
+				})
 			});
 
 			const result = await fetchUserLocation(mockSupabase, 'user-123');
@@ -282,7 +495,13 @@ describe('Nearby Events Server Functions', () => {
 				location_lng: -122.4194
 			};
 
-			mockSupabase.single.mockResolvedValueOnce({ data: mockUser, error: null });
+			mockSupabase.from.mockReturnValue({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({ data: mockUser, error: null })
+					})
+				})
+			});
 
 			const result = await fetchUserLocation(mockSupabase, 'user-123');
 
@@ -295,7 +514,13 @@ describe('Nearby Events Server Functions', () => {
 				location_lng: null
 			};
 
-			mockSupabase.single.mockResolvedValueOnce({ data: mockUser, error: null });
+			mockSupabase.from.mockReturnValue({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({ data: mockUser, error: null })
+					})
+				})
+			});
 
 			const result = await fetchUserLocation(mockSupabase, 'user-123');
 
