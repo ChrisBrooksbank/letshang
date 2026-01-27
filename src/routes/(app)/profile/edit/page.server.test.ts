@@ -18,6 +18,11 @@ vi.mock('sveltekit-superforms/adapters', () => ({
 	zod: vi.fn((schema) => schema)
 }));
 
+// Mock geocoding utility
+vi.mock('$lib/utils/geocoding', () => ({
+	geocodeAddress: vi.fn()
+}));
+
 // Import after mocks are set up
 import { load, actions } from './+page.server';
 import { superValidate } from 'sveltekit-superforms';
@@ -296,6 +301,8 @@ describe('Profile Edit Page Server', () => {
 				display_name: 'John Doe',
 				bio: null,
 				location: null,
+				location_lat: null,
+				location_lng: null,
 				profile_photo_url: null,
 				profile_visibility: 'members_only'
 			});
@@ -401,6 +408,8 @@ describe('Profile Edit Page Server', () => {
 				display_name: 'John Doe',
 				bio: null,
 				location: null,
+				location_lat: null,
+				location_lng: null,
 				profile_photo_url: null,
 				profile_visibility: 'members_only'
 			});
@@ -461,6 +470,8 @@ describe('Profile Edit Page Server', () => {
 				display_name: 'John Doe',
 				bio: null,
 				location: null,
+				location_lat: null,
+				location_lng: null,
 				profile_photo_url: null,
 				profile_visibility: 'public'
 			});
@@ -519,6 +530,8 @@ describe('Profile Edit Page Server', () => {
 				display_name: 'John Doe',
 				bio: null,
 				location: null,
+				location_lat: null,
+				location_lng: null,
 				profile_photo_url: null,
 				profile_visibility: 'connections_only'
 			});
