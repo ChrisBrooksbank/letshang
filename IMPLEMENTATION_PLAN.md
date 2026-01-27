@@ -701,9 +701,15 @@
   - Coverage: Existing 3 tests in page.server.test.ts cover data loading
   - All gates passed: check ✓, lint ✓, test ✓ (1327 passed), build ✓, knip ✓, depcheck ✓
 
-- [ ] Implement "Search this area" [P1]
-  - AC: Button appears when map panned
-  - AC: Reloads events for visible area
+- [x] Implement "Search this area" [P1] ✓
+  - AC: Button appears when map panned ✓
+  - AC: Reloads events for visible area ✓
+  - Implementation: Added searchArea form action with geographic bounds filtering
+  - Implementation: Button appears after map moved > 0.01 degrees (~1km)
+  - Implementation: Dynamic map marker updates with new search results
+  - Implementation: Server functions: fetchEventsInBounds(), transformEventsWithCounts()
+  - Coverage: 6 new tests (100% on new code), 1333 total tests passed
+  - Commit: f9585fe
 
 ---
 
