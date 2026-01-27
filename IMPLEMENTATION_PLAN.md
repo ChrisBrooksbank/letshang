@@ -641,9 +641,16 @@
   - Coverage: 100% on new code (32 tests for date-filters utility)
   - Commit: [next]
 
-- [ ] Create "Happening Now" section [P1]
-  - AC: Events currently in progress
-  - AC: "Join late" affordance
+- [x] Create "Happening Now" section [P1] ✓
+  - AC: Events currently in progress ✓
+  - AC: "Join late" affordance ✓
+  - Implementation: HappeningNow.svelte component with responsive grid layout
+  - Implementation: fetchHappeningNowEvents() server function to query in-progress events
+  - Implementation: Utility functions: isEventHappeningNow(), canJoinLate(), minutesUntilEnd()
+  - Implementation: Dashboard page server loads happening now events (limit 10)
+  - Implementation: Green pulsing indicator, time remaining badge, join late affordance
+  - Coverage: 43 tests total (7 server + 17 utility + 16 component + 3 integration)
+  - Commit: c063e9f
 
 - [ ] Build "Happening Today" carousel [P1]
   - AC: Featured on home page
