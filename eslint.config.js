@@ -34,6 +34,7 @@ export default [
 				Event: 'readonly',
 				confirm: 'readonly',
 				window: 'readonly',
+				navigator: 'readonly',
 				HTMLDivElement: 'readonly',
 				HTMLSelectElement: 'readonly',
 				HTMLInputElement: 'readonly',

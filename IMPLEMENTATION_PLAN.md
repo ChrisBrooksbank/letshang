@@ -739,9 +739,19 @@
   - Coverage: 32 tests (22 utility + 10 endpoint), 100% coverage on new code
   - Commit: bf4b324
 
-- [ ] Implement location-based recommendations [P1]
-  - AC: Default to user's saved location
-  - AC: "Near me" uses device GPS
+- [x] Implement location-based recommendations [P1] ✓
+  - AC: Default to user's saved location ✓
+  - AC: "Near me" uses device GPS ✓
+  - Implementation: Location utilities with Haversine distance calculation
+  - Implementation: Database migration adds location_lat/location_lng to users table
+  - Implementation: Profile geocoding via Mapbox API on location save
+  - Implementation: fetchNearbyEvents() server function (25-mile radius, sorted by distance)
+  - Implementation: fetchUserLocation() retrieves saved user coordinates
+  - Implementation: NearMe.svelte component with GPS geolocation support
+  - Implementation: Dashboard "Near You" section with distance badges
+  - Implementation: Efficient bounding box + precise distance filtering
+  - Coverage: 41 new tests (29 location utils + 12 nearby events)
+  - Commit: [next]
 
 ---
 

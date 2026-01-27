@@ -3,6 +3,7 @@ import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { profileUpdateSchema } from '$lib/schemas/profile';
+import { geocodeAddress } from '$lib/utils/geocoding';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Ensure user is authenticated
@@ -94,6 +95,26 @@ export const actions: Actions = {
 			});
 		}
 
+		// Geocode location if provided
+		let locationLat: number | null = null;
+		let locationLng: number | null = null;
+
+		if (location) {
+			try {
+				const coords = await geocodeAddress(location);
+				if (coords) {
+					locationLat = coords.lat;
+					locationLng = coords.lng;
+				}
+			} catch (error) {
+				// Log geocoding error but don't fail the update
+				if (process.env.NODE_ENV !== 'production') {
+					// eslint-disable-next-line no-console
+					console.warn('Geocoding failed for location:', location, error);
+				}
+			}
+		}
+
 		// Update user profile in database
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const { error } = await (locals.supabase as any)
@@ -102,6 +123,8 @@ export const actions: Actions = {
 				display_name: displayName,
 				bio: bio || null,
 				location: location || null,
+				location_lat: locationLat,
+				location_lng: locationLng,
 				profile_photo_url: profilePhotoUrl || null,
 				profile_visibility: profileVisibility
 			})
