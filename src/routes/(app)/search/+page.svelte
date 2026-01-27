@@ -5,6 +5,12 @@
 	import GroupCard from '$lib/components/GroupCard.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import {
+		getDateRangeForQuickFilter,
+		getQuickFilterLabel,
+		isQuickFilterActive,
+		type QuickFilter
+	} from '$lib/utils/date-filters';
 
 	let { data }: { data: PageData } = $props();
 
@@ -80,6 +86,20 @@
 		url.searchParams.set('tab', tab);
 		goto(url.toString(), { replaceState: true, noScroll: true });
 	}
+
+	// Quick filter handlers
+	function applyQuickFilter(filter: QuickFilter) {
+		const dateRange = getDateRangeForQuickFilter(filter);
+		startDate = dateRange.startDate;
+		endDate = dateRange.endDate;
+		applySearch();
+	}
+
+	// Check which quick filter is currently active
+	const activeQuickFilter = $derived.by(() => {
+		const filters: QuickFilter[] = ['today', 'tomorrow', 'this-weekend', 'this-week'];
+		return filters.find((f) => isQuickFilterActive(f, startDate, endDate)) || null;
+	});
 
 	// Computed results based on active tab
 	const visibleEvents = $derived(
@@ -231,6 +251,27 @@
 						</div>
 					{/if}
 				</form>
+
+				<!-- Quick Filter Chips -->
+				<div class="mb-6">
+					<div class="flex flex-wrap gap-2">
+						{#each ['today', 'tomorrow', 'this-weekend', 'this-week'] as filter}
+							{@const quickFilter = filter as QuickFilter}
+							{@const isActive = activeQuickFilter === quickFilter}
+							<button
+								type="button"
+								onclick={() => applyQuickFilter(quickFilter)}
+								class="px-4 py-2 text-sm font-medium rounded-full transition-colors {isActive
+									? 'bg-blue-600 text-white'
+									: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'}"
+								aria-pressed={isActive}
+								aria-label="Filter by {getQuickFilterLabel(quickFilter)}"
+							>
+								{getQuickFilterLabel(quickFilter)}
+							</button>
+						{/each}
+					</div>
+				</div>
 
 				<!-- Results Summary -->
 				{#if data.query}
