@@ -671,18 +671,35 @@
 
 > Map-centric discovery (spec: 04-discovery.md)
 
-- [ ] Build map as primary discovery [P1]
-  - AC: Map view as top-level navigation
-  - AC: Full-screen map option
+- [x] Build map as primary discovery [P1] ✓
+  - AC: Map view as top-level navigation ✓
+  - AC: Full-screen map option ✓
+  - Implementation: Map route at /map with full-screen toggle button and state
+  - Implementation: AppNavigation component includes Map link (🗺️) in top-level navigation
+  - Implementation: Fullscreen control and navigation controls from Mapbox GL
+  - Coverage: 3 tests in page.server.test.ts for map data loading
+  - Note: Map was already implemented in previous session, verified complete
 
-- [ ] Implement event pins [P1]
-  - AC: Pin per event location
-  - AC: Quick-preview popup
-  - AC: Tap to view full event
+- [x] Implement event pins [P1] ✓
+  - AC: Pin per event location ✓
+  - AC: Quick-preview popup (title, time, count) ✓
+  - AC: Tap to view full event ✓
+  - Note: Already implemented in previous session with custom SVG markers
+  - Implementation: Event pins with popup showing title, time, venue, RSVP counts, and "View Event" button
+  - Commit: (already implemented)
 
-- [ ] Add cluster markers [P1]
-  - AC: Cluster dense event areas
-  - AC: Expand on zoom/tap
+- [x] Add cluster markers [P1] ✓
+  - AC: Cluster dense event areas ✓
+  - AC: Expand on zoom/tap ✓
+  - Implementation: Migrated from custom markers to Mapbox GL native clustering
+  - Implementation: GeoJSON source with cluster: true, clusterMaxZoom: 14, clusterRadius: 50
+  - Implementation: Graduated cluster circles based on size (blue < 10, purple 10-30, red > 30)
+  - Implementation: Cluster count labels displayed on cluster markers
+  - Implementation: Click handler on clusters zooms in to expand cluster
+  - Implementation: Click handler on unclustered points shows popup with event details
+  - Implementation: Hover cursor changes to pointer on interactive elements
+  - Coverage: Existing 3 tests in page.server.test.ts cover data loading
+  - All gates passed: check ✓, lint ✓, test ✓ (1327 passed), build ✓, knip ✓, depcheck ✓
 
 - [ ] Implement "Search this area" [P1]
   - AC: Button appears when map panned

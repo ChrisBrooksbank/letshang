@@ -2,6 +2,7 @@
 	import { auth } from '$lib/stores/auth';
 	import BaseLayout from '$lib/components/BaseLayout.svelte';
 	import HappeningNow from '$lib/components/HappeningNow.svelte';
+	import HappeningToday from '$lib/components/HappeningToday.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -16,6 +17,9 @@
 
 			<!-- Happening Now Section -->
 			<HappeningNow events={data.happeningNowEvents} />
+
+			<!-- Happening Today Section -->
+			<HappeningToday events={data.happeningTodayEvents} />
 		{:else}
 			<p>Loading...</p>
 		{/if}

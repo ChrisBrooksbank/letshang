@@ -1,4 +1,6 @@
 <script lang="ts">
+	import AppNavigation from './AppNavigation.svelte';
+
 	/**
 	 * BaseLayout - Mobile-first layout component
 	 *
@@ -7,6 +9,7 @@
 	 * - Touch-friendly minimum touch targets (44px)
 	 * - No horizontal scroll on any screen size
 	 * - Responsive padding and spacing
+	 * - App navigation (bottom on mobile, top on desktop)
 	 *
 	 * Usage:
 	 * <BaseLayout>
@@ -16,14 +19,24 @@
 	 * </BaseLayout>
 	 */
 
-	let { children, header, footer } = $props<{
+	let {
+		children,
+		header,
+		footer,
+		showNav = true
+	} = $props<{
 		children: import('svelte').Snippet;
 		header?: import('svelte').Snippet;
 		footer?: import('svelte').Snippet;
+		showNav?: boolean;
 	}>();
 </script>
 
 <div class="base-layout">
+	{#if showNav}
+		<AppNavigation />
+	{/if}
+
 	{#if header}
 		<header class="base-layout__header">
 			{@render header()}
