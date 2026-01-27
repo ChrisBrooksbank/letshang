@@ -139,7 +139,6 @@ export async function fetchNotifications(
 		.range(offset, offset + limit - 1);
 
 	if (error) {
-		console.error('Error fetching notifications:', { message: error.message });
 		throw new Error('Failed to fetch notifications');
 	}
 
@@ -168,7 +167,6 @@ export async function getUnreadNotificationCount(supabase: SupabaseClient): Prom
 	const { data, error } = await supabase.rpc('get_unread_notification_count');
 
 	if (error) {
-		console.error('Error getting unread count:', { message: error.message });
 		throw new Error('Failed to get unread notification count');
 	}
 
@@ -189,7 +187,6 @@ export async function markNotificationRead(
 	});
 
 	if (error) {
-		console.error('Error marking notification as read:', { message: error.message });
 		throw new Error('Failed to mark notification as read');
 	}
 }
@@ -202,7 +199,6 @@ export async function markAllNotificationsRead(supabase: SupabaseClient): Promis
 	const { error } = await supabase.rpc('mark_all_notifications_read');
 
 	if (error) {
-		console.error('Error marking all notifications as read:', { message: error.message });
 		throw new Error('Failed to mark all notifications as read');
 	}
 }

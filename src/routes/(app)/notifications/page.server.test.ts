@@ -21,7 +21,6 @@ describe('Notifications Page Server', () => {
 	beforeEach(() => {
 		mockSupabase = {} as SupabaseClient;
 		vi.clearAllMocks();
-		vi.spyOn(console, 'error').mockImplementation(() => {});
 	});
 
 	describe('load function', () => {
@@ -58,7 +57,6 @@ describe('Notifications Page Server', () => {
 			const result = await load({ locals } as never);
 
 			expect(result).toEqual({ notifications: [] });
-			expect(console.error).toHaveBeenCalled();
 		});
 	});
 
@@ -104,7 +102,6 @@ describe('Notifications Page Server', () => {
 			const result = await actions.markRead({ request, locals } as never);
 
 			expect(result).toEqual({ success: false, error: 'Failed to mark notification as read' });
-			expect(console.error).toHaveBeenCalled();
 		});
 	});
 
@@ -131,7 +128,6 @@ describe('Notifications Page Server', () => {
 				success: false,
 				error: 'Failed to mark all notifications as read'
 			});
-			expect(console.error).toHaveBeenCalled();
 		});
 	});
 });

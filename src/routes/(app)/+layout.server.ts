@@ -18,8 +18,7 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 	let unreadNotificationCount = 0;
 	try {
 		unreadNotificationCount = await getUnreadNotificationCount(locals.supabase);
-	} catch (error) {
-		console.error('Error fetching unread notification count:', error);
+	} catch {
 		// Don't fail the page load if notification count fails
 	}
 

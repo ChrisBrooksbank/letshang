@@ -13,8 +13,7 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 		return {
 			notifications
 		};
-	} catch (error) {
-		console.error('Error loading notifications:', error);
+	} catch {
 		return {
 			notifications: []
 		};
@@ -33,8 +32,7 @@ export const actions: Actions = {
 		try {
 			await markNotificationRead(supabase, notificationId);
 			return { success: true };
-		} catch (error) {
-			console.error('Error marking notification as read:', error);
+		} catch {
 			return { success: false, error: 'Failed to mark notification as read' };
 		}
 	},
@@ -43,8 +41,7 @@ export const actions: Actions = {
 		try {
 			await markAllNotificationsRead(supabase);
 			return { success: true };
-		} catch (error) {
-			console.error('Error marking all notifications as read:', error);
+		} catch {
 			return { success: false, error: 'Failed to mark all notifications as read' };
 		}
 	}
