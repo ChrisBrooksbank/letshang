@@ -15,6 +15,7 @@
 		{ href: '/dashboard', label: 'Home', icon: '🏠' },
 		{ href: '/map', label: 'Map', icon: '🗺️' },
 		{ href: '/search', label: 'Search', icon: '🔍' },
+		{ href: '/calendar', label: 'Calendar', icon: '📅' },
 		{ href: '/categories', label: 'Browse', icon: '📂' }
 	];
 

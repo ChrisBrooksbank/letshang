@@ -24,6 +24,7 @@ export default [
 				Request: 'readonly',
 				Response: 'readonly',
 				URL: 'readonly',
+				URLSearchParams: 'readonly',
 				fetch: 'readonly',
 				FormData: 'readonly',
 				setInterval: 'readonly',
@@ -33,6 +34,7 @@ export default [
 				Event: 'readonly',
 				confirm: 'readonly',
 				HTMLDivElement: 'readonly',
+				HTMLSelectElement: 'readonly',
 				// SvelteKit App namespace
 				App: 'readonly'
 			}
