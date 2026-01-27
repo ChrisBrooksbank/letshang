@@ -652,10 +652,18 @@
   - Coverage: 43 tests total (7 server + 17 utility + 16 component + 3 integration)
   - Commit: c063e9f
 
-- [ ] Build "Happening Today" carousel [P1]
-  - AC: Featured on home page
-  - AC: Swipeable cards
-  - AC: Time until start shown
+- [x] Build "Happening Today" carousel [P1] ✓
+  - AC: Featured on home page ✓
+  - AC: Swipeable cards ✓
+  - AC: Time until start shown ✓
+  - Implementation: HappeningToday.svelte component with swipeable carousel
+  - Implementation: Mobile-first responsive design (85% mobile, 45% tablet, 30% desktop)
+  - Implementation: Snap scrolling, navigation arrows, time badges
+  - Implementation: Server function fetchHappeningTodayEvents() queries events starting later today
+  - Implementation: Utility functions for time formatting and "starting soon" indicator
+  - Implementation: Dashboard page displays happening today events (limit 20)
+  - Coverage: 59 tests total (10 server + 24 utils + 25 component)
+  - Commit: 210d7bd
 
 ---
 
