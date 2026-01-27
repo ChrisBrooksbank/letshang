@@ -9,6 +9,7 @@ export interface SearchEventResult {
 	description: string;
 	event_type: string;
 	start_time: string;
+	end_time: string | null;
 	venue_name: string | null;
 	venue_address: string | null;
 	capacity: number | null;
