@@ -632,6 +632,30 @@
 			{/if}
 		</div>
 
+		<!-- Add to Calendar Button -->
+		<div class="mb-8">
+			<a
+				href="/events/{event.id}/ical"
+				class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-all min-h-[44px] w-full sm:w-auto"
+			>
+				<svg
+					class="w-5 h-5"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+					/>
+				</svg>
+				<span>Add to Calendar</span>
+			</a>
+		</div>
+
 		<!-- Event Details -->
 		{#if event.description}
 			<div class="mb-6">

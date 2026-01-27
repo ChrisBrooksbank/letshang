@@ -717,10 +717,17 @@
 
 > Personal calendar view (spec: 04-discovery.md)
 
-- [ ] Implement personal calendar [P1]
-  - AC: Shows all RSVPed events
-  - AC: Month and week views
-  - AC: Filter by group
+- [x] Implement personal calendar [P1] ✓
+  - AC: Shows all RSVPed events ✓
+  - AC: Month and week views ✓
+  - AC: Filter by group ✓
+  - Implementation: Created Calendar.svelte component with month/week toggle
+  - Implementation: Server functions fetchUserCalendarEvents() with filtering options
+  - Implementation: Calendar utility functions for date calculations (42-day grid)
+  - Implementation: /calendar page with group filter dropdown
+  - Implementation: Added calendar link to app navigation
+  - Coverage: 65 tests (100% coverage on new code)
+  - Commit: 9e0c63d
 
 - [ ] Add iCal export [P1]
   - AC: Download .ics for single event
