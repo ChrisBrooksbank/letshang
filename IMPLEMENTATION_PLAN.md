@@ -729,9 +729,15 @@
   - Coverage: 65 tests (100% coverage on new code)
   - Commit: 9e0c63d
 
-- [ ] Add iCal export [P1]
-  - AC: Download .ics for single event
-  - AC: "Add to Calendar" button
+- [x] Add iCal export [P1] ✓
+  - AC: Download .ics for single event ✓
+  - AC: "Add to Calendar" button ✓
+  - Implementation: Created iCal utility (ical.ts) for RFC 5545 compliant .ics generation
+  - Implementation: GET /events/[id]/ical endpoint with visibility checks (public, group-only, hidden)
+  - Implementation: "Add to Calendar" button on event detail page with calendar icon
+  - Implementation: Text escaping, line folding, and proper date formatting
+  - Coverage: 32 tests (22 utility + 10 endpoint), 100% coverage on new code
+  - Commit: bf4b324
 
 - [ ] Implement location-based recommendations [P1]
   - AC: Default to user's saved location
