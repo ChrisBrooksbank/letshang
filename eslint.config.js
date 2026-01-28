@@ -38,6 +38,11 @@ export default [
 				HTMLDivElement: 'readonly',
 				HTMLSelectElement: 'readonly',
 				HTMLInputElement: 'readonly',
+				// DOM globals
+				document: 'readonly',
+				HTMLElement: 'readonly',
+				performance: 'readonly',
+				globalThis: 'readonly',
 				// Storage globals
 				localStorage: 'readonly',
 				// Push notification globals

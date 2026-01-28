@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AppNavigation from './AppNavigation.svelte';
 	import InstallPrompt from './InstallPrompt.svelte';
+	import SplashScreen from './SplashScreen.svelte';
 
 	/**
 	 * BaseLayout - Mobile-first layout component
@@ -34,6 +35,8 @@
 		unreadNotificationCount?: number;
 	}>();
 </script>
+
+<SplashScreen />
 
 <div class="base-layout">
 	{#if showNav}

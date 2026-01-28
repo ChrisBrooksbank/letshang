@@ -61,7 +61,6 @@ export function measureWebVitals(): PerformanceMetrics {
 	const metrics: PerformanceMetrics = {};
 
 	// Get paint timing
-	// eslint-disable-next-line no-undef
 	const paintEntries = performance.getEntriesByType('paint');
 	const fcpEntry = paintEntries.find((entry) => entry.name === 'first-contentful-paint');
 	if (fcpEntry) {

@@ -871,9 +871,17 @@
   - Integrated into BaseLayout.svelte for app-wide display
   - Coverage: 100% on install-prompt.ts (36 tests: 14 utility + 22 component)
 
-- [ ] Build splash screen [P1]
-  - AC: Branded loading screen
-  - AC: Matches theme colors
+- [x] Build splash screen [P1] ✓
+  - AC: Branded loading screen ✓
+  - AC: Shown during app startup ✓
+  - AC: Matches theme colors ✓
+  - Implementation: Static HTML splash screen in app.html renders before JS loads
+  - Implementation: Indigo (#6366f1) branded screen with SVG icon and "LetsHang" text
+  - Implementation: SplashScreen.svelte component dismisses splash on hydration via onMount
+  - Implementation: splash-screen.ts utility manages hide timing with 800ms minimum display duration
+  - Implementation: Smooth opacity fade-out transition (0.3s ease-out)
+  - Implementation: Integrated into BaseLayout.svelte for app-wide automatic dismissal
+  - Coverage: 15 tests (11 utility + 4 component), 100% on new code
 
 - [ ] Build offline data storage [P1]
   - AC: IndexedDB for user data
