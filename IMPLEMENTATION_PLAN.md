@@ -931,10 +931,15 @@
   - AC: Mobile-optimized layout
   - AC: Social proof indicators prominent
 
-- [ ] Create cover image gallery [P1]
-  - AC: Curated stock images by category
-  - AC: Custom upload option
-  - AC: Crop/position tool
+- [x] Create cover image gallery [P1] ✓
+  - AC: Curated stock images by category ✓
+  - AC: Custom upload option ✓
+  - AC: Crop/position tool ✓
+  - Implementation: CoverImageUpload component with gallery modal (10 categories, 30 images)
+  - Implementation: Stock images data in src/lib/data/stock-images.ts
+  - Implementation: Integrated into event/group creation forms
+  - Coverage: 19 tests for stock images data, schema validation for coverImageUrl
+  - Note: Feature was completed in previous iteration (Iteration 9) during group creation wizard
 
 - [ ] Implement social proof indicators [P1]
   - AC: "X Going, Y Interested" on cards
