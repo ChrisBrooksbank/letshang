@@ -42,8 +42,41 @@ export const notificationSchema = z.object({
 });
 
 /**
+ * Push subscription schema
+ * Validates Web Push API subscription data
+ */
+export const pushSubscriptionSchema = z.object({
+	endpoint: z.string().url().max(500),
+	keys: z.object({
+		p256dh: z.string().min(1).max(200),
+		auth: z.string().min(1).max(100)
+	})
+});
+
+/**
+ * Push delivery status enum
+ */
+export const pushDeliveryStatusEnum = z.enum(['pending', 'delivered', 'failed']);
+
+/**
+ * Push delivery log schema
+ * Tracks delivery confirmation for push notifications
+ */
+export const pushDeliveryLogSchema = z.object({
+	id: z.string().uuid(),
+	userId: z.string().uuid(),
+	notificationType: notificationTypeEnum,
+	subscriptionEndpoint: z.string().url().max(500),
+	status: pushDeliveryStatusEnum,
+	errorMessage: z.string().nullable(),
+	attemptedAt: z.string().datetime(),
+	deliveredAt: z.string().datetime().nullable()
+});
+
+/**
  * Type exports
  */
 export type NotificationType = z.infer<typeof notificationTypeEnum>;
 export type NotificationPreference = z.infer<typeof notificationPreferenceSchema>;
 export type Notification = z.infer<typeof notificationSchema>;
+export type PushSubscription = z.infer<typeof pushSubscriptionSchema>;

@@ -2,7 +2,10 @@ import { describe, it, expect } from 'vitest';
 import {
 	notificationTypeEnum,
 	notificationPreferenceSchema,
-	notificationSchema
+	notificationSchema,
+	pushSubscriptionSchema,
+	pushDeliveryStatusEnum,
+	pushDeliveryLogSchema
 } from './notifications';
 
 describe('notificationTypeEnum', () => {
@@ -202,6 +205,217 @@ describe('notificationSchema', () => {
 			isRead: false,
 			createdAt: '2026-01-27T10:00:00Z',
 			readAt: null
+		});
+
+		expect(result.success).toBe(false);
+	});
+});
+
+describe('pushSubscriptionSchema', () => {
+	it('accepts valid push subscription', () => {
+		const result = pushSubscriptionSchema.safeParse({
+			endpoint: 'https://fcm.googleusercontent.com/fcm/send/abc123',
+			keys: {
+				p256dh: 'BLf5yN7JVj0Xt8a3mA9z7Q2k...',
+				auth: 'dGhpcyBpcyBhdXRoIGtleQ'
+			}
+		});
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.endpoint).toBe('https://fcm.googleusercontent.com/fcm/send/abc123');
+			expect(result.data.keys.p256dh).toBe('BLf5yN7JVj0Xt8a3mA9z7Q2k...');
+			expect(result.data.keys.auth).toBe('dGhpcyBpcyBhdXRoIGtleQ');
+		}
+	});
+
+	it('rejects subscription with invalid endpoint URL', () => {
+		const result = pushSubscriptionSchema.safeParse({
+			endpoint: 'not-a-url',
+			keys: { p256dh: 'key', auth: 'auth' }
+		});
+
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects subscription with endpoint too long', () => {
+		const result = pushSubscriptionSchema.safeParse({
+			endpoint: 'https://example.com/' + 'a'.repeat(500),
+			keys: { p256dh: 'key', auth: 'auth' }
+		});
+
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects subscription with missing keys', () => {
+		const result = pushSubscriptionSchema.safeParse({
+			endpoint: 'https://fcm.example.com/push/abc'
+		});
+
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects subscription with empty p256dh key', () => {
+		const result = pushSubscriptionSchema.safeParse({
+			endpoint: 'https://fcm.example.com/push/abc',
+			keys: { p256dh: '', auth: 'authkey' }
+		});
+
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects subscription with empty auth key', () => {
+		const result = pushSubscriptionSchema.safeParse({
+			endpoint: 'https://fcm.example.com/push/abc',
+			keys: { p256dh: 'p256key', auth: '' }
+		});
+
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects subscription with p256dh key too long', () => {
+		const result = pushSubscriptionSchema.safeParse({
+			endpoint: 'https://fcm.example.com/push/abc',
+			keys: { p256dh: 'a'.repeat(201), auth: 'authkey' }
+		});
+
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects subscription with auth key too long', () => {
+		const result = pushSubscriptionSchema.safeParse({
+			endpoint: 'https://fcm.example.com/push/abc',
+			keys: { p256dh: 'p256key', auth: 'a'.repeat(101) }
+		});
+
+		expect(result.success).toBe(false);
+	});
+});
+
+describe('pushDeliveryStatusEnum', () => {
+	it('accepts valid delivery statuses', () => {
+		const validStatuses = ['pending', 'delivered', 'failed'];
+
+		validStatuses.forEach((status) => {
+			const result = pushDeliveryStatusEnum.safeParse(status);
+			expect(result.success).toBe(true);
+		});
+	});
+
+	it('rejects invalid delivery status', () => {
+		const result = pushDeliveryStatusEnum.safeParse('unknown');
+		expect(result.success).toBe(false);
+	});
+});
+
+describe('pushDeliveryLogSchema', () => {
+	it('accepts valid delivery log', () => {
+		const result = pushDeliveryLogSchema.safeParse({
+			id: '123e4567-e89b-12d3-a456-426614174000',
+			userId: '123e4567-e89b-12d3-a456-426614174001',
+			notificationType: 'event_reminder',
+			subscriptionEndpoint: 'https://fcm.example.com/push/abc',
+			status: 'delivered',
+			errorMessage: null,
+			attemptedAt: '2026-01-28T10:00:00Z',
+			deliveredAt: '2026-01-28T10:00:01Z'
+		});
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.status).toBe('delivered');
+			expect(result.data.deliveredAt).toBe('2026-01-28T10:00:01Z');
+		}
+	});
+
+	it('accepts delivery log with pending status and null timestamps', () => {
+		const result = pushDeliveryLogSchema.safeParse({
+			id: '123e4567-e89b-12d3-a456-426614174000',
+			userId: '123e4567-e89b-12d3-a456-426614174001',
+			notificationType: 'waitlist_promotion',
+			subscriptionEndpoint: 'https://fcm.example.com/push/abc',
+			status: 'pending',
+			errorMessage: null,
+			attemptedAt: '2026-01-28T10:00:00Z',
+			deliveredAt: null
+		});
+
+		expect(result.success).toBe(true);
+	});
+
+	it('accepts delivery log with error message', () => {
+		const result = pushDeliveryLogSchema.safeParse({
+			id: '123e4567-e89b-12d3-a456-426614174000',
+			userId: '123e4567-e89b-12d3-a456-426614174001',
+			notificationType: 'event_reminder',
+			subscriptionEndpoint: 'https://fcm.example.com/push/abc',
+			status: 'failed',
+			errorMessage: 'Endpoint expired',
+			attemptedAt: '2026-01-28T10:00:00Z',
+			deliveredAt: null
+		});
+
+		expect(result.success).toBe(true);
+		if (result.success) {
+			expect(result.data.errorMessage).toBe('Endpoint expired');
+		}
+	});
+
+	it('rejects delivery log with invalid UUID', () => {
+		const result = pushDeliveryLogSchema.safeParse({
+			id: 'not-a-uuid',
+			userId: '123e4567-e89b-12d3-a456-426614174001',
+			notificationType: 'event_reminder',
+			subscriptionEndpoint: 'https://fcm.example.com/push/abc',
+			status: 'pending',
+			errorMessage: null,
+			attemptedAt: '2026-01-28T10:00:00Z',
+			deliveredAt: null
+		});
+
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects delivery log with invalid notification type', () => {
+		const result = pushDeliveryLogSchema.safeParse({
+			id: '123e4567-e89b-12d3-a456-426614174000',
+			userId: '123e4567-e89b-12d3-a456-426614174001',
+			notificationType: 'invalid_type',
+			subscriptionEndpoint: 'https://fcm.example.com/push/abc',
+			status: 'pending',
+			errorMessage: null,
+			attemptedAt: '2026-01-28T10:00:00Z',
+			deliveredAt: null
+		});
+
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects delivery log with invalid status', () => {
+		const result = pushDeliveryLogSchema.safeParse({
+			id: '123e4567-e89b-12d3-a456-426614174000',
+			userId: '123e4567-e89b-12d3-a456-426614174001',
+			notificationType: 'event_reminder',
+			subscriptionEndpoint: 'https://fcm.example.com/push/abc',
+			status: 'sending',
+			errorMessage: null,
+			attemptedAt: '2026-01-28T10:00:00Z',
+			deliveredAt: null
+		});
+
+		expect(result.success).toBe(false);
+	});
+
+	it('rejects delivery log with invalid endpoint URL', () => {
+		const result = pushDeliveryLogSchema.safeParse({
+			id: '123e4567-e89b-12d3-a456-426614174000',
+			userId: '123e4567-e89b-12d3-a456-426614174001',
+			notificationType: 'event_reminder',
+			subscriptionEndpoint: 'not-a-url',
+			status: 'pending',
+			errorMessage: null,
+			attemptedAt: '2026-01-28T10:00:00Z',
+			deliveredAt: null
 		});
 
 		expect(result.success).toBe(false);

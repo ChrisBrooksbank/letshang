@@ -38,6 +38,10 @@ export default [
 				HTMLDivElement: 'readonly',
 				HTMLSelectElement: 'readonly',
 				HTMLInputElement: 'readonly',
+				// Push notification globals
+				Notification: 'readonly',
+				atob: 'readonly',
+				btoa: 'readonly',
 				// SvelteKit App namespace
 				App: 'readonly'
 			}

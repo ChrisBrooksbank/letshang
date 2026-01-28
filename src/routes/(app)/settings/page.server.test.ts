@@ -7,6 +7,14 @@ vi.mock('$lib/server/notifications', () => ({
 	updateNotificationPreference: vi.fn()
 }));
 
+// Mock push subscription server functions
+vi.mock('$lib/server/push-subscriptions', () => ({
+	hasActivePushSubscription: vi.fn()
+}));
+
+// Set environment variable for tests
+process.env.PUBLIC_VAPID_PUBLIC_KEY = 'test-vapid-public-key';
+
 // Mock SvelteKit modules
 vi.mock('@sveltejs/kit', () => ({
 	redirect: vi.fn((status: number, location: string) => {
@@ -19,6 +27,7 @@ import {
 	fetchUserNotificationPreferences,
 	updateNotificationPreference
 } from '$lib/server/notifications';
+import { hasActivePushSubscription } from '$lib/server/push-subscriptions';
 
 describe('settings page load function', () => {
 	beforeEach(() => {
@@ -50,6 +59,7 @@ describe('settings page load function', () => {
 		const mockLocals = createMockLocals();
 
 		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue(mockPreferences);
+		vi.mocked(hasActivePushSubscription).mockResolvedValue(false);
 
 		const result = await load({
 			locals: mockLocals
@@ -61,6 +71,41 @@ describe('settings page load function', () => {
 
 		expect(result.preferences).toEqual(mockPreferences);
 		expect(fetchUserNotificationPreferences).toHaveBeenCalledWith(mockLocals.supabase);
+	});
+
+	it('returns vapidPublicKey and hasPushSubscription', async () => {
+		const mockLocals = createMockLocals();
+
+		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue([]);
+		vi.mocked(hasActivePushSubscription).mockResolvedValue(true);
+
+		const result = await load({
+			locals: mockLocals
+		} as never);
+
+		if (!result) {
+			throw new Error('Load function returned undefined');
+		}
+
+		expect(result.vapidPublicKey).toBe('test-vapid-public-key');
+		expect(result.hasPushSubscription).toBe(true);
+	});
+
+	it('returns hasPushSubscription false when no subscription exists', async () => {
+		const mockLocals = createMockLocals();
+
+		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue([]);
+		vi.mocked(hasActivePushSubscription).mockResolvedValue(false);
+
+		const result = await load({
+			locals: mockLocals
+		} as never);
+
+		if (!result) {
+			throw new Error('Load function returned undefined');
+		}
+
+		expect(result.hasPushSubscription).toBe(false);
 	});
 
 	it('redirects to login when not authenticated', async () => {
@@ -77,6 +122,7 @@ describe('settings page load function', () => {
 		const mockLocals = createMockLocals();
 
 		vi.mocked(fetchUserNotificationPreferences).mockRejectedValue(new Error('Database error'));
+		vi.mocked(hasActivePushSubscription).mockResolvedValue(false);
 
 		const result = await load({
 			locals: mockLocals
@@ -87,6 +133,23 @@ describe('settings page load function', () => {
 		}
 
 		expect(result.preferences).toEqual([]);
+	});
+
+	it('defaults hasPushSubscription to false when check fails', async () => {
+		const mockLocals = createMockLocals();
+
+		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue([]);
+		vi.mocked(hasActivePushSubscription).mockRejectedValue(new Error('Check failed'));
+
+		const result = await load({
+			locals: mockLocals
+		} as never);
+
+		if (!result) {
+			throw new Error('Load function returned undefined');
+		}
+
+		expect(result.hasPushSubscription).toBe(false);
 	});
 });
 

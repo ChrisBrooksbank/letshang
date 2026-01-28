@@ -1,9 +1,16 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import BaseLayout from '$lib/components/BaseLayout.svelte';
+	import PushNotificationPrompt from '$lib/components/PushNotificationPrompt.svelte';
 	import type { NotificationPreference } from '$lib/schemas/notifications';
 
 	let { data }: { data: PageData } = $props();
+
+	// Track whether user has just enabled push notifications
+	let pushEnabled = $state(false);
+	$effect(() => {
+		pushEnabled = data.hasPushSubscription;
+	});
 
 	// Notification type labels for display
 	const notificationTypeLabels: Record<string, { title: string; description: string }> = {
@@ -99,6 +106,19 @@
 				Manage how you receive notifications for events, groups, and messages.
 			</p>
 		</div>
+
+		<!-- Push Notification Permission Prompt -->
+		{#if !pushEnabled}
+			<PushNotificationPrompt
+				vapidPublicKey={data.vapidPublicKey}
+				onEnabled={() => {
+					pushEnabled = true;
+				}}
+				onDismissed={() => {
+					pushEnabled = true;
+				}}
+			/>
+		{/if}
 
 		<!-- Notification Preferences Table -->
 		<div class="bg-white rounded-lg shadow overflow-hidden">
@@ -203,8 +223,9 @@
 				</div>
 				<div class="ml-3 flex-1">
 					<p class="text-sm text-blue-700">
-						<strong>Push notifications</strong> require browser permission. Click the bell icon in
-						your browser to enable.
+						<strong>Push notifications</strong>
+						{#if pushEnabled}are enabled on this device.{:else}can be enabled using the prompt
+							above.{/if}
 						<br />
 						<strong>Email notifications</strong> are sent to your registered email address.
 						<br />

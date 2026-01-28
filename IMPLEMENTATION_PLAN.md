@@ -797,10 +797,10 @@
   - Coverage: 24 new tests (13 server + 7 schema + 4 page server), 100% on new code
   - Commit: 8f2670b
 
-- [ ] Create push notification system [P1]
+- [x] Create push notification system [P1]
   - AC: Web Push API integration
-  - AC: Permission prompt
-  - AC: Event reminders delivered
+  - AC: Permission prompt with value proposition
+  - AC: Delivery confirmation via push_delivery_log table
 
 ---
 

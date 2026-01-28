@@ -4,6 +4,7 @@ import {
 	fetchUserNotificationPreferences,
 	updateNotificationPreference
 } from '$lib/server/notifications';
+import { hasActivePushSubscription } from '$lib/server/push-subscriptions';
 import { notificationPreferenceSchema } from '$lib/schemas/notifications';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -15,18 +16,26 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const supabase = locals.supabase;
 
-	try {
-		const preferences = await fetchUserNotificationPreferences(supabase);
+	let preferences: Awaited<ReturnType<typeof fetchUserNotificationPreferences>> = [];
+	let hasPushSubscription = false;
 
-		return {
-			preferences
-		};
+	try {
+		preferences = await fetchUserNotificationPreferences(supabase);
 	} catch {
 		// If fetch fails, return empty array
-		return {
-			preferences: []
-		};
 	}
+
+	try {
+		hasPushSubscription = await hasActivePushSubscription(supabase);
+	} catch {
+		// If check fails, assume no subscription
+	}
+
+	return {
+		preferences,
+		vapidPublicKey: process.env.PUBLIC_VAPID_PUBLIC_KEY ?? '',
+		hasPushSubscription
+	};
 };
 
 export const actions: Actions = {
