@@ -317,6 +317,32 @@ export interface Database {
 					updated_at?: string;
 				};
 			};
+			user_blocks: {
+				Row: {
+					id: string;
+					blocker_id: string;
+					blocked_id: string;
+					reason: string | null;
+					blocked_at: string;
+					created_at: string;
+				};
+				Insert: {
+					id?: string;
+					blocker_id: string;
+					blocked_id: string;
+					reason?: string | null;
+					blocked_at?: string;
+					created_at?: string;
+				};
+				Update: {
+					id?: string;
+					blocker_id?: string;
+					blocked_id?: string;
+					reason?: string | null;
+					blocked_at?: string;
+					created_at?: string;
+				};
+			};
 		};
 		Views: Record<string, never>;
 		Functions: Record<string, never>;

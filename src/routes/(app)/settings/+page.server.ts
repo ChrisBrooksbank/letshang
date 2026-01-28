@@ -6,6 +6,8 @@ import {
 } from '$lib/server/notifications';
 import { hasActivePushSubscription } from '$lib/server/push-subscriptions';
 import { notificationPreferenceSchema } from '$lib/schemas/notifications';
+import { getBlockedUsers, blockUser, unblockUser } from '$lib/server/blocks';
+import { blockUserSchema, unblockUserSchema } from '$lib/schemas/blocks';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Ensure user is authenticated
@@ -18,6 +20,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	let preferences: Awaited<ReturnType<typeof fetchUserNotificationPreferences>> = [];
 	let hasPushSubscription = false;
+	let blockedUsers: Awaited<ReturnType<typeof getBlockedUsers>> = [];
 
 	try {
 		preferences = await fetchUserNotificationPreferences(supabase);
@@ -31,10 +34,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// If check fails, assume no subscription
 	}
 
+	try {
+		blockedUsers = await getBlockedUsers(supabase);
+	} catch {
+		// If fetch fails, return empty array
+	}
+
 	return {
 		preferences,
 		vapidPublicKey: process.env.PUBLIC_VAPID_PUBLIC_KEY ?? '',
-		hasPushSubscription
+		hasPushSubscription,
+		blockedUsers
 	};
 };
 
@@ -87,6 +97,70 @@ export const actions: Actions = {
 			};
 		} catch {
 			return fail(500, { error: 'Failed to update notification preference' });
+		}
+	},
+
+	/**
+	 * Block a user
+	 */
+	blockUser: async ({ locals, request }) => {
+		const session = await locals.supabase.auth.getSession();
+		if (!session.data.session) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const blockedId = formData.get('blockedId') as string;
+		const reason = formData.get('reason') as string | null;
+
+		const result = blockUserSchema.safeParse({
+			blockedId,
+			reason: reason ?? undefined
+		});
+
+		if (!result.success) {
+			return fail(400, {
+				error: 'Invalid block data',
+				errors: result.error.flatten().fieldErrors
+			});
+		}
+
+		try {
+			await blockUser(locals.supabase, result.data.blockedId, result.data.reason);
+			return { success: true };
+		} catch (e) {
+			const message = e instanceof Error ? e.message : 'Failed to block user';
+			return fail(500, { error: message });
+		}
+	},
+
+	/**
+	 * Unblock a user
+	 */
+	unblockUser: async ({ locals, request }) => {
+		const session = await locals.supabase.auth.getSession();
+		if (!session.data.session) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const blockedId = formData.get('blockedId') as string;
+
+		const result = unblockUserSchema.safeParse({ blockedId });
+
+		if (!result.success) {
+			return fail(400, {
+				error: 'Invalid unblock data',
+				errors: result.error.flatten().fieldErrors
+			});
+		}
+
+		try {
+			await unblockUser(locals.supabase, result.data.blockedId);
+			return { success: true };
+		} catch (e) {
+			const message = e instanceof Error ? e.message : 'Failed to unblock user';
+			return fail(500, { error: message });
 		}
 	}
 };

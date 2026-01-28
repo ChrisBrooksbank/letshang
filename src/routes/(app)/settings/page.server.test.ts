@@ -12,6 +12,13 @@ vi.mock('$lib/server/push-subscriptions', () => ({
 	hasActivePushSubscription: vi.fn()
 }));
 
+// Mock blocks server functions
+vi.mock('$lib/server/blocks', () => ({
+	getBlockedUsers: vi.fn(),
+	blockUser: vi.fn(),
+	unblockUser: vi.fn()
+}));
+
 // Set environment variable for tests
 process.env.PUBLIC_VAPID_PUBLIC_KEY = 'test-vapid-public-key';
 
@@ -28,6 +35,7 @@ import {
 	updateNotificationPreference
 } from '$lib/server/notifications';
 import { hasActivePushSubscription } from '$lib/server/push-subscriptions';
+import { getBlockedUsers, blockUser, unblockUser } from '$lib/server/blocks';
 
 describe('settings page load function', () => {
 	beforeEach(() => {
@@ -60,6 +68,7 @@ describe('settings page load function', () => {
 
 		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue(mockPreferences);
 		vi.mocked(hasActivePushSubscription).mockResolvedValue(false);
+		vi.mocked(getBlockedUsers).mockResolvedValue([]);
 
 		const result = await load({
 			locals: mockLocals
@@ -78,6 +87,7 @@ describe('settings page load function', () => {
 
 		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue([]);
 		vi.mocked(hasActivePushSubscription).mockResolvedValue(true);
+		vi.mocked(getBlockedUsers).mockResolvedValue([]);
 
 		const result = await load({
 			locals: mockLocals
@@ -96,6 +106,7 @@ describe('settings page load function', () => {
 
 		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue([]);
 		vi.mocked(hasActivePushSubscription).mockResolvedValue(false);
+		vi.mocked(getBlockedUsers).mockResolvedValue([]);
 
 		const result = await load({
 			locals: mockLocals
@@ -123,6 +134,7 @@ describe('settings page load function', () => {
 
 		vi.mocked(fetchUserNotificationPreferences).mockRejectedValue(new Error('Database error'));
 		vi.mocked(hasActivePushSubscription).mockResolvedValue(false);
+		vi.mocked(getBlockedUsers).mockResolvedValue([]);
 
 		const result = await load({
 			locals: mockLocals
@@ -135,11 +147,58 @@ describe('settings page load function', () => {
 		expect(result.preferences).toEqual([]);
 	});
 
+	it('returns empty array when fetching blocked users fails', async () => {
+		const mockLocals = createMockLocals();
+
+		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue([]);
+		vi.mocked(hasActivePushSubscription).mockResolvedValue(false);
+		vi.mocked(getBlockedUsers).mockRejectedValue(new Error('Database error'));
+
+		const result = await load({
+			locals: mockLocals
+		} as never);
+
+		if (!result) {
+			throw new Error('Load function returned undefined');
+		}
+
+		expect(result.blockedUsers).toEqual([]);
+	});
+
+	it('loads blocked users for authenticated user', async () => {
+		const mockLocals = createMockLocals();
+		const mockBlockedUsers = [
+			{
+				id: 'block-1',
+				blockedId: 'user-456',
+				displayName: 'Jane Doe',
+				reason: 'Spam',
+				blockedAt: '2026-01-28T12:00:00Z'
+			}
+		];
+
+		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue([]);
+		vi.mocked(hasActivePushSubscription).mockResolvedValue(false);
+		vi.mocked(getBlockedUsers).mockResolvedValue(mockBlockedUsers);
+
+		const result = await load({
+			locals: mockLocals
+		} as never);
+
+		if (!result) {
+			throw new Error('Load function returned undefined');
+		}
+
+		expect(result.blockedUsers).toEqual(mockBlockedUsers);
+		expect(getBlockedUsers).toHaveBeenCalledWith(mockLocals.supabase);
+	});
+
 	it('defaults hasPushSubscription to false when check fails', async () => {
 		const mockLocals = createMockLocals();
 
 		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue([]);
 		vi.mocked(hasActivePushSubscription).mockRejectedValue(new Error('Check failed'));
+		vi.mocked(getBlockedUsers).mockResolvedValue([]);
 
 		const result = await load({
 			locals: mockLocals
@@ -291,5 +350,222 @@ describe('settings page updatePreference action', () => {
 			false,
 			true
 		);
+	});
+});
+
+describe('settings page blockUser action', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	const createMockRequest = (formData: FormData) => ({
+		formData: async () => formData
+	});
+
+	const createMockLocals = (hasSession = true) => ({
+		supabase: {
+			auth: {
+				getSession: vi.fn().mockResolvedValue({
+					data: {
+						session: hasSession ? { user: { id: 'user-123' } } : null
+					}
+				})
+			}
+		}
+	});
+
+	it('blocks a user successfully', async () => {
+		const formData = new FormData();
+		formData.append('blockedId', '550e8400-e29b-41d4-a716-446655440000');
+		formData.append('reason', 'Unwanted contact');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		vi.mocked(blockUser).mockResolvedValue({
+			id: 'block-id',
+			blocker_id: 'user-123',
+			blocked_id: '550e8400-e29b-41d4-a716-446655440000',
+			blocked_at: '2026-01-28T12:00:00Z'
+		});
+
+		const result = await actions.blockUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result).toEqual({ success: true });
+		expect(blockUser).toHaveBeenCalledWith(
+			mockLocals.supabase,
+			'550e8400-e29b-41d4-a716-446655440000',
+			'Unwanted contact'
+		);
+	});
+
+	it('blocks a user without reason', async () => {
+		const formData = new FormData();
+		formData.append('blockedId', '550e8400-e29b-41d4-a716-446655440000');
+		formData.append('reason', '');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		vi.mocked(blockUser).mockResolvedValue({
+			id: 'block-id',
+			blocker_id: 'user-123',
+			blocked_id: '550e8400-e29b-41d4-a716-446655440000',
+			blocked_at: '2026-01-28T12:00:00Z'
+		});
+
+		const result = await actions.blockUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result).toEqual({ success: true });
+		expect(blockUser).toHaveBeenCalledWith(
+			mockLocals.supabase,
+			'550e8400-e29b-41d4-a716-446655440000',
+			undefined
+		);
+	});
+
+	it('returns 401 when not authenticated', async () => {
+		const formData = new FormData();
+		formData.append('blockedId', '550e8400-e29b-41d4-a716-446655440000');
+
+		const mockLocals = createMockLocals(false);
+		const mockRequest = createMockRequest(formData);
+
+		const result = await actions.blockUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(401);
+	});
+
+	it('returns 400 for invalid blockedId', async () => {
+		const formData = new FormData();
+		formData.append('blockedId', 'not-a-uuid');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		const result = await actions.blockUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(400);
+	});
+
+	it('returns 500 when block fails', async () => {
+		const formData = new FormData();
+		formData.append('blockedId', '550e8400-e29b-41d4-a716-446655440000');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		vi.mocked(blockUser).mockRejectedValue(new Error('User is already blocked'));
+
+		const result = await actions.blockUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(500);
+		expect(result?.error).toBe('User is already blocked');
+	});
+});
+
+describe('settings page unblockUser action', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	const createMockRequest = (formData: FormData) => ({
+		formData: async () => formData
+	});
+
+	const createMockLocals = (hasSession = true) => ({
+		supabase: {
+			auth: {
+				getSession: vi.fn().mockResolvedValue({
+					data: {
+						session: hasSession ? { user: { id: 'user-123' } } : null
+					}
+				})
+			}
+		}
+	});
+
+	it('unblocks a user successfully', async () => {
+		const formData = new FormData();
+		formData.append('blockedId', '550e8400-e29b-41d4-a716-446655440000');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		vi.mocked(unblockUser).mockResolvedValue();
+
+		const result = await actions.unblockUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result).toEqual({ success: true });
+		expect(unblockUser).toHaveBeenCalledWith(
+			mockLocals.supabase,
+			'550e8400-e29b-41d4-a716-446655440000'
+		);
+	});
+
+	it('returns 401 when not authenticated', async () => {
+		const formData = new FormData();
+		formData.append('blockedId', '550e8400-e29b-41d4-a716-446655440000');
+
+		const mockLocals = createMockLocals(false);
+		const mockRequest = createMockRequest(formData);
+
+		const result = await actions.unblockUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(401);
+	});
+
+	it('returns 400 for invalid blockedId', async () => {
+		const formData = new FormData();
+		formData.append('blockedId', 'invalid-id');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		const result = await actions.unblockUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(400);
+	});
+
+	it('returns 500 when unblock fails', async () => {
+		const formData = new FormData();
+		formData.append('blockedId', '550e8400-e29b-41d4-a716-446655440000');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		vi.mocked(unblockUser).mockRejectedValue(new Error('User was not blocked'));
+
+		const result = await actions.unblockUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(500);
+		expect(result?.error).toBe('User was not blocked');
 	});
 });

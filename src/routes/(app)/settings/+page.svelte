@@ -204,6 +204,49 @@
 			</div>
 		</div>
 
+		<!-- Blocked Users Section -->
+		<div class="mt-8">
+			<h2 class="text-xl font-semibold text-gray-900 mb-2">Blocked Users</h2>
+			<p class="text-gray-600 mb-4">
+				Blocked users cannot contact you and are hidden from your view.
+			</p>
+
+			<div class="bg-white rounded-lg shadow overflow-hidden">
+				{#if data.blockedUsers.length === 0}
+					<div class="px-6 py-8 text-center">
+						<p class="text-gray-500">No users blocked.</p>
+					</div>
+				{:else}
+					<ul class="divide-y divide-gray-200">
+						{#each data.blockedUsers as blocked}
+							<li class="px-6 py-4 flex items-center justify-between">
+								<div class="flex flex-col">
+									<span class="text-sm font-medium text-gray-900">
+										{blocked.displayName ?? 'Unknown User'}
+									</span>
+									{#if blocked.reason}
+										<span class="text-xs text-gray-500 mt-0.5">{blocked.reason}</span>
+									{/if}
+									<span class="text-xs text-gray-400 mt-0.5">
+										Blocked {new Date(blocked.blockedAt).toLocaleDateString()}
+									</span>
+								</div>
+								<form method="POST" action="?/unblockUser" class="flex-shrink-0">
+									<input type="hidden" name="blockedId" value={blocked.blockedId} />
+									<button
+										type="submit"
+										class="px-4 py-1.5 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+									>
+										Unblock
+									</button>
+								</form>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			</div>
+		</div>
+
 		<!-- Help Text -->
 		<div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
 			<div class="flex">

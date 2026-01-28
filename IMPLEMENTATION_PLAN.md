@@ -808,9 +808,16 @@
 
 > Core moderation features (spec: 07-communication.md)
 
-- [ ] Create block/unblock functionality [P1]
-  - AC: Block prevents all contact
-  - AC: Manage blocked list in settings
+- [x] Create block/unblock functionality [P1] ✓
+  - AC: Block prevents all contact ✓
+  - AC: Blocked user hidden from you ✓
+  - AC: Manage blocked list in settings ✓
+  - Implementation: user_blocks table with RLS, self-block prevention, unique constraint
+  - Database: Migration with blocker_id/blocked_id FKs, indexes, is_user_blocked() function
+  - Schema: blockUserSchema (UUID + optional reason 500 chars), unblockUserSchema (UUID)
+  - Server: blockUser, unblockUser, getBlockedUsers, isUserBlocked functions
+  - UI: Blocked Users section on settings page with unblock buttons
+  - Coverage: 51 tests (10 schema + 19 server + 22 page server), 100% on new code
 
 - [ ] Implement connection-gated messaging [P1]
   - AC: Option to only receive DMs from connections
