@@ -906,10 +906,19 @@
   - Accessibility: role="status", aria-live="polite", descriptive aria-label, touch-friendly 44px height
   - Coverage: 32 tests (14 utility + 18 component), 100% on new code
 
-- [ ] Implement adaptive navigation [P1]
-  - AC: Bottom nav on mobile
-  - AC: Sidebar on desktop
-  - AC: Smooth breakpoint transition
+- [x] Implement adaptive navigation [P1] ✓
+  - AC: Bottom nav on mobile ✓
+  - AC: Sidebar on desktop (1024px+) ✓
+  - AC: Smooth breakpoint transition ✓
+  - Implementation: AppNavigation component with fixed sidebar on desktop (240px width, left positioned)
+  - Implementation: Bottom sticky nav on mobile (<1024px), vertical navigation stack in sidebar
+  - Implementation: BaseLayout adjusted with left margin (240px) on desktop to accommodate sidebar
+  - Implementation: CSS transitions for smooth width and margin-left transitions (0.3s ease)
+  - Implementation: Horizontal icon+label layout in sidebar for better readability, hover states
+  - Testing: Created AppNavigation.test.ts with 40 test cases (100% coverage)
+  - Testing: Updated BaseLayout.test.ts with 3 desktop sidebar tests
+  - Coverage: All tests pass (1952 passed | 6 skipped), 100% on new code
+  - Commit: 2cc38bc
 
 ---
 
