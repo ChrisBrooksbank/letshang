@@ -69,7 +69,8 @@ export const actions: Actions = {
 			capacity,
 			formatTags,
 			accessibilityTags,
-			eventSize
+			eventSize,
+			coverImageUrl
 		} = form.data as {
 			title: string;
 			description: string;
@@ -90,6 +91,7 @@ export const actions: Actions = {
 				'first_timer_friendly' | 'structured_activity' | 'low_pressure' | 'beginner_welcome'
 			>;
 			eventSize?: 'intimate' | 'small' | 'medium' | 'large' | null;
+			coverImageUrl?: string | null;
 		};
 
 		// Calculate end time if duration is provided instead
@@ -124,7 +126,8 @@ export const actions: Actions = {
 				capacity: capacity || null,
 				format_tags: formatTags || [],
 				accessibility_tags: accessibilityTags || [],
-				event_size: finalEventSize || null
+				event_size: finalEventSize || null,
+				cover_image_url: coverImageUrl || null
 			})
 			.select()
 			.single();

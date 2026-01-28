@@ -68,6 +68,17 @@
 
 <BaseLayout>
 	<div class="max-w-3xl mx-auto">
+		<!-- Cover Image -->
+		{#if event.cover_image_url}
+			<div class="mb-6 -mx-4 sm:mx-0">
+				<img
+					src={event.cover_image_url}
+					alt={event.title}
+					class="w-full h-64 sm:h-80 object-cover sm:rounded-lg"
+				/>
+			</div>
+		{/if}
+
 		<!-- Event Header -->
 		<div class="mb-6">
 			<h1 class="text-3xl font-bold text-gray-900 mb-2">{event.title}</h1>

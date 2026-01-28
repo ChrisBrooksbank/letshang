@@ -2,6 +2,7 @@
 	import { superForm } from 'sveltekit-superforms';
 	import type { PageData } from './$types';
 	import BaseLayout from '$lib/components/BaseLayout.svelte';
+	import CoverImageUpload from '$lib/components/CoverImageUpload.svelte';
 	// import AddressAutocomplete from '$lib/components/AddressAutocomplete.svelte';
 
 	export let data: PageData;
@@ -48,6 +49,11 @@
 
 	// Reactive: Update form data when duration changes
 	$: $form.durationMinutes = durationMinutes;
+
+	// Handle cover image change
+	function handleCoverImageChange(imageUrl: string) {
+		$form.coverImageUrl = imageUrl;
+	}
 </script>
 
 <svelte:head>
@@ -175,6 +181,19 @@
 							</p>
 						{/if}
 					</fieldset>
+				</div>
+
+				<!-- Cover Image -->
+				<div>
+					<div class="block text-sm font-medium text-gray-700 mb-2">Cover Image</div>
+					<CoverImageUpload
+						currentImageUrl={($form.coverImageUrl as string | undefined) || ''}
+						onImageChange={handleCoverImageChange}
+						disabled={$delayed}
+					/>
+					<p class="mt-2 text-xs text-gray-500">
+						Add a cover image to make your event stand out. 16:9 aspect ratio recommended.
+					</p>
 				</div>
 
 				<!-- Title -->

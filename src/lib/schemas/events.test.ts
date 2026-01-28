@@ -1035,3 +1035,89 @@ describe('eventSizeEnum', () => {
 		expect(() => eventSizeEnum.parse('huge')).toThrow();
 	});
 });
+
+describe('coverImageUrl validation', () => {
+	// Helper to create a valid base event
+	const createValidEvent = (): {
+		title: string;
+		eventType: 'in_person' | 'online' | 'hybrid';
+		startTime: string;
+		durationMinutes: number;
+		venueName?: string;
+		venueAddress?: string;
+		videoLink?: string;
+		coverImageUrl?: string | null;
+	} => ({
+		title: 'Test Event',
+		eventType: 'in_person',
+		startTime: new Date(Date.now() + 86400000).toISOString(),
+		durationMinutes: 60,
+		venueName: 'Test Venue',
+		venueAddress: '123 Test St'
+	});
+
+	it('should accept valid HTTPS URLs', () => {
+		const event = createValidEvent();
+		event.coverImageUrl = 'https://example.com/image.jpg';
+		expect(() => eventCreationSchema.parse(event)).not.toThrow();
+	});
+
+	it('should accept valid HTTP URLs', () => {
+		const event = createValidEvent();
+		event.coverImageUrl = 'http://example.com/image.png';
+		expect(() => eventCreationSchema.parse(event)).not.toThrow();
+	});
+
+	it('should accept data URLs', () => {
+		const event = createValidEvent();
+		event.coverImageUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA';
+		expect(() => eventCreationSchema.parse(event)).not.toThrow();
+	});
+
+	it('should accept null', () => {
+		const event = createValidEvent();
+		event.coverImageUrl = null;
+		expect(() => eventCreationSchema.parse(event)).not.toThrow();
+	});
+
+	it('should accept undefined (optional field)', () => {
+		const event = createValidEvent();
+		delete (event as { coverImageUrl?: string }).coverImageUrl;
+		expect(() => eventCreationSchema.parse(event)).not.toThrow();
+	});
+
+	it('should reject invalid URLs', () => {
+		const event = createValidEvent();
+		event.coverImageUrl = 'not-a-url';
+		expect(() => eventCreationSchema.parse(event)).toThrow('Please enter a valid image URL');
+	});
+
+	it('should reject empty strings', () => {
+		const event = createValidEvent();
+		event.coverImageUrl = '';
+		expect(() => eventCreationSchema.parse(event)).toThrow();
+	});
+
+	it('should trim whitespace', () => {
+		const event = createValidEvent();
+		event.coverImageUrl = '  https://example.com/image.jpg  ';
+		const result = eventCreationSchema.parse(event);
+		expect(result.coverImageUrl).toBe('https://example.com/image.jpg');
+	});
+
+	it('should reject URLs exceeding 2000 characters', () => {
+		const event = createValidEvent();
+		event.coverImageUrl = 'https://example.com/' + 'a'.repeat(2000);
+		expect(() => eventCreationSchema.parse(event)).toThrow(
+			'Image URL must not exceed 2000 characters'
+		);
+	});
+
+	it('should accept URLs up to 2000 characters', () => {
+		const event = createValidEvent();
+		// Create a URL that's exactly 1980 characters (leaves room for protocol and domain)
+		const longPath = 'a'.repeat(1960);
+		event.coverImageUrl = `https://example.com/${longPath}`;
+		expect(() => eventCreationSchema.parse(event)).not.toThrow();
+	});
+});

@@ -11,6 +11,11 @@
 		ACCEPTED_IMAGE_TYPES,
 		MAX_IMAGE_SIZE_MB
 	} from '$lib/utils/image-compression';
+	import {
+		STOCK_IMAGE_CATEGORIES,
+		getImagesByCategory,
+		type StockImageCategory
+	} from '$lib/data/stock-images';
 
 	interface Props {
 		currentImageUrl?: string;
@@ -27,6 +32,10 @@
 	let cropperImage: string = $state('');
 	let error: string = $state('');
 	let isProcessing: boolean = $state(false);
+
+	// Gallery state
+	let showGallery: boolean = $state(false);
+	let selectedCategory: StockImageCategory = $state('Social');
 
 	// Cropper state (16:9 aspect ratio for cover images)
 	let crop = $state({ x: 0, y: 0 });
@@ -144,6 +153,29 @@
 		}
 	}
 
+	/**
+	 * Select a stock image from the gallery
+	 */
+	function selectStockImage(imageUrl: string) {
+		previewUrl = imageUrl;
+		onImageChange(imageUrl);
+		showGallery = false;
+	}
+
+	/**
+	 * Open gallery modal
+	 */
+	function openGallery() {
+		showGallery = true;
+	}
+
+	/**
+	 * Close gallery modal
+	 */
+	function closeGallery() {
+		showGallery = false;
+	}
+
 	// Update preview when currentImageUrl changes
 	$effect(() => {
 		if (currentImageUrl && !selectedFile) {
@@ -180,13 +212,13 @@
 								d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
 							/>
 						</svg>
-						<p class="mt-2 text-sm text-gray-500">Upload a cover image</p>
+						<p class="mt-2 text-sm text-gray-500">Select from gallery or upload your own</p>
 					</div>
 				</div>
 			{/if}
 		</div>
 
-		<div class="flex items-center gap-2">
+		<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
 			<input
 				bind:this={fileInput}
 				type="file"
@@ -198,11 +230,20 @@
 
 			<button
 				type="button"
+				onclick={openGallery}
+				disabled={disabled || isProcessing}
+				class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg text-sm font-medium transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[44px]"
+			>
+				Browse Gallery
+			</button>
+
+			<button
+				type="button"
 				onclick={selectImage}
 				disabled={disabled || isProcessing}
-				class="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg text-sm font-medium transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+				class="px-4 py-2 bg-white border-2 border-blue-600 hover:bg-blue-50 disabled:bg-gray-100 disabled:border-gray-300 text-blue-600 disabled:text-gray-400 rounded-lg text-sm font-medium transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[44px]"
 			>
-				{previewUrl ? 'Change Image' : 'Upload Image'}
+				{previewUrl ? 'Upload Different Image' : 'Upload Custom Image'}
 			</button>
 
 			{#if previewUrl}
@@ -210,7 +251,7 @@
 					type="button"
 					onclick={removeImage}
 					disabled={disabled || isProcessing}
-					class="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 text-gray-800 rounded-lg text-sm font-medium transition-colors focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+					class="px-4 py-2 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 text-gray-800 rounded-lg text-sm font-medium transition-colors focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 min-h-[44px]"
 				>
 					Remove
 				</button>
@@ -218,7 +259,7 @@
 		</div>
 
 		<p class="text-xs text-gray-500">
-			JPG, PNG, or WebP. Max {MAX_IMAGE_SIZE_MB}MB. 16:9 aspect ratio recommended.
+			Choose from curated gallery or upload your own (JPG, PNG, WebP, max {MAX_IMAGE_SIZE_MB}MB)
 		</p>
 	</div>
 
@@ -293,6 +334,94 @@
 							Save
 						{/if}
 					</button>
+				</div>
+			</div>
+		</div>
+	{/if}
+
+	<!-- Stock Image Gallery Modal -->
+	{#if showGallery}
+		<div
+			class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="gallery-title"
+		>
+			<div class="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] flex flex-col">
+				<!-- Header -->
+				<div class="p-4 border-b">
+					<div class="flex items-center justify-between">
+						<h2 id="gallery-title" class="text-lg font-semibold">Select Cover Image</h2>
+						<button
+							type="button"
+							onclick={closeGallery}
+							class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+							aria-label="Close gallery"
+						>
+							<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+								<path
+									fill-rule="evenodd"
+									d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+						</button>
+					</div>
+					<p class="text-sm text-gray-600 mt-1">Browse curated images by category</p>
+				</div>
+
+				<!-- Category Tabs -->
+				<div class="border-b overflow-x-auto">
+					<div class="flex gap-2 p-4 min-w-max">
+						{#each STOCK_IMAGE_CATEGORIES as category}
+							<button
+								type="button"
+								onclick={() => (selectedCategory = category)}
+								class="px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap {selectedCategory ===
+								category
+									? 'bg-blue-100 text-blue-700'
+									: 'bg-white text-gray-700 hover:bg-gray-100'}"
+							>
+								{category}
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				<!-- Image Grid -->
+				<div class="flex-1 overflow-y-auto p-4">
+					<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+						{#each getImagesByCategory(selectedCategory) as image (image.id)}
+							<button
+								type="button"
+								onclick={() => selectStockImage(image.url)}
+								class="relative aspect-video rounded-lg overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition-colors group focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+							>
+								<img
+									src={image.url}
+									alt={image.alt}
+									class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+								/>
+								<div
+									class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center"
+								>
+									<svg
+										class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M5 13l4 4L19 7"
+										/>
+									</svg>
+								</div>
+							</button>
+						{/each}
+					</div>
 				</div>
 			</div>
 		</div>

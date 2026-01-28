@@ -128,7 +128,16 @@ export const eventCreationSchema = z
 		accessibilityTags: z.array(eventAccessibilityTagEnum).default([]),
 
 		// Event size: optional, can be auto-calculated from capacity
-		eventSize: eventSizeEnum.optional().nullable()
+		eventSize: eventSizeEnum.optional().nullable(),
+
+		// Cover image: URL to image in storage or external URL
+		coverImageUrl: z
+			.string()
+			.url({ message: 'Please enter a valid image URL' })
+			.max(2000, 'Image URL must not exceed 2000 characters')
+			.trim()
+			.optional()
+			.nullable()
 	})
 	.superRefine((data, ctx) => {
 		// Validate that in-person events have venue information
