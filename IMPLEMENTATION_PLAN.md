@@ -883,10 +883,17 @@
   - Implementation: Integrated into BaseLayout.svelte for app-wide automatic dismissal
   - Coverage: 15 tests (11 utility + 4 component), 100% on new code
 
-- [ ] Build offline data storage [P1]
-  - AC: IndexedDB for user data
-  - AC: Cache joined groups
-  - AC: Cache upcoming RSVPed events
+- [x] Build offline data storage [P1] ✓
+  - AC: IndexedDB for user data ✓
+  - AC: Cache joined groups ✓
+  - AC: Cache upcoming RSVPed events ✓
+  - Implementation: Created offline-storage.ts utility with idb library
+  - Three object stores: user-profile, joined-groups, rsvped-events
+  - TTL-based freshness: 24h for profile, 12h for groups, 6h for events
+  - Snapshot-based caching for groups/events (clear + rewrite on update)
+  - Stale entry cleanup on read (lazy expiry)
+  - clearAllCache() for logout flow
+  - Coverage: 31 tests, 100% on new code
 
 - [ ] Add offline indicators [P1]
   - AC: Banner when offline

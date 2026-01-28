@@ -125,6 +125,7 @@ export default [
 		ignores: [
 			'.svelte-kit/**',
 			'build/**',
+			'coverage/**',
 			'dist/**',
 			'node_modules/**',
 			'**/*.config.js',
