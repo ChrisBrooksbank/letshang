@@ -926,10 +926,24 @@
 
 > Beautiful event pages (spec: 03-events.md)
 
-- [ ] Design event detail page with themes [P1]
-  - AC: Beautiful default theme
-  - AC: Mobile-optimized layout
-  - AC: Social proof indicators prominent
+- [x] Design event detail page with themes [P1] ✓
+  - AC: Beautiful default theme ✓
+  - AC: Mobile-optimized layout ✓
+  - AC: Social proof indicators prominent ✓
+  - Implementation: Enhanced event detail page with modern visual design system
+  - Features: Gradient backgrounds, shadow effects, larger typography (4xl/5xl headers)
+  - Cover image: Gradient overlay, increased height (h-72/h-96), rounded-2xl borders
+  - Event badges: Gradient badges with icons (blue-to-indigo, purple-to-pink) and shadows
+  - Social proof section: Gradient card (indigo-50 to purple-50) with grid layout, 3xl numbers
+  - Progress bar: Animated gradient bar for capacity tracking
+  - Alert badges: Pulsing "Filling up fast!" gradient badge with animation
+  - Content cards: White rounded-2xl cards with shadows and borders for About/Location sections
+  - Icons: Indigo-colored icons throughout for visual consistency
+  - Enhanced tags: Format and accessibility tags with gradient badges and emoji icons
+  - CTA buttons: Gradient buttons with hover effects and shadows
+  - File: src/routes/(app)/events/[id]/+page.svelte
+  - Coverage: All existing tests pass (1979 passed | 6 skipped), no test changes needed
+  - Commit: e800654
 
 - [x] Create cover image gallery [P1] ✓
   - AC: Curated stock images by category ✓
@@ -941,10 +955,16 @@
   - Coverage: 19 tests for stock images data, schema validation for coverImageUrl
   - Note: Feature was completed in previous iteration (Iteration 9) during group creation wizard
 
-- [ ] Implement social proof indicators [P1]
-  - AC: "X Going, Y Interested" on cards
-  - AC: "Filling up fast" at 80%+ capacity
-  - AC: "X spots left" near capacity
+- [x] Implement social proof indicators [P1] ✓
+  - AC: "X Going, Y Interested" on cards ✓
+  - AC: "Filling up fast" at 80%+ capacity ✓
+  - AC: "X spots left" near capacity ✓
+  - Note: Implemented as part of "Design event detail page with themes" task above
+  - Features: Redesigned attendee counts with prominent gradient cards, animated progress bars
+  - Visual indicators: Pulsing badge for filling up fast, gradient warning card at capacity
+  - Numbers: Large 3xl bold numbers with color-coded accents (indigo/purple/amber)
+  - Layout: Responsive grid layout showing going/interested/waitlisted counts
+  - Progress tracking: Visual progress bar with percentage calculation and spots remaining
 
 ---
 
