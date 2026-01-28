@@ -842,9 +842,18 @@
   - Form action: reportUser on settings page with Zod validation and error handling
   - Coverage: 100% on new code (16 schema + 15 server + 8 page server = 39 tests)
 
-- [ ] Build rate limiting [P1]
-  - AC: Detect mass-messaging patterns
-  - AC: Throttle suspicious behavior
+- [x] Build rate limiting [P1] ✓
+  - AC: Detect mass-messaging patterns ✓
+  - AC: Throttle suspicious behavior ✓
+  - AC: Alert platform admins ✓
+  - Implementation: message_rate_limits table with sliding window detection (10 msg/hr)
+  - Implementation: rate_limit_alerts table for admin review of suspicious patterns
+  - Implementation: Database functions check_rate_limit() and record_message_send()
+  - Implementation: Server functions: checkRateLimit, recordMessageSend, getRateLimitHistory, getPendingRateLimitAlerts, markAlertReviewed
+  - Implementation: Rate limit actions: allowed → warned (7+ msgs) → throttled (10+ msgs) → suspended (3+ throttles in 24h)
+  - Implementation: Admin alerts auto-created on throttle/suspension events
+  - Schema: rateLimitActionEnum, rateLimitAlertTypeEnum, RATE_LIMIT_THRESHOLDS constants
+  - Coverage: 100% on new code (34 schema tests + 27 server tests = 61 tests total)
 
 ---
 
