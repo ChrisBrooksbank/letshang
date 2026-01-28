@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AppNavigation from './AppNavigation.svelte';
 	import InstallPrompt from './InstallPrompt.svelte';
+	import OfflineBanner from './OfflineBanner.svelte';
 	import SplashScreen from './SplashScreen.svelte';
 
 	/**
@@ -50,6 +51,7 @@
 	{/if}
 
 	<main class="base-layout__main">
+		<OfflineBanner />
 		<InstallPrompt />
 		{@render children()}
 	</main>

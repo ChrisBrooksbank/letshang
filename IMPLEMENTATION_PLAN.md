@@ -895,9 +895,16 @@
   - clearAllCache() for logout flow
   - Coverage: 31 tests, 100% on new code
 
-- [ ] Add offline indicators [P1]
-  - AC: Banner when offline
-  - AC: Indicate cached vs live data
+- [x] Add offline indicators [P1] ✓
+  - AC: Banner when offline ✓
+  - AC: Indicate cached vs live data ✓
+  - Implementation: Created offline-indicators.ts utility with online/offline detection via Navigator.onLine and window events
+  - Implementation: Created OfflineBanner.svelte component with amber warning banner displayed when offline
+  - Implementation: Freshness label system ("Live" vs "Cached") to indicate data staleness
+  - Implementation: Subscriber pattern for real-time status updates with proper cleanup on destroy
+  - Implementation: Integrated into BaseLayout.svelte above InstallPrompt for app-wide visibility
+  - Accessibility: role="status", aria-live="polite", descriptive aria-label, touch-friendly 44px height
+  - Coverage: 32 tests (14 utility + 18 component), 100% on new code
 
 - [ ] Implement adaptive navigation [P1]
   - AC: Bottom nav on mobile
