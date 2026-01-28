@@ -13,6 +13,8 @@ import {
 	updateMessagingPreference
 } from '$lib/server/messaging-preferences';
 import { updateMessagingPreferenceSchema } from '$lib/schemas/messaging-preferences';
+import { submitReport } from '$lib/server/reports';
+import { reportUserSchema } from '$lib/schemas/reports';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Ensure user is authenticated
@@ -204,6 +206,50 @@ export const actions: Actions = {
 			return { success: true };
 		} catch (e) {
 			const message = e instanceof Error ? e.message : 'Failed to unblock user';
+			return fail(500, { error: message });
+		}
+	},
+
+	/**
+	 * Submit a report against a user
+	 */
+	reportUser: async ({ locals, request }) => {
+		const session = await locals.supabase.auth.getSession();
+		if (!session.data.session) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const reportedUserId = formData.get('reportedUserId') as string;
+		const category = formData.get('category') as string;
+		const context = formData.get('context') as string | null;
+		const additionalDetails = formData.get('additionalDetails') as string | null;
+
+		const result = reportUserSchema.safeParse({
+			reportedUserId,
+			category,
+			context: context ?? undefined,
+			additionalDetails: additionalDetails ?? undefined
+		});
+
+		if (!result.success) {
+			return fail(400, {
+				error: 'Invalid report data',
+				errors: result.error.flatten().fieldErrors
+			});
+		}
+
+		try {
+			await submitReport(
+				locals.supabase,
+				result.data.reportedUserId,
+				result.data.category,
+				result.data.context,
+				result.data.additionalDetails
+			);
+			return { success: true };
+		} catch (e) {
+			const message = e instanceof Error ? e.message : 'Failed to submit report';
 			return fail(500, { error: message });
 		}
 	}

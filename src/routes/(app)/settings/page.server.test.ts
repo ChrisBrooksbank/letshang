@@ -25,6 +25,11 @@ vi.mock('$lib/server/messaging-preferences', () => ({
 	updateMessagingPreference: vi.fn()
 }));
 
+// Mock reports server functions
+vi.mock('$lib/server/reports', () => ({
+	submitReport: vi.fn()
+}));
+
 // Set environment variable for tests
 process.env.PUBLIC_VAPID_PUBLIC_KEY = 'test-vapid-public-key';
 
@@ -46,6 +51,7 @@ import {
 	fetchMessagingPreference,
 	updateMessagingPreference
 } from '$lib/server/messaging-preferences';
+import { submitReport } from '$lib/server/reports';
 
 describe('settings page load function', () => {
 	beforeEach(() => {
@@ -743,5 +749,196 @@ describe('settings page updateMessagingPreference action', () => {
 
 		expect(result?.status).toBe(500);
 		expect(result?.error).toBe('Failed to update messaging preferences');
+	});
+});
+
+describe('settings page reportUser action', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	const createMockRequest = (formData: FormData) => ({
+		formData: async () => formData
+	});
+
+	const createMockLocals = (hasSession = true) => ({
+		supabase: {
+			auth: {
+				getSession: vi.fn().mockResolvedValue({
+					data: {
+						session: hasSession ? { user: { id: 'user-123' } } : null
+					}
+				})
+			}
+		}
+	});
+
+	it('submits a report successfully with all fields', async () => {
+		const formData = new FormData();
+		formData.append('reportedUserId', '550e8400-e29b-41d4-a716-446655440000');
+		formData.append('category', 'harassment');
+		formData.append('context', 'Sent threatening messages');
+		formData.append('additionalDetails', 'This happened multiple times');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		vi.mocked(submitReport).mockResolvedValue({
+			id: 'report-id',
+			reporter_id: 'user-123',
+			reported_user_id: '550e8400-e29b-41d4-a716-446655440000',
+			category: 'harassment',
+			status: 'pending',
+			reported_at: '2026-01-28T12:00:00Z'
+		});
+
+		const result = await actions.reportUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result).toEqual({ success: true });
+		expect(submitReport).toHaveBeenCalledWith(
+			mockLocals.supabase,
+			'550e8400-e29b-41d4-a716-446655440000',
+			'harassment',
+			'Sent threatening messages',
+			'This happened multiple times'
+		);
+	});
+
+	it('submits a report with only required fields', async () => {
+		const formData = new FormData();
+		formData.append('reportedUserId', '550e8400-e29b-41d4-a716-446655440000');
+		formData.append('category', 'spam');
+		formData.append('context', '');
+		formData.append('additionalDetails', '');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		vi.mocked(submitReport).mockResolvedValue({
+			id: 'report-id',
+			reporter_id: 'user-123',
+			reported_user_id: '550e8400-e29b-41d4-a716-446655440000',
+			category: 'spam',
+			status: 'pending',
+			reported_at: '2026-01-28T12:00:00Z'
+		});
+
+		const result = await actions.reportUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result).toEqual({ success: true });
+		expect(submitReport).toHaveBeenCalledWith(
+			mockLocals.supabase,
+			'550e8400-e29b-41d4-a716-446655440000',
+			'spam',
+			undefined,
+			undefined
+		);
+	});
+
+	it('returns 401 when not authenticated', async () => {
+		const formData = new FormData();
+		formData.append('reportedUserId', '550e8400-e29b-41d4-a716-446655440000');
+		formData.append('category', 'harassment');
+
+		const mockLocals = createMockLocals(false);
+		const mockRequest = createMockRequest(formData);
+
+		const result = await actions.reportUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(401);
+	});
+
+	it('returns 400 for invalid reportedUserId', async () => {
+		const formData = new FormData();
+		formData.append('reportedUserId', 'not-a-uuid');
+		formData.append('category', 'harassment');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		const result = await actions.reportUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(400);
+	});
+
+	it('returns 400 for invalid category', async () => {
+		const formData = new FormData();
+		formData.append('reportedUserId', '550e8400-e29b-41d4-a716-446655440000');
+		formData.append('category', 'invalid_category');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		const result = await actions.reportUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(400);
+	});
+
+	it('returns 400 for missing category', async () => {
+		const formData = new FormData();
+		formData.append('reportedUserId', '550e8400-e29b-41d4-a716-446655440000');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		const result = await actions.reportUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(400);
+	});
+
+	it('returns 500 when report submission fails', async () => {
+		const formData = new FormData();
+		formData.append('reportedUserId', '550e8400-e29b-41d4-a716-446655440000');
+		formData.append('category', 'safety');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		vi.mocked(submitReport).mockRejectedValue(new Error('Cannot report yourself'));
+
+		const result = await actions.reportUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(500);
+		expect(result?.error).toBe('Cannot report yourself');
+	});
+
+	it('handles generic error without message', async () => {
+		const formData = new FormData();
+		formData.append('reportedUserId', '550e8400-e29b-41d4-a716-446655440000');
+		formData.append('category', 'inappropriate');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		vi.mocked(submitReport).mockRejectedValue('unknown error');
+
+		const result = await actions.reportUser({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(500);
+		expect(result?.error).toBe('Failed to submit report');
 	});
 });

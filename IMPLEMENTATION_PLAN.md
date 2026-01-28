@@ -831,10 +831,16 @@
   - Form action: updateMessagingPreference with Zod validation
   - Coverage: 100% on new code (11 schema + 12 server + 8 page server = 31 tests)
 
-- [ ] Create one-tap reporting [P1]
-  - AC: Report button on messages/profiles
-  - AC: Categories: harassment, spam, inappropriate
-  - AC: Includes context automatically
+- [x] Create one-tap reporting [P1] ✓
+  - AC: Report button on messages/profiles ✓
+  - AC: Categories: harassment, spam, inappropriate, safety ✓
+  - AC: Include message context automatically ✓
+  - Implementation: user_reports table with report_category enum (harassment/spam/inappropriate/safety)
+  - Database: Migration with RLS policies, indexes on reporter_id/reported_user_id/status, self-report prevention
+  - Schema: reportCategoryEnum, reportUserSchema with context (1000 chars) and additionalDetails (500 chars)
+  - Server: submitReport(), getUserReports(), hasActiveReport() functions with session validation
+  - Form action: reportUser on settings page with Zod validation and error handling
+  - Coverage: 100% on new code (16 schema + 15 server + 8 page server = 39 tests)
 
 - [ ] Build rate limiting [P1]
   - AC: Detect mass-messaging patterns
