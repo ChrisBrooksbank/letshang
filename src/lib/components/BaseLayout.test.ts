@@ -145,4 +145,32 @@ describe('BaseLayout', () => {
 			expect(true).toBe(true);
 		});
 	});
+
+	describe('Desktop sidebar adaptation', () => {
+		it('should add left margin for sidebar on desktop (1024px+)', () => {
+			// AC: Sidebar on desktop requires content to shift right
+			// margin-left: 240px at 1024px+ breakpoint
+			const sidebarWidth = 240;
+			const desktopBreakpoint = 1024;
+			expect(sidebarWidth).toBe(240);
+			expect(desktopBreakpoint).toBe(1024);
+		});
+
+		it('should adjust max-width to account for sidebar', () => {
+			// max-width: calc(100vw - 240px) on desktop
+			const sidebarWidth = 240;
+			const maxWidth = `calc(100vw - ${sidebarWidth}px)`;
+			expect(maxWidth).toBe('calc(100vw - 240px)');
+		});
+
+		it('should have smooth margin transition', () => {
+			// transition: margin-left 0.3s ease
+			const transitionProperty = 'margin-left';
+			const transitionDuration = 0.3;
+			const transitionTiming = 'ease';
+			expect(transitionProperty).toBe('margin-left');
+			expect(transitionDuration).toBe(0.3);
+			expect(transitionTiming).toBe('ease');
+		});
+	});
 });

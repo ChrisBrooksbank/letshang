@@ -68,6 +68,9 @@
 		right: 0;
 		z-index: 20;
 		box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+		transition:
+			width 0.3s ease,
+			transform 0.3s ease;
 	}
 
 	.app-nav__list {
@@ -137,50 +140,57 @@
 		line-height: 1;
 	}
 
-	/* Tablet and desktop: move to top and horizontal layout */
-	@media (min-width: 768px) {
+	/* Desktop: sidebar layout */
+	@media (min-width: 1024px) {
 		.app-nav {
-			position: sticky;
+			position: fixed;
 			top: 0;
-			bottom: auto;
+			left: 0;
+			bottom: 0;
+			width: 240px;
+			height: 100vh;
 			border-top: none;
-			border-bottom: 1px solid #e5e7eb;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+			border-right: 1px solid #e5e7eb;
+			box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+			overflow-y: auto;
 		}
 
 		.app-nav__list {
+			flex-direction: column;
 			justify-content: flex-start;
-			gap: 1rem;
-			padding: 0 1rem;
-			max-width: 1200px;
-			margin: 0 auto;
+			gap: 0.25rem;
+			padding: 1rem 0.5rem;
+			height: 100%;
 		}
 
 		.app-nav__item {
-			flex: 0;
+			width: 100%;
 		}
 
 		.app-nav__link {
 			flex-direction: row;
-			gap: 0.5rem;
-			padding: 1rem;
-			min-height: 60px;
+			justify-content: flex-start;
+			gap: 0.75rem;
+			padding: 0.875rem 1rem;
+			min-height: 48px;
+			border-radius: 0.5rem;
+		}
+
+		.app-nav__link:hover {
+			background: #f3f4f6;
+		}
+
+		.app-nav__link--active {
+			background: #eff6ff;
 		}
 
 		.app-nav__icon {
-			font-size: 1.25rem;
+			font-size: 1.5rem;
 		}
 
 		.app-nav__label {
-			font-size: 0.875rem;
-		}
-	}
-
-	/* Large desktop: increase max-width */
-	@media (min-width: 1280px) {
-		.app-nav__list {
-			max-width: 1400px;
-			gap: 1.5rem;
+			font-size: 1rem;
+			font-weight: 500;
 		}
 	}
 </style>

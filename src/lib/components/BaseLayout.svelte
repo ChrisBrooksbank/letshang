@@ -76,6 +76,9 @@
 		/* Prevent horizontal scroll */
 		overflow-x: hidden;
 		max-width: 100vw;
+
+		/* Smooth transition for sidebar appearance */
+		transition: margin-left 0.3s ease;
 	}
 
 	.base-layout__header {
@@ -132,6 +135,17 @@
 		.base-layout__header,
 		.base-layout__footer {
 			padding: 1rem 2rem;
+		}
+	}
+
+	/* Desktop: add left margin for sidebar */
+	@media (min-width: 1024px) {
+		.base-layout {
+			margin-left: 240px;
+		}
+
+		.base-layout__main {
+			max-width: calc(100vw - 240px);
 		}
 	}
 
