@@ -1,5 +1,6 @@
 <script lang="ts">
 	import AppNavigation from './AppNavigation.svelte';
+	import InstallPrompt from './InstallPrompt.svelte';
 
 	/**
 	 * BaseLayout - Mobile-first layout component
@@ -46,6 +47,7 @@
 	{/if}
 
 	<main class="base-layout__main">
+		<InstallPrompt />
 		{@render children()}
 	</main>
 

@@ -861,10 +861,15 @@
 
 > PWA polish (spec: 12-pwa-features.md)
 
-- [ ] Create install prompt UX [P1]
-  - AC: Custom "Add to Home Screen" prompt
-  - AC: Clear value proposition
-  - AC: Dismissable, remembers preference
+- [x] Create install prompt UX [P1] ✓
+  - AC: Custom "Add to Home Screen" prompt ✓
+  - AC: Clear value proposition ✓
+  - AC: Dismissable, remembers preference ✓
+  - Implementation: InstallPrompt.svelte component with install-prompt.ts utility
+  - Utility: captureInstallPrompt, triggerInstallPrompt, dismissInstallPrompt, isInstalledApp
+  - localStorage persistence for dismissal preference
+  - Integrated into BaseLayout.svelte for app-wide display
+  - Coverage: 100% on install-prompt.ts (36 tests: 14 utility + 22 component)
 
 - [ ] Build splash screen [P1]
   - AC: Branded loading screen
