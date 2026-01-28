@@ -19,6 +19,12 @@ vi.mock('$lib/server/blocks', () => ({
 	unblockUser: vi.fn()
 }));
 
+// Mock messaging preference server functions
+vi.mock('$lib/server/messaging-preferences', () => ({
+	fetchMessagingPreference: vi.fn(),
+	updateMessagingPreference: vi.fn()
+}));
+
 // Set environment variable for tests
 process.env.PUBLIC_VAPID_PUBLIC_KEY = 'test-vapid-public-key';
 
@@ -36,10 +42,16 @@ import {
 } from '$lib/server/notifications';
 import { hasActivePushSubscription } from '$lib/server/push-subscriptions';
 import { getBlockedUsers, blockUser, unblockUser } from '$lib/server/blocks';
+import {
+	fetchMessagingPreference,
+	updateMessagingPreference
+} from '$lib/server/messaging-preferences';
 
 describe('settings page load function', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+		// Default messaging preference mock for all load tests
+		vi.mocked(fetchMessagingPreference).mockResolvedValue({ allowDmFrom: 'anyone' });
 	});
 
 	const createMockLocals = (hasSession = true) => ({
@@ -209,6 +221,45 @@ describe('settings page load function', () => {
 		}
 
 		expect(result.hasPushSubscription).toBe(false);
+	});
+
+	it('loads messaging preference for authenticated user', async () => {
+		const mockLocals = createMockLocals();
+
+		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue([]);
+		vi.mocked(hasActivePushSubscription).mockResolvedValue(false);
+		vi.mocked(getBlockedUsers).mockResolvedValue([]);
+		vi.mocked(fetchMessagingPreference).mockResolvedValue({ allowDmFrom: 'connections' });
+
+		const result = await load({
+			locals: mockLocals
+		} as never);
+
+		if (!result) {
+			throw new Error('Load function returned undefined');
+		}
+
+		expect(result.messagingPreference).toEqual({ allowDmFrom: 'connections' });
+		expect(fetchMessagingPreference).toHaveBeenCalledWith(mockLocals.supabase);
+	});
+
+	it('returns default messaging preference when fetch fails', async () => {
+		const mockLocals = createMockLocals();
+
+		vi.mocked(fetchUserNotificationPreferences).mockResolvedValue([]);
+		vi.mocked(hasActivePushSubscription).mockResolvedValue(false);
+		vi.mocked(getBlockedUsers).mockResolvedValue([]);
+		vi.mocked(fetchMessagingPreference).mockRejectedValue(new Error('Database error'));
+
+		const result = await load({
+			locals: mockLocals
+		} as never);
+
+		if (!result) {
+			throw new Error('Load function returned undefined');
+		}
+
+		expect(result.messagingPreference).toEqual({ allowDmFrom: 'anyone' });
 	});
 });
 
@@ -567,5 +618,130 @@ describe('settings page unblockUser action', () => {
 
 		expect(result?.status).toBe(500);
 		expect(result?.error).toBe('User was not blocked');
+	});
+});
+
+describe('settings page updateMessagingPreference action', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	const createMockRequest = (formData: FormData) => ({
+		formData: async () => formData
+	});
+
+	const createMockLocals = (hasSession = true) => ({
+		supabase: {
+			auth: {
+				getSession: vi.fn().mockResolvedValue({
+					data: {
+						session: hasSession ? { user: { id: 'user-123' } } : null
+					}
+				})
+			}
+		}
+	});
+
+	it('updates messaging preference successfully', async () => {
+		const formData = new FormData();
+		formData.append('allowDmFrom', 'connections');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		vi.mocked(updateMessagingPreference).mockResolvedValue({ allowDmFrom: 'connections' });
+
+		const result = await actions.updateMessagingPreference({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result).toEqual({ success: true });
+		expect(updateMessagingPreference).toHaveBeenCalledWith(mockLocals.supabase, 'connections');
+	});
+
+	it('updates to all valid permission levels', async () => {
+		const levels = ['anyone', 'connections', 'attendees', 'organizers'];
+
+		for (const level of levels) {
+			const formData = new FormData();
+			formData.append('allowDmFrom', level);
+
+			const mockLocals = createMockLocals();
+			const mockRequest = createMockRequest(formData);
+
+			vi.mocked(updateMessagingPreference).mockResolvedValue({
+				allowDmFrom: level as never
+			});
+
+			const result = await actions.updateMessagingPreference({
+				locals: mockLocals,
+				request: mockRequest
+			} as never);
+
+			expect(result).toEqual({ success: true });
+		}
+	});
+
+	it('returns 401 when not authenticated', async () => {
+		const formData = new FormData();
+		formData.append('allowDmFrom', 'anyone');
+
+		const mockLocals = createMockLocals(false);
+		const mockRequest = createMockRequest(formData);
+
+		const result = await actions.updateMessagingPreference({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(401);
+	});
+
+	it('returns 400 for invalid permission level', async () => {
+		const formData = new FormData();
+		formData.append('allowDmFrom', 'invalid_level');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		const result = await actions.updateMessagingPreference({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(400);
+	});
+
+	it('returns 400 for missing allowDmFrom field', async () => {
+		const formData = new FormData();
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		const result = await actions.updateMessagingPreference({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(400);
+	});
+
+	it('returns 500 when update fails', async () => {
+		const formData = new FormData();
+		formData.append('allowDmFrom', 'organizers');
+
+		const mockLocals = createMockLocals();
+		const mockRequest = createMockRequest(formData);
+
+		vi.mocked(updateMessagingPreference).mockRejectedValue(new Error('Database error'));
+
+		const result = await actions.updateMessagingPreference({
+			locals: mockLocals,
+			request: mockRequest
+		} as never);
+
+		expect(result?.status).toBe(500);
+		expect(result?.error).toBe('Failed to update messaging preferences');
 	});
 });

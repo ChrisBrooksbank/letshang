@@ -3,6 +3,8 @@
 	import BaseLayout from '$lib/components/BaseLayout.svelte';
 	import PushNotificationPrompt from '$lib/components/PushNotificationPrompt.svelte';
 	import type { NotificationPreference } from '$lib/schemas/notifications';
+	import { DM_PERMISSION_LABELS } from '$lib/schemas/messaging-preferences';
+	import type { DmPermission } from '$lib/schemas/messaging-preferences';
 
 	let { data }: { data: PageData } = $props();
 
@@ -55,6 +57,35 @@
 
 	// Track saving state separately
 	let savingStates = $state<Record<string, boolean>>({});
+
+	// Messaging preference state (track selected value separately for optimistic updates)
+	let selectedMessagingPref = $state<DmPermission | null>(null);
+	let savingMessagingPref = $state(false);
+	let messagingPref = $derived(selectedMessagingPref ?? data.messagingPreference.allowDmFrom);
+
+	async function handleMessagingPrefChange(value: DmPermission) {
+		savingMessagingPref = true;
+
+		const formData = new FormData();
+		formData.append('allowDmFrom', value);
+
+		try {
+			const response = await fetch('?/updateMessagingPreference', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				selectedMessagingPref = value;
+			} else {
+				window.location.reload();
+			}
+		} catch {
+			window.location.reload();
+		} finally {
+			savingMessagingPref = false;
+		}
+	}
 
 	// Handle toggle change
 	async function handleToggle(
@@ -201,6 +232,38 @@
 						{/each}
 					</tbody>
 				</table>
+			</div>
+		</div>
+
+		<!-- Message Permissions Section -->
+		<div class="mt-8">
+			<h2 class="text-xl font-semibold text-gray-900 mb-2">Message Permissions</h2>
+			<p class="text-gray-600 mb-4">Control who can send you direct messages.</p>
+
+			<div class="bg-white rounded-lg shadow overflow-hidden">
+				<div class="divide-y divide-gray-200">
+					{#each Object.entries(DM_PERMISSION_LABELS) as [value, label]}
+						<label
+							class="flex items-start px-6 py-4 cursor-pointer hover:bg-gray-50 {savingMessagingPref
+								? 'opacity-50 pointer-events-none'
+								: ''}"
+						>
+							<input
+								type="radio"
+								name="allowDmFrom"
+								{value}
+								checked={messagingPref === value}
+								class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+								aria-label={label.title}
+								onchange={() => handleMessagingPrefChange(value as DmPermission)}
+							/>
+							<div class="ml-3">
+								<span class="text-sm font-medium text-gray-900">{label.title}</span>
+								<p class="text-xs text-gray-500 mt-0.5">{label.description}</p>
+							</div>
+						</label>
+					{/each}
+				</div>
 			</div>
 		</div>
 

@@ -343,6 +343,29 @@ export interface Database {
 					created_at?: string;
 				};
 			};
+			messaging_preferences: {
+				Row: {
+					id: string;
+					user_id: string;
+					allow_dm_from: 'anyone' | 'connections' | 'attendees' | 'organizers';
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					user_id: string;
+					allow_dm_from?: 'anyone' | 'connections' | 'attendees' | 'organizers';
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: {
+					id?: string;
+					user_id?: string;
+					allow_dm_from?: 'anyone' | 'connections' | 'attendees' | 'organizers';
+					created_at?: string;
+					updated_at?: string;
+				};
+			};
 		};
 		Views: Record<string, never>;
 		Functions: Record<string, never>;
@@ -359,6 +382,7 @@ export interface Database {
 				| 'member';
 			reminder_type: 'seven_days' | 'two_days' | 'day_of';
 			delivery_status: 'scheduled' | 'sent' | 'failed' | 'cancelled';
+			dm_permission: 'anyone' | 'connections' | 'attendees' | 'organizers';
 		};
 	};
 }

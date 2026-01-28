@@ -819,9 +819,17 @@
   - UI: Blocked Users section on settings page with unblock buttons
   - Coverage: 51 tests (10 schema + 19 server + 22 page server), 100% on new code
 
-- [ ] Implement connection-gated messaging [P1]
-  - AC: Option to only receive DMs from connections
-  - AC: Option for event co-attendees only
+- [x] Implement connection-gated messaging [P1] ✓
+  - AC: Option to only receive DMs from connections ✓
+  - AC: Option for event co-attendees only ✓
+  - AC: Organizer-only mode option ✓
+  - Implementation: messaging_preferences table with dm_permission enum (anyone/connections/attendees/organizers)
+  - Database: Migration with RLS policies, unique user constraint, can_receive_dm() function
+  - Schema: dmPermissionEnum, updateMessagingPreferenceSchema, DM_PERMISSION_LABELS constant
+  - Server: fetchMessagingPreference() with PGRST116 default handling, updateMessagingPreference() with upsert
+  - UI: Radio button selector in settings page "Message Permissions" section
+  - Form action: updateMessagingPreference with Zod validation
+  - Coverage: 100% on new code (11 schema + 12 server + 8 page server = 31 tests)
 
 - [ ] Create one-tap reporting [P1]
   - AC: Report button on messages/profiles

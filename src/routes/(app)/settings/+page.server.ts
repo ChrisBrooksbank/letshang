@@ -8,6 +8,11 @@ import { hasActivePushSubscription } from '$lib/server/push-subscriptions';
 import { notificationPreferenceSchema } from '$lib/schemas/notifications';
 import { getBlockedUsers, blockUser, unblockUser } from '$lib/server/blocks';
 import { blockUserSchema, unblockUserSchema } from '$lib/schemas/blocks';
+import {
+	fetchMessagingPreference,
+	updateMessagingPreference
+} from '$lib/server/messaging-preferences';
+import { updateMessagingPreferenceSchema } from '$lib/schemas/messaging-preferences';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Ensure user is authenticated
@@ -21,6 +26,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 	let preferences: Awaited<ReturnType<typeof fetchUserNotificationPreferences>> = [];
 	let hasPushSubscription = false;
 	let blockedUsers: Awaited<ReturnType<typeof getBlockedUsers>> = [];
+	let messagingPreference: Awaited<ReturnType<typeof fetchMessagingPreference>> = {
+		allowDmFrom: 'anyone'
+	};
 
 	try {
 		preferences = await fetchUserNotificationPreferences(supabase);
@@ -40,11 +48,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// If fetch fails, return empty array
 	}
 
+	try {
+		messagingPreference = await fetchMessagingPreference(supabase);
+	} catch {
+		// If fetch fails, return default preference
+	}
+
 	return {
 		preferences,
 		vapidPublicKey: process.env.PUBLIC_VAPID_PUBLIC_KEY ?? '',
 		hasPushSubscription,
-		blockedUsers
+		blockedUsers,
+		messagingPreference
 	};
 };
 
@@ -131,6 +146,35 @@ export const actions: Actions = {
 		} catch (e) {
 			const message = e instanceof Error ? e.message : 'Failed to block user';
 			return fail(500, { error: message });
+		}
+	},
+
+	/**
+	 * Update messaging preference (connection-gated DM settings)
+	 */
+	updateMessagingPreference: async ({ locals, request }) => {
+		const session = await locals.supabase.auth.getSession();
+		if (!session.data.session) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const allowDmFrom = formData.get('allowDmFrom') as string;
+
+		const result = updateMessagingPreferenceSchema.safeParse({ allowDmFrom });
+
+		if (!result.success) {
+			return fail(400, {
+				error: 'Invalid messaging preference',
+				errors: result.error.flatten().fieldErrors
+			});
+		}
+
+		try {
+			await updateMessagingPreference(locals.supabase, result.data.allowDmFrom);
+			return { success: true };
+		} catch {
+			return fail(500, { error: 'Failed to update messaging preferences' });
 		}
 	},
 
