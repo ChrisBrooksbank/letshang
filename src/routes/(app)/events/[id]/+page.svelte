@@ -67,25 +67,32 @@
 </script>
 
 <BaseLayout>
-	<div class="max-w-3xl mx-auto">
+	<div class="max-w-4xl mx-auto">
 		<!-- Cover Image -->
 		{#if event.cover_image_url}
-			<div class="mb-6 -mx-4 sm:mx-0">
-				<img
-					src={event.cover_image_url}
-					alt={event.title}
-					class="w-full h-64 sm:h-80 object-cover sm:rounded-lg"
-				/>
+			<div class="mb-8 -mx-4 sm:mx-0">
+				<div class="relative">
+					<img
+						src={event.cover_image_url}
+						alt={event.title}
+						class="w-full h-72 sm:h-96 object-cover sm:rounded-2xl shadow-xl"
+					/>
+					<div
+						class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent sm:rounded-2xl"
+					></div>
+				</div>
 			</div>
 		{/if}
 
 		<!-- Event Header -->
-		<div class="mb-6">
-			<h1 class="text-3xl font-bold text-gray-900 mb-2">{event.title}</h1>
-			<div class="flex flex-wrap gap-2 text-sm text-gray-600">
-				<span class="flex items-center gap-1">
+		<div class="mb-8 px-1">
+			<h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+				{event.title}
+			</h1>
+			<div class="flex flex-wrap gap-4 text-base text-gray-700">
+				<span class="flex items-center gap-2 font-medium">
 					<svg
-						class="w-4 h-4"
+						class="w-5 h-5 text-indigo-600"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -100,9 +107,9 @@
 					</svg>
 					{formatDate(event.start_time)}
 				</span>
-				<span class="flex items-center gap-1">
+				<span class="flex items-center gap-2 font-medium">
 					<svg
-						class="w-4 h-4"
+						class="w-5 h-5 text-indigo-600"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -121,17 +128,67 @@
 		</div>
 
 		<!-- Event Type Badge & Size Badge -->
-		<div class="mb-6 flex flex-wrap gap-2">
+		<div class="mb-8 flex flex-wrap gap-3">
 			<span
-				class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+				class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-base font-bold bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md"
 			>
+				<svg
+					class="w-5 h-5"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					{#if event.event_type === 'online'}
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+						/>
+					{:else if event.event_type === 'in_person'}
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+						/>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+						/>
+					{:else}
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					{/if}
+				</svg>
 				{getEventTypeLabel(event.event_type)}
 			</span>
 			{#if eventSizeLabel}
 				<span
-					class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800"
+					class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-base font-bold bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-md"
 					title={eventSizeDesc || ''}
 				>
+					<svg
+						class="w-5 h-5"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+						/>
+					</svg>
 					{eventSizeLabel} Group
 				</span>
 			{/if}
@@ -139,12 +196,28 @@
 
 		<!-- Format Tags -->
 		{#if event.format_tags && event.format_tags.length > 0}
-			<div class="mb-6">
-				<h3 class="text-sm font-medium text-gray-700 mb-2">Event Format</h3>
-				<div class="flex flex-wrap gap-2">
+			<div class="mb-8 bg-white rounded-2xl p-6 shadow-md border border-indigo-100">
+				<h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+					<svg
+						class="w-5 h-5 text-indigo-600"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+						/>
+					</svg>
+					Event Format
+				</h3>
+				<div class="flex flex-wrap gap-3">
 					{#each event.format_tags as tag}
 						<span
-							class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
+							class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-sm"
 						>
 							{#if tag === 'speaker'}Speaker{/if}
 							{#if tag === 'workshop'}Workshop{/if}
@@ -160,17 +233,33 @@
 
 		<!-- Accessibility Tags -->
 		{#if event.accessibility_tags && event.accessibility_tags.length > 0}
-			<div class="mb-6">
-				<h3 class="text-sm font-medium text-gray-700 mb-2">Who's Welcome</h3>
-				<div class="flex flex-wrap gap-2">
+			<div class="mb-8 bg-white rounded-2xl p-6 shadow-md border border-green-100">
+				<h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+					<svg
+						class="w-5 h-5 text-green-600"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+					Who's Welcome
+				</h3>
+				<div class="flex flex-wrap gap-3">
 					{#each event.accessibility_tags as tag}
 						<span
-							class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
+							class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-sm"
 						>
-							{#if tag === 'first_timer_friendly'}First-Timer Friendly{/if}
-							{#if tag === 'structured_activity'}Structured Activity{/if}
-							{#if tag === 'low_pressure'}Low-Pressure{/if}
-							{#if tag === 'beginner_welcome'}Beginner Welcome{/if}
+							{#if tag === 'first_timer_friendly'}✨ First-Timer Friendly{/if}
+							{#if tag === 'structured_activity'}📋 Structured Activity{/if}
+							{#if tag === 'low_pressure'}😌 Low-Pressure{/if}
+							{#if tag === 'beginner_welcome'}👋 Beginner Welcome{/if}
 						</span>
 					{/each}
 				</div>
@@ -332,47 +421,118 @@
 			</div>
 		{/if}
 
-		<!-- Attendee Counts -->
-		<div class="bg-gray-50 rounded-lg p-4 mb-6">
-			<div class="flex gap-6 text-sm">
-				<div>
-					<span class="font-semibold text-gray-900">{counts.going}</span>
-					{#if event.capacity}
-						<span class="text-gray-600 ml-1">/ {event.capacity} Going</span>
-					{:else}
-						<span class="text-gray-600 ml-1">Going</span>
-					{/if}
+		<!-- Attendee Counts - Social Proof -->
+		<div
+			class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 mb-8 border-2 border-indigo-100 shadow-lg"
+		>
+			<div class="flex items-center justify-between mb-4">
+				<h3 class="text-lg font-bold text-gray-900">Who's Coming</h3>
+				<svg
+					class="w-6 h-6 text-indigo-600"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+					/>
+				</svg>
+			</div>
+
+			<div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
+				<div class="bg-white rounded-xl p-4 shadow-sm border border-indigo-100">
+					<div class="text-3xl font-extrabold text-indigo-600 mb-1">{counts.going}</div>
+					<div class="text-sm text-gray-600 font-medium">
+						{#if event.capacity}
+							of {event.capacity} Going
+						{:else}
+							Going
+						{/if}
+					</div>
 				</div>
-				<div>
-					<span class="font-semibold text-gray-900">{counts.interested}</span>
-					<span class="text-gray-600 ml-1">Interested</span>
+				<div class="bg-white rounded-xl p-4 shadow-sm border border-purple-100">
+					<div class="text-3xl font-extrabold text-purple-600 mb-1">{counts.interested}</div>
+					<div class="text-sm text-gray-600 font-medium">Interested</div>
 				</div>
 				{#if counts.waitlisted > 0}
-					<div>
-						<span class="font-semibold text-gray-900">{counts.waitlisted}</span>
-						<span class="text-gray-600 ml-1">Waitlisted</span>
+					<div class="bg-white rounded-xl p-4 shadow-sm border border-amber-100">
+						<div class="text-3xl font-extrabold text-amber-600 mb-1">{counts.waitlisted}</div>
+						<div class="text-sm text-gray-600 font-medium">Waitlisted</div>
 					</div>
 				{/if}
 			</div>
+
 			{#if event.capacity}
 				{@const spotsLeft = event.capacity - counts.going}
 				{@const percentageFull = (counts.going / event.capacity) * 100}
 				{#if spotsLeft > 0}
-					<div class="mt-2 text-xs text-gray-600">
-						{spotsLeft}
-						{spotsLeft === 1 ? 'spot' : 'spots'} left
-					</div>
-					{#if percentageFull >= 80}
-						<div class="mt-2 text-xs font-medium text-orange-600">Filling up fast!</div>
-					{/if}
-				{:else}
-					<div class="mt-2 text-xs font-medium text-red-600">Event is at capacity</div>
-					{#if counts.waitlisted > 0}
-						<div class="mt-1 text-xs text-gray-600">
-							{counts.waitlisted}
-							{counts.waitlisted === 1 ? 'person' : 'people'} on waitlist
+					<div class="bg-white rounded-xl p-4 border-2 border-indigo-200">
+						<div class="flex items-center justify-between mb-2">
+							<span class="text-lg font-bold text-gray-900">
+								{spotsLeft}
+								{spotsLeft === 1 ? 'spot' : 'spots'} left
+							</span>
+							{#if percentageFull >= 80}
+								<span
+									class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-orange-500 to-red-500 text-white animate-pulse"
+								>
+									<svg
+										class="w-4 h-4"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+										xmlns="http://www.w3.org/2000/svg"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M13 10V3L4 14h7v7l9-11h-7z"
+										/>
+									</svg>
+									Filling up fast!
+								</span>
+							{/if}
 						</div>
-					{/if}
+						<div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+							<div
+								class="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+								style="width: {percentageFull}%"
+							></div>
+						</div>
+					</div>
+				{:else}
+					<div
+						class="bg-gradient-to-r from-red-500 to-pink-500 rounded-xl p-4 text-white shadow-lg"
+					>
+						<div class="flex items-center gap-2 mb-2">
+							<svg
+								class="w-6 h-6"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+								/>
+							</svg>
+							<span class="text-xl font-bold">Event is at capacity</span>
+						</div>
+						{#if counts.waitlisted > 0}
+							<p class="text-sm text-white/90">
+								{counts.waitlisted}
+								{counts.waitlisted === 1 ? 'person is' : 'people are'} on the waitlist
+							</p>
+						{/if}
+					</div>
 				{/if}
 			{/if}
 		</div>
@@ -669,30 +829,70 @@
 
 		<!-- Event Details -->
 		{#if event.description}
-			<div class="mb-6">
-				<h2 class="text-lg font-semibold text-gray-900 mb-2">About this event</h2>
-				<p class="text-gray-700 whitespace-pre-wrap">{event.description}</p>
+			<div class="mb-8 bg-white rounded-2xl p-6 shadow-md border border-gray-200">
+				<h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+					<svg
+						class="w-6 h-6 text-indigo-600"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+					About this event
+				</h2>
+				<p class="text-gray-700 whitespace-pre-wrap leading-relaxed text-base">
+					{event.description}
+				</p>
 			</div>
 		{/if}
 
 		<!-- Location Details -->
 		{#if event.event_type === 'in_person' || event.event_type === 'hybrid'}
-			<div class="mb-6">
-				<h2 class="text-lg font-semibold text-gray-900 mb-2">Location</h2>
+			<div class="mb-8 bg-white rounded-2xl p-6 shadow-md border border-gray-200">
+				<h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+					<svg
+						class="w-6 h-6 text-indigo-600"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+						/>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+						/>
+					</svg>
+					Location
+				</h2>
 				{#if event.venue_name}
-					<p class="font-medium text-gray-900">{event.venue_name}</p>
+					<p class="font-bold text-xl text-gray-900 mb-2">{event.venue_name}</p>
 				{/if}
 				{#if event.venue_address}
-					<p class="text-gray-700">{event.venue_address}</p>
+					<p class="text-gray-600 mb-4 text-base">{event.venue_address}</p>
 
 					<!-- Map Display -->
 					{#if event.venue_lat && event.venue_lng}
-						<div class="mb-3 overflow-hidden rounded-lg">
+						<div class="mb-4 overflow-hidden rounded-xl border-2 border-gray-200 shadow-lg">
 							<EventMap
 								latitude={event.venue_lat}
 								longitude={event.venue_lng}
 								markerLabel={event.venue_name || 'Event Location'}
-								height="300px"
+								height="320px"
 							/>
 						</div>
 
@@ -701,7 +901,7 @@
 							href={getDirectionsUrl(event.venue_lat, event.venue_lng)}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition min-h-[44px]"
+							class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl min-h-[44px]"
 						>
 							<svg
 								class="w-5 h-5"
