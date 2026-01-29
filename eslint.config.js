@@ -124,6 +124,7 @@ export default [
 	{
 		ignores: [
 			'.svelte-kit/**',
+			'.netlify/**',
 			'build/**',
 			'coverage/**',
 			'dist/**',

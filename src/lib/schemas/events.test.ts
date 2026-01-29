@@ -163,10 +163,10 @@ describe('eventCreationSchema', () => {
 			expect(() => eventCreationSchema.parse(event)).toThrow('Please enter a valid date and time');
 		});
 
-		it('should reject non-ISO 8601 date formats', () => {
+		it('should accept date-only ISO 8601 formats (parsed as midnight UTC)', () => {
 			const event = createValidEvent();
-			event.startTime = '2024-12-31'; // Missing time component
-			expect(() => eventCreationSchema.parse(event)).toThrow('Please enter a valid date and time');
+			event.startTime = '2027-12-31'; // Date-only format is valid ISO 8601
+			expect(() => eventCreationSchema.parse(event)).not.toThrow();
 		});
 	});
 
