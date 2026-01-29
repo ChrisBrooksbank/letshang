@@ -1028,7 +1028,39 @@ The following P2 features should be prioritized after core functionality is comp
 
 ## Blocked / Needs Clarification
 
-None currently. All P0/P1 specs are clear enough to begin implementation.
+### Critical: Zod 4.x / Superforms Compatibility Issue
+
+**Problem**: The project uses Zod 4.3.5 which is not compatible with sveltekit-superforms 2.29.1. This causes all forms to fail with the error "No shape could be created for schema."
+
+**Impact**: 48 of 49 E2E tests fail because all auth routes (/login, /register, /forgot-password, /reset-password) and /groups/create return 500 errors.
+
+**Affected routes**:
+
+- `/login` - Cannot load due to schema error
+- `/register` - Cannot load due to schema error
+- `/forgot-password` - Cannot load due to schema error
+- `/reset-password` - Cannot load due to schema error
+- `/groups/create` - Cannot load due to schema error
+
+**E2E Test Status** (49 total, 1 passing):
+
+- ✅ `tests/smoke.test.ts: page has correct title` - Only test that passes (homepage doesn't use Superforms)
+- ❌ `tests/smoke.test.ts: home page loads` - Expects h1 "Welcome to LetsHang" but needs verification
+- ❌ `tests/password-reset.test.ts` - All 13 tests fail (500 on /forgot-password, /reset-password)
+- ❌ `tests/google-oauth.test.ts` - All 17 tests fail (500 on /login, /register)
+- ❌ `tests/group-creation.test.ts` - All 18 tests fail (500 on /groups/create)
+
+**Fix Required**:
+Either:
+
+1. Downgrade Zod to 3.x (recommended for Superforms compatibility)
+2. Upgrade Superforms to a version that supports Zod 4.x (if available)
+3. Use a Zod 4 adapter if Superforms provides one
+
+**Secondary Issues** (to fix after Zod compatibility):
+
+- Smoke test expects h1 with "Welcome to LetsHang" but actual h1 content may differ
+- Some tests may need updates after forms are working
 
 ---
 
