@@ -1,7 +1,7 @@
 import { fail, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { eventCreationSchema } from '$lib/schemas/events';
 import { calculateEventSize } from '$lib/utils/event-size';
 
@@ -30,8 +30,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}));
 
 	// Initialize empty form
-	// @ts-expect-error - zod adapter type compatibility issue
-	const form = await superValidate(null, zod(eventCreationSchema));
+	const form = await superValidate(null, zod4(eventCreationSchema));
 	return { form, groups };
 };
 
@@ -44,8 +43,7 @@ export const actions: Actions = {
 		}
 
 		// Validate form data
-		// @ts-expect-error - zod adapter type compatibility issue
-		const form = await superValidate(request, zod(eventCreationSchema));
+		const form = await superValidate(request, zod4(eventCreationSchema));
 
 		if (!form.valid) {
 			return fail(400, { form });

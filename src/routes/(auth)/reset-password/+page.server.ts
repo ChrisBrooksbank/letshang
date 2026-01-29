@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { passwordResetSchema, type PasswordResetSchema } from '$lib/schemas/auth';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -17,8 +17,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	if (error || !user) {
 		// Invalid or expired reset link
-		// @ts-expect-error - zod adapter type compatibility issue with sveltekit-superforms 2.x
-		const form = await superValidate(null, zod(passwordResetSchema));
+		const form = await superValidate(null, zod4(passwordResetSchema));
 		return {
 			form,
 			error: 'Invalid or expired reset link. Please request a new password reset.'
@@ -26,15 +25,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Initialize the form with the schema
-	// @ts-expect-error - zod adapter type compatibility issue with sveltekit-superforms 2.x
-	const form = await superValidate(null, zod(passwordResetSchema));
+	const form = await superValidate(null, zod4(passwordResetSchema));
 	return { form };
 };
 
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
-		// @ts-expect-error - zod adapter type compatibility issue with sveltekit-superforms 2.x
-		const form = await superValidate(request, zod(passwordResetSchema));
+		const form = await superValidate(request, zod4(passwordResetSchema));
 
 		// Validate form data
 		if (!form.valid) {

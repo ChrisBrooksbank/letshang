@@ -1,7 +1,7 @@
 import { fail, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { groupCreateSchema } from '$lib/schemas/groups';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -25,8 +25,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Initialize empty form
-	// @ts-expect-error - zod adapter type compatibility issue
-	const form = await superValidate(null, zod(groupCreateSchema));
+	const form = await superValidate(null, zod4(groupCreateSchema));
 
 	return {
 		form,
@@ -44,8 +43,7 @@ export const actions: Actions = {
 		}
 
 		// Validate form data
-		// @ts-expect-error - zod adapter type compatibility issue
-		const form = await superValidate(request, zod(groupCreateSchema));
+		const form = await superValidate(request, zod4(groupCreateSchema));
 
 		if (!form.valid) {
 			return fail(400, { form });

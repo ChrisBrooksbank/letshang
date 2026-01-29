@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { loginSchema } from '$lib/schemas/auth';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -12,15 +12,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Initialize the form with the schema
-	// @ts-expect-error - zod adapter type compatibility issue with sveltekit-superforms 2.x
-	const form = await superValidate(null, zod(loginSchema));
+	const form = await superValidate(null, zod4(loginSchema));
 	return { form };
 };
 
 export const actions: Actions = {
 	default: async ({ request, locals, cookies }) => {
-		// @ts-expect-error - zod adapter type compatibility issue with sveltekit-superforms 2.x
-		const form = await superValidate(request, zod(loginSchema));
+		const form = await superValidate(request, zod4(loginSchema));
 
 		// Validate form data
 		if (!form.valid) {

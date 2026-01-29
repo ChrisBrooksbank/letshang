@@ -1,20 +1,18 @@
 import { fail } from '@sveltejs/kit';
 import { superValidate, message } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { passwordResetRequestSchema, type PasswordResetRequestSchema } from '$lib/schemas/auth';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
 	// Initialize the form with the schema
-	// @ts-expect-error - zod adapter type compatibility issue with sveltekit-superforms 2.x
-	const form = await superValidate(null, zod(passwordResetRequestSchema));
+	const form = await superValidate(null, zod4(passwordResetRequestSchema));
 	return { form };
 };
 
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
-		// @ts-expect-error - zod adapter type compatibility issue with sveltekit-superforms 2.x
-		const form = await superValidate(request, zod(passwordResetRequestSchema));
+		const form = await superValidate(request, zod4(passwordResetRequestSchema));
 
 		// Validate form data
 		if (!form.valid) {

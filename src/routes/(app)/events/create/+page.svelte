@@ -518,7 +518,7 @@
 							Select all that apply to help attendees understand what to expect.
 						</p>
 						<div class="grid grid-cols-2 gap-3">
-							{#each [{ value: 'speaker', label: 'Speaker' }, { value: 'workshop', label: 'Workshop' }, { value: 'activity', label: 'Activity' }, { value: 'discussion', label: 'Discussion' }, { value: 'mixer', label: 'Mixer' }, { value: 'hangout', label: 'Hangout' }] as tag}
+							{#each [{ value: 'speaker', label: 'Speaker' }, { value: 'workshop', label: 'Workshop' }, { value: 'activity', label: 'Activity' }, { value: 'discussion', label: 'Discussion' }, { value: 'mixer', label: 'Mixer' }, { value: 'hangout', label: 'Hangout' }] as tag (tag.value)}
 								<label
 									class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition"
 								>
@@ -528,11 +528,18 @@
 										value={tag.value}
 										checked={($form.formatTags as string[] | undefined)?.includes(tag.value)}
 										on:change={(e) => {
-											const currentTags = ($form.formatTags as string[] | undefined) || [];
+											type FormatTag =
+												| 'speaker'
+												| 'workshop'
+												| 'activity'
+												| 'discussion'
+												| 'mixer'
+												| 'hangout';
+											const currentTags = ($form.formatTags || []) as FormatTag[];
 											if (e.currentTarget.checked) {
-												$form.formatTags = [...currentTags, tag.value];
+												$form.formatTags = [...currentTags, tag.value as FormatTag];
 											} else {
-												$form.formatTags = currentTags.filter((t: string) => t !== tag.value);
+												$form.formatTags = currentTags.filter((t) => t !== tag.value);
 											}
 										}}
 										class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
@@ -569,13 +576,16 @@
 										value={tag.value}
 										checked={($form.accessibilityTags as string[] | undefined)?.includes(tag.value)}
 										on:change={(e) => {
-											const currentTags = ($form.accessibilityTags as string[] | undefined) || [];
+											type AccessibilityTag =
+												| 'first_timer_friendly'
+												| 'structured_activity'
+												| 'low_pressure'
+												| 'beginner_welcome';
+											const currentTags = ($form.accessibilityTags || []) as AccessibilityTag[];
 											if (e.currentTarget.checked) {
-												$form.accessibilityTags = [...currentTags, tag.value];
+												$form.accessibilityTags = [...currentTags, tag.value as AccessibilityTag];
 											} else {
-												$form.accessibilityTags = currentTags.filter(
-													(t: string) => t !== tag.value
-												);
+												$form.accessibilityTags = currentTags.filter((t) => t !== tag.value);
 											}
 										}}
 										class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5"

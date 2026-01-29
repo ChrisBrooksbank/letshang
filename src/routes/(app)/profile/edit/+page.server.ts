@@ -1,7 +1,7 @@
 import { fail, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { profileUpdateSchema } from '$lib/schemas/profile';
 import { geocodeAddress } from '$lib/utils/geocoding';
 
@@ -30,8 +30,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				profilePhotoUrl: '',
 				profileVisibility: 'members_only' as const
 			},
-			// @ts-expect-error - Known Zod/Superforms type incompatibility with optional fields
-			zod(profileUpdateSchema)
+			zod4(profileUpdateSchema)
 		);
 		return { form };
 	}
@@ -45,8 +44,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			profilePhotoUrl: profile.profile_photo_url || '',
 			profileVisibility: profile.profile_visibility || 'members_only'
 		},
-		// @ts-expect-error - Known Zod/Superforms type incompatibility with optional fields
-		zod(profileUpdateSchema)
+		zod4(profileUpdateSchema)
 	);
 
 	return { form };
@@ -61,8 +59,7 @@ export const actions: Actions = {
 		}
 
 		// Validate form data
-		// @ts-expect-error - zod adapter type compatibility issue
-		const form = await superValidate(request, zod(profileUpdateSchema));
+		const form = await superValidate(request, zod4(profileUpdateSchema));
 
 		if (!form.valid) {
 			return fail(400, { form });

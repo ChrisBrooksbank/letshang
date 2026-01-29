@@ -15,7 +15,8 @@ vi.mock('sveltekit-superforms', () => ({
 
 // Mock zod adapter
 vi.mock('sveltekit-superforms/adapters', () => ({
-	zod: vi.fn((schema) => schema)
+	zod: vi.fn((schema) => schema),
+	zod4: vi.fn((schema) => schema)
 }));
 
 // Import after mocks are set up
