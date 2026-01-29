@@ -22,9 +22,20 @@ export const handle: Handle = async ({ event, resolve }) => {
 					return event.cookies.getAll();
 				},
 				setAll: (cookiesToSet) => {
-					cookiesToSet.forEach(({ name, value, options }) => {
-						event.cookies.set(name, value, { ...options, path: '/' });
-					});
+					console.log(
+						'[Hooks setAll] Setting cookies:',
+						cookiesToSet.map((c) => c.name)
+					);
+					try {
+						cookiesToSet.forEach(({ name, value, options }) => {
+							event.cookies.set(name, value, { ...options, path: '/' });
+						});
+						console.log('[Hooks setAll] Cookies set successfully');
+					} catch (e) {
+						console.error('[Hooks setAll] Error setting cookies:', e);
+						// Ignore errors when cookies are set after response is sent
+						// This can happen during async token refresh
+					}
 				}
 			}
 		}
@@ -41,6 +52,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const {
 		data: { session }
 	} = await event.locals.supabase.auth.getSession();
+
+	console.log(
+		'[Hooks] Path:',
+		event.url.pathname,
+		'| Session:',
+		!!session,
+		'| Cookies:',
+		event.cookies.getAll().map((c) => c.name)
+	);
 
 	event.locals.session = session;
 	event.locals.user = session?.user ?? null;

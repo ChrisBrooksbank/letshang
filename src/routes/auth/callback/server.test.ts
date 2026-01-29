@@ -78,7 +78,7 @@ describe('auth callback handler', () => {
 			} catch (error: any) {
 				expect(error.status).toBe(303);
 				expect(error.location).toContain('/login?error=');
-				expect(error.location).toContain('Verification%20failed');
+				expect(error.location).toContain('Invalid%20verification%20code');
 			}
 
 			expect(mockExchangeCodeForSession).toHaveBeenCalledWith('invalid-code');

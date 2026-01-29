@@ -10,7 +10,8 @@ describe('hooks.server', () => {
 				getAll: vi.fn(() => []),
 				set: vi.fn()
 			},
-			request: new Request('http://localhost:5173/')
+			request: new Request('http://localhost:5173/'),
+			url: new URL('http://localhost:5173/')
 		} as unknown as RequestEvent;
 
 		const mockResolve = vi.fn(async () => new Response('OK'));
@@ -28,7 +29,8 @@ describe('hooks.server', () => {
 				getAll: vi.fn(() => []),
 				set: vi.fn()
 			},
-			request: new Request('http://localhost:5173/')
+			request: new Request('http://localhost:5173/'),
+			url: new URL('http://localhost:5173/')
 		} as unknown as RequestEvent;
 
 		const mockResolve = vi.fn(async () => new Response('OK'));
@@ -46,7 +48,8 @@ describe('hooks.server', () => {
 				getAll: vi.fn(() => []),
 				set: vi.fn()
 			},
-			request: new Request('http://localhost:5173/')
+			request: new Request('http://localhost:5173/'),
+			url: new URL('http://localhost:5173/')
 		} as unknown as RequestEvent;
 
 		const mockResolve = vi.fn(async (_, options) => {
@@ -72,7 +75,8 @@ describe('hooks.server', () => {
 				]),
 				set: mockSetCookie
 			},
-			request: new Request('http://localhost:5173/')
+			request: new Request('http://localhost:5173/'),
+			url: new URL('http://localhost:5173/')
 		} as unknown as RequestEvent;
 
 		const mockResolve = vi.fn(async () => new Response('OK'));

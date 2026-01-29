@@ -15,16 +15,25 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	// If there's a code, exchange it for a session
 	if (code) {
-		const { error } = await locals.supabase.auth.exchangeCodeForSession(code);
+		const { data, error } = await locals.supabase.auth.exchangeCodeForSession(code);
+
+		console.log('[Auth Callback] Exchange result:', {
+			hasSession: !!data?.session,
+			hasUser: !!data?.user,
+			error: error?.message
+		});
 
 		// If there was an error, redirect to an error page
 		if (error) {
+			console.error('[Auth Callback] Error:', error.message);
 			// Redirect to login with error message
 			throw redirect(
 				303,
-				`/login?error=${encodeURIComponent('Verification failed. Please try again.')}`
+				`/login?error=${encodeURIComponent(error.message || 'Verification failed. Please try again.')}`
 			);
 		}
+	} else {
+		console.log('[Auth Callback] No code in URL');
 	}
 
 	// Redirect to the next URL (or dashboard)
