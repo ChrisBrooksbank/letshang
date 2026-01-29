@@ -7,5 +7,5 @@ test('home page loads', async ({ page }) => {
 
 test('page has correct title', async ({ page }) => {
 	await page.goto('/');
-	await expect(page).toHaveTitle(/SvelteKit/);
+	await expect(page).toHaveTitle(/LetsHang/);
 });

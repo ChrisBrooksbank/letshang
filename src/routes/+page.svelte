@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>LetsHang - Community Meetup Platform</title>
+</svelte:head>
+
 <h1 class="text-3xl font-bold text-blue-600">Welcome to LetsHang</h1>
 <p class="mt-4">
 	Community meetup platform built with
