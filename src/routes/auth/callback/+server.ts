@@ -10,7 +10,6 @@ import type { Database } from '$lib/types/database';
  *
  * IMPORTANT: We create a fresh Supabase client here instead of using locals.supabase
  * to ensure cookies are set synchronously before the redirect response is sent.
- * The hooks.server.ts client can have timing issues with async cookie setting.
  */
 export const GET: RequestHandler = async ({ url, cookies }) => {
 	// Get the code from the URL query params
@@ -22,8 +21,14 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
 	// If there's a code, exchange it for a session
 	if (code) {
+		// Track if cookies have been set
+		let cookiesSet = false;
+		let resolveWaitForCookies: () => void;
+		const waitForCookies = new Promise<void>((resolve) => {
+			resolveWaitForCookies = resolve;
+		});
+
 		// Create a Supabase client specifically for this request
-		// This ensures cookies are set directly via the cookies object
 		const supabase = createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 			cookies: {
 				getAll: () => cookies.getAll(),
@@ -32,9 +37,19 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 						'[Auth Callback] Setting cookies:',
 						cookiesToSet.map((c) => c.name)
 					);
-					cookiesToSet.forEach(({ name, value, options }) => {
-						cookies.set(name, value, { ...options, path: '/' });
-					});
+					try {
+						cookiesToSet.forEach(({ name, value, options }) => {
+							cookies.set(name, value, { ...options, path: '/' });
+						});
+						console.log('[Auth Callback] Cookies set successfully');
+					} catch (e) {
+						console.error('[Auth Callback] Error setting cookies:', e);
+					}
+					// Signal that cookies have been set
+					if (!cookiesSet) {
+						cookiesSet = true;
+						resolveWaitForCookies();
+					}
 				}
 			}
 		});
@@ -50,12 +65,22 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		// If there was an error, redirect to an error page
 		if (error) {
 			console.error('[Auth Callback] Error:', error.message);
-			// Redirect to login with error message
 			throw redirect(
 				303,
 				`/login?error=${encodeURIComponent(error.message || 'Verification failed. Please try again.')}`
 			);
 		}
+
+		// Wait for cookies to be set (with a timeout)
+		if (!cookiesSet) {
+			console.log('[Auth Callback] Waiting for cookies to be set...');
+			await Promise.race([
+				waitForCookies,
+				new Promise<void>((resolve) => setTimeout(resolve, 1000)) // 1 second timeout
+			]);
+		}
+
+		console.log('[Auth Callback] Cookies set, redirecting to:', next);
 	} else {
 		console.log('[Auth Callback] No code in URL');
 	}
