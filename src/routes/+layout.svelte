@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { invalidate } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
+	import { hideSplashScreen } from '$lib/utils/splash-screen';
 	import { createBrowserClient } from '@supabase/ssr';
 	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 	import '../app.css';
@@ -25,6 +26,9 @@
 	 * This sets up automatic token refresh and auth state change listeners.
 	 */
 	onMount(() => {
+		// Dismiss splash screen on all pages
+		hideSplashScreen();
+
 		auth.initialize(supabase);
 
 		// Set initial auth state from server data
