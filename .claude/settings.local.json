@@ -5,7 +5,15 @@
 			"Bash(git add:*)",
 			"Bash(git commit:*)",
 			"Bash(git push)",
-			"Bash(git restore:*)"
+			"Bash(git restore:*)",
+			"Bash(pnpm check:*)",
+			"Bash(pnpm build:*)",
+			"Bash(pnpm test:e2e:*)",
+			"Bash(pnpm format:*)",
+			"Bash(pnpm dev:*)",
+			"Bash(ls:*)",
+			"Bash(npm ls:*)",
+			"Bash(node scripts/generate-proper-icons.js:*)"
 		]
 	}
 }

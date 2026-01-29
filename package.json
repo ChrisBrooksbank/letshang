@@ -48,6 +48,7 @@
 		"postcss": "^8.5.6",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.4.1",
+		"supabase": "^2.72.9",
 		"svelte": "^5.45.6",
 		"svelte-check": "^4.3.4",
 		"svelte-easy-crop": "^5.0.0",

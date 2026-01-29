@@ -21,10 +21,12 @@
 	const navItems = [
 		{ href: '/dashboard', label: 'Home', icon: '🏠' },
 		{ href: '/map', label: 'Map', icon: '🗺️' },
+		{ href: '/events/create', label: 'Event', icon: '📅', highlight: true },
+		{ href: '/groups/create', label: 'Group', icon: '👥', highlight: true },
 		{ href: '/search', label: 'Search', icon: '🔍' },
-		{ href: '/calendar', label: 'Calendar', icon: '📅' },
+		{ href: '/categories', label: 'Browse', icon: '📂' },
 		{ href: '/notifications', label: 'Alerts', icon: '🔔', badge: true },
-		{ href: '/categories', label: 'Browse', icon: '📂' }
+		{ href: '/profile', label: 'Profile', icon: '👤' }
 	];
 
 	// Check if route is active
@@ -41,6 +43,7 @@
 					href={item.href}
 					class="app-nav__link"
 					class:app-nav__link--active={isActive(item.href)}
+					class:app-nav__link--highlight={item.highlight}
 					aria-current={isActive(item.href) ? 'page' : undefined}
 				>
 					<span class="app-nav__icon-wrapper">
@@ -108,6 +111,15 @@
 	.app-nav__link--active {
 		color: #2563eb;
 		font-weight: 600;
+	}
+
+	.app-nav__link--highlight {
+		color: #16a34a;
+	}
+
+	.app-nav__link--highlight:hover {
+		color: #15803d;
+		background: #f0fdf4;
 	}
 
 	.app-nav__icon-wrapper {

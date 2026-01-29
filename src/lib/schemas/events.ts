@@ -66,10 +66,17 @@ export const eventCreationSchema = z
 		// Event type: in-person, online, or hybrid
 		eventType: eventTypeEnum,
 
-		// Start time: ISO 8601 date-time string
+		// Start time: accepts datetime-local format (YYYY-MM-DDTHH:MM) or ISO 8601
 		startTime: z
 			.string()
-			.datetime({ message: 'Please enter a valid date and time' })
+			.min(1, 'Please enter a date and time')
+			.refine(
+				(val) => {
+					const date = new Date(val);
+					return !isNaN(date.getTime());
+				},
+				{ message: 'Please enter a valid date and time' }
+			)
 			.refine(
 				(val) => {
 					const startDate = new Date(val);
@@ -79,8 +86,18 @@ export const eventCreationSchema = z
 				{ message: 'Event start time must be in the future' }
 			),
 
-		// End time: ISO 8601 date-time string
-		endTime: z.string().datetime({ message: 'Please enter a valid date and time' }).optional(),
+		// End time: accepts datetime-local format or ISO 8601
+		endTime: z
+			.string()
+			.refine(
+				(val) => {
+					if (!val) return true;
+					const date = new Date(val);
+					return !isNaN(date.getTime());
+				},
+				{ message: 'Please enter a valid date and time' }
+			)
+			.optional(),
 
 		// Duration in minutes (alternative to end time)
 		durationMinutes: z.number().int().min(15, 'Duration must be at least 15 minutes').optional(),

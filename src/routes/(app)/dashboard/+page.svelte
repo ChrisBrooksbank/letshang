@@ -42,6 +42,58 @@
 
 			<!-- Happening Today Section -->
 			<HappeningToday events={data.happeningTodayEvents} />
+
+			<!-- Empty State - Show when no events -->
+			{#if (!data.nearbyEvents || data.nearbyEvents.length === 0) && (!data.happeningNowEvents || data.happeningNowEvents.length === 0) && (!data.happeningTodayEvents || data.happeningTodayEvents.length === 0)}
+				<div class="mt-8 space-y-6">
+					<!-- Getting Started Card -->
+					<div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white">
+						<h2 class="text-xl font-bold mb-2">Get Started with LetsHang</h2>
+						<p class="opacity-90 mb-4">
+							Connect with people in your community through events and groups.
+						</p>
+					</div>
+
+					<!-- Quick Actions -->
+					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+						<a
+							href="/events/create"
+							class="block p-6 bg-white border-2 border-green-200 rounded-xl hover:border-green-400 hover:shadow-lg transition"
+						>
+							<div class="text-3xl mb-2">📅</div>
+							<h3 class="font-bold text-gray-900 mb-1">Create an Event</h3>
+							<p class="text-sm text-gray-600">Host a meetup, workshop, or hangout</p>
+						</a>
+
+						<a
+							href="/groups/create"
+							class="block p-6 bg-white border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:shadow-lg transition"
+						>
+							<div class="text-3xl mb-2">👥</div>
+							<h3 class="font-bold text-gray-900 mb-1">Start a Group</h3>
+							<p class="text-sm text-gray-600">Build a community around shared interests</p>
+						</a>
+
+						<a
+							href="/categories"
+							class="block p-6 bg-white border-2 border-purple-200 rounded-xl hover:border-purple-400 hover:shadow-lg transition"
+						>
+							<div class="text-3xl mb-2">🔍</div>
+							<h3 class="font-bold text-gray-900 mb-1">Browse Categories</h3>
+							<p class="text-sm text-gray-600">Find groups by topic: Tech, Sports, Arts...</p>
+						</a>
+
+						<a
+							href="/profile/edit"
+							class="block p-6 bg-white border-2 border-orange-200 rounded-xl hover:border-orange-400 hover:shadow-lg transition"
+						>
+							<div class="text-3xl mb-2">📍</div>
+							<h3 class="font-bold text-gray-900 mb-1">Set Your Location</h3>
+							<p class="text-sm text-gray-600">Get personalized event recommendations</p>
+						</a>
+					</div>
+				</div>
+			{/if}
 		{:else}
 			<p>Loading...</p>
 		{/if}

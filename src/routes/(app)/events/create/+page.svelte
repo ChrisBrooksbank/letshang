@@ -284,7 +284,7 @@
 								<input
 									type="radio"
 									name="eventType"
-									value="in-person"
+									value="in_person"
 									bind:group={$form.eventType}
 									class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500"
 									required
