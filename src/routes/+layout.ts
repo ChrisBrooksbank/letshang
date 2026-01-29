@@ -48,6 +48,6 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	return {
 		supabase,
 		session: session ?? data.session,
-		user: user.user
+		user: user.user ?? data.user
 	};
 };

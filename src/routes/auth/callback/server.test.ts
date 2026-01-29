@@ -1,29 +1,52 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from './+server.js';
 
+// Mock the createServerClient from @supabase/ssr
+vi.mock('@supabase/ssr', () => ({
+	createServerClient: vi.fn()
+}));
+
+// Get the mocked function
+import { createServerClient } from '@supabase/ssr';
+const mockCreateServerClient = vi.mocked(createServerClient);
+
 describe('auth callback handler', () => {
+	let mockExchangeCodeForSession: ReturnType<typeof vi.fn>;
+	let mockCookies: {
+		getAll: ReturnType<typeof vi.fn>;
+		set: ReturnType<typeof vi.fn>;
+	};
+
 	beforeEach(() => {
 		vi.clearAllMocks();
+
+		mockExchangeCodeForSession = vi.fn();
+		mockCookies = {
+			getAll: vi.fn().mockReturnValue([]),
+			set: vi.fn()
+		};
+
+		// Setup default mock for createServerClient
+		mockCreateServerClient.mockReturnValue({
+			auth: {
+				exchangeCodeForSession: mockExchangeCodeForSession
+			}
+		} as any);
 	});
 
 	describe('email verification flow', () => {
 		it('should exchange code for session and redirect to dashboard', async () => {
-			const mockExchangeCodeForSession = vi.fn().mockResolvedValue({ error: null });
+			mockExchangeCodeForSession.mockResolvedValue({
+				data: { session: {}, user: {} },
+				error: null
+			});
 			const mockUrl = new URL('http://localhost:5173/auth/callback?code=test-verification-code');
-
-			const mockLocals = {
-				supabase: {
-					auth: {
-						exchangeCodeForSession: mockExchangeCodeForSession
-					}
-				}
-			};
 
 			await expect(
 				GET({
 					url: mockUrl,
-					// @ts-expect-error - Partial mock of locals for testing
-					locals: mockLocals
+					// @ts-expect-error - Partial mock for testing
+					cookies: mockCookies
 				})
 			).rejects.toThrow();
 
@@ -31,22 +54,17 @@ describe('auth callback handler', () => {
 		});
 
 		it('should redirect to custom next URL when provided', async () => {
-			const mockExchangeCodeForSession = vi.fn().mockResolvedValue({ error: null });
+			mockExchangeCodeForSession.mockResolvedValue({
+				data: { session: {}, user: {} },
+				error: null
+			});
 			const mockUrl = new URL('http://localhost:5173/auth/callback?code=test-code&next=/events');
-
-			const mockLocals = {
-				supabase: {
-					auth: {
-						exchangeCodeForSession: mockExchangeCodeForSession
-					}
-				}
-			};
 
 			try {
 				await GET({
 					url: mockUrl,
-					// @ts-expect-error - Partial mock of locals for testing
-					locals: mockLocals
+					// @ts-expect-error - Partial mock for testing
+					cookies: mockCookies
 				});
 			} catch (error: any) {
 				expect(error.status).toBe(303);
@@ -58,22 +76,14 @@ describe('auth callback handler', () => {
 
 		it('should redirect to login with error when code exchange fails', async () => {
 			const mockError = { message: 'Invalid verification code', status: 400 };
-			const mockExchangeCodeForSession = vi.fn().mockResolvedValue({ error: mockError });
+			mockExchangeCodeForSession.mockResolvedValue({ data: {}, error: mockError });
 			const mockUrl = new URL('http://localhost:5173/auth/callback?code=invalid-code');
-
-			const mockLocals = {
-				supabase: {
-					auth: {
-						exchangeCodeForSession: mockExchangeCodeForSession
-					}
-				}
-			};
 
 			try {
 				await GET({
 					url: mockUrl,
-					// @ts-expect-error - Partial mock of locals for testing
-					locals: mockLocals
+					// @ts-expect-error - Partial mock for testing
+					cookies: mockCookies
 				});
 			} catch (error: any) {
 				expect(error.status).toBe(303);
@@ -87,19 +97,11 @@ describe('auth callback handler', () => {
 		it('should handle missing code parameter', async () => {
 			const mockUrl = new URL('http://localhost:5173/auth/callback');
 
-			const mockLocals = {
-				supabase: {
-					auth: {
-						exchangeCodeForSession: vi.fn()
-					}
-				}
-			};
-
 			try {
 				await GET({
 					url: mockUrl,
-					// @ts-expect-error - Partial mock of locals for testing
-					locals: mockLocals
+					// @ts-expect-error - Partial mock for testing
+					cookies: mockCookies
 				});
 			} catch (error: any) {
 				expect(error.status).toBe(303);
@@ -107,28 +109,23 @@ describe('auth callback handler', () => {
 			}
 
 			// Should not call exchangeCodeForSession when no code is provided
-			expect(mockLocals.supabase.auth.exchangeCodeForSession).not.toHaveBeenCalled();
+			expect(mockExchangeCodeForSession).not.toHaveBeenCalled();
 		});
 	});
 
 	describe('OAuth flow support', () => {
 		it('should work with OAuth callback codes', async () => {
-			const mockExchangeCodeForSession = vi.fn().mockResolvedValue({ error: null });
+			mockExchangeCodeForSession.mockResolvedValue({
+				data: { session: {}, user: {} },
+				error: null
+			});
 			const mockUrl = new URL('http://localhost:5173/auth/callback?code=oauth-code-xyz');
-
-			const mockLocals = {
-				supabase: {
-					auth: {
-						exchangeCodeForSession: mockExchangeCodeForSession
-					}
-				}
-			};
 
 			try {
 				await GET({
 					url: mockUrl,
-					// @ts-expect-error - Partial mock of locals for testing
-					locals: mockLocals
+					// @ts-expect-error - Partial mock for testing
+					cookies: mockCookies
 				});
 			} catch (error: any) {
 				expect(error.status).toBe(303);
@@ -142,19 +139,11 @@ describe('auth callback handler', () => {
 		it('should handle empty code parameter', async () => {
 			const mockUrl = new URL('http://localhost:5173/auth/callback?code=');
 
-			const mockLocals = {
-				supabase: {
-					auth: {
-						exchangeCodeForSession: vi.fn()
-					}
-				}
-			};
-
 			try {
 				await GET({
 					url: mockUrl,
-					// @ts-expect-error - Partial mock of locals for testing
-					locals: mockLocals
+					// @ts-expect-error - Partial mock for testing
+					cookies: mockCookies
 				});
 			} catch (error: any) {
 				expect(error.status).toBe(303);
@@ -162,28 +151,23 @@ describe('auth callback handler', () => {
 			}
 
 			// Empty code is falsy, so should not call exchangeCodeForSession
-			expect(mockLocals.supabase.auth.exchangeCodeForSession).not.toHaveBeenCalled();
+			expect(mockExchangeCodeForSession).not.toHaveBeenCalled();
 		});
 
 		it('should URL decode next parameter correctly', async () => {
-			const mockExchangeCodeForSession = vi.fn().mockResolvedValue({ error: null });
+			mockExchangeCodeForSession.mockResolvedValue({
+				data: { session: {}, user: {} },
+				error: null
+			});
 			const mockUrl = new URL(
 				'http://localhost:5173/auth/callback?code=test-code&next=%2Fevents%2F123'
 			);
 
-			const mockLocals = {
-				supabase: {
-					auth: {
-						exchangeCodeForSession: mockExchangeCodeForSession
-					}
-				}
-			};
-
 			try {
 				await GET({
 					url: mockUrl,
-					// @ts-expect-error - Partial mock of locals for testing
-					locals: mockLocals
+					// @ts-expect-error - Partial mock for testing
+					cookies: mockCookies
 				});
 			} catch (error: any) {
 				expect(error.status).toBe(303);

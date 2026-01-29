@@ -4,7 +4,13 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { registrationSchema } from '$lib/schemas/auth';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ locals }) => {
+	// If already logged in, redirect to dashboard
+	const session = await locals.supabase.auth.getSession();
+	if (session.data.session) {
+		throw redirect(303, '/dashboard');
+	}
+
 	// Initialize the form with the schema
 	const form = await superValidate(null, zod4(registrationSchema));
 	return { form };
