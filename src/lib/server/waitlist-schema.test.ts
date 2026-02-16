@@ -1,98 +1,81 @@
 /**
  * Waitlist Schema Tests
  *
- * Tests for the waitlist system migration and schema changes.
- * Validates the migration file structure and expected behavior.
+ * Tests for the waitlist system in the consolidated schema.
+ * Validates that waitlist features are properly defined.
  */
 
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-describe('Waitlist Schema Migration', () => {
-	const migrationPath = resolve(
-		process.cwd(),
-		'supabase/archive/migrations_v1/20260125_waitlist_system.sql'
-	);
-	let migrationContent: string;
+const schemaPath = resolve(process.cwd(), 'supabase/consolidated_schema.sql');
+let schemaContent: string;
 
-	try {
-		migrationContent = readFileSync(migrationPath, 'utf-8');
-	} catch {
-		migrationContent = '';
-	}
+try {
+	schemaContent = readFileSync(schemaPath, 'utf-8');
+} catch {
+	schemaContent = '';
+}
 
-	it('should have migration file present', () => {
-		expect(migrationContent).toBeTruthy();
-		expect(migrationContent.length).toBeGreaterThan(0);
+describe('Waitlist Schema', () => {
+	it('should have schema file present', () => {
+		expect(schemaContent).toBeTruthy();
+		expect(schemaContent.length).toBeGreaterThan(0);
 	});
 
-	describe('Enum Extension', () => {
-		it('should add waitlisted status to rsvp_status enum', () => {
-			expect(migrationContent).toContain('ALTER TYPE rsvp_status ADD VALUE');
-			expect(migrationContent).toContain("'waitlisted'");
+	describe('Enum', () => {
+		it('should include waitlisted status in rsvp_status enum', () => {
+			expect(schemaContent).toContain("'waitlisted'");
 		});
 
-		it('should preserve existing enum values', () => {
-			// The migration shouldn't remove existing values (going, interested, not_going)
-			// Just verify the ALTER TYPE syntax is correct
-			const alterTypeMatch = migrationContent.match(
-				/ALTER TYPE rsvp_status ADD VALUE\s+'waitlisted'/
-			);
-			expect(alterTypeMatch).toBeTruthy();
+		it('should have waitlisted in the rsvp_status CREATE TYPE definition', () => {
+			expect(schemaContent).toMatch(/CREATE TYPE rsvp_status AS ENUM\s*\([^)]*'waitlisted'[^)]*\)/);
 		});
 	});
 
 	describe('Table Schema', () => {
-		it('should add waitlist_position column', () => {
-			expect(migrationContent).toContain('ALTER TABLE public.event_rsvps');
-			expect(migrationContent).toContain('ADD COLUMN waitlist_position INTEGER');
+		it('should have waitlist_position column in event_rsvps', () => {
+			expect(schemaContent).toContain('waitlist_position INTEGER');
 		});
 
 		it('should make waitlist_position nullable', () => {
-			// Verify column is nullable (no NOT NULL constraint)
-			const columnMatch = migrationContent.match(/ADD COLUMN waitlist_position INTEGER/);
-			expect(columnMatch).toBeTruthy();
-			if (columnMatch) {
-				const fullLine = migrationContent
-					.split('\n')
-					.find((line) => line.includes('waitlist_position'));
-				expect(fullLine).toBeTruthy();
-				if (fullLine) {
-					expect(fullLine).not.toContain('NOT NULL');
-				}
+			// Verify column is in the CREATE TABLE without NOT NULL
+			const lines = schemaContent.split('\n');
+			const waitlistLine = lines.find((line) => line.includes('waitlist_position'));
+			expect(waitlistLine).toBeTruthy();
+			if (waitlistLine) {
+				expect(waitlistLine).not.toContain('NOT NULL');
 			}
 		});
 	});
 
 	describe('Indexes', () => {
 		it('should create index for waitlist queries', () => {
-			expect(migrationContent).toContain('CREATE INDEX idx_event_rsvps_waitlist');
-			expect(migrationContent).toContain(
-				'ON public.event_rsvps(event_id, status, waitlist_position)'
-			);
+			expect(schemaContent).toContain('idx_event_rsvps_waitlist');
+			expect(schemaContent).toContain('ON public.event_rsvps(event_id, status, waitlist_position)');
 		});
 
 		it('should create partial index for waitlisted status only', () => {
-			expect(migrationContent).toContain("WHERE status = 'waitlisted'");
+			expect(schemaContent).toContain("WHERE status = 'waitlisted'");
 		});
 	});
 
 	describe('Comments', () => {
 		it('should document waitlist_position column', () => {
-			expect(migrationContent).toContain('COMMENT ON COLUMN public.event_rsvps.waitlist_position');
-			expect(migrationContent).toContain('FIFO');
-			expect(migrationContent).toContain('position');
+			expect(schemaContent).toContain('COMMENT ON COLUMN public.event_rsvps.waitlist_position');
+			expect(schemaContent).toContain('FIFO');
+			expect(schemaContent).toContain('position');
 		});
 	});
 
 	describe('Data Integrity', () => {
 		it('should use INTEGER for position', () => {
-			expect(migrationContent).toContain('waitlist_position INTEGER');
+			expect(schemaContent).toContain('waitlist_position INTEGER');
 		});
 
 		it('should not add default value to waitlist_position', () => {
-			const columnLine = migrationContent
+			const columnLine = schemaContent
 				.split('\n')
 				.find((line) => line.includes('waitlist_position'));
 			expect(columnLine).toBeTruthy();
