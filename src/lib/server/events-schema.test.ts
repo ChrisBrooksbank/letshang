@@ -10,7 +10,10 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 describe('Events Schema Migration', () => {
-	const migrationPath = resolve(process.cwd(), 'supabase/migrations/20260122_events_schema.sql');
+	const migrationPath = resolve(
+		process.cwd(),
+		'supabase/archive/migrations_v1/20260122_events_schema.sql'
+	);
 	let migrationContent: string;
 
 	try {
@@ -243,21 +246,30 @@ describe('Events Schema Migration', () => {
 
 describe('Events Schema Business Rules', () => {
 	it('should support standalone events (group_id NULL)', () => {
-		const migrationPath = resolve(process.cwd(), 'supabase/migrations/20260122_events_schema.sql');
+		const migrationPath = resolve(
+			process.cwd(),
+			'supabase/archive/migrations_v1/20260122_events_schema.sql'
+		);
 		const migrationContent = readFileSync(migrationPath, 'utf-8');
 
 		expect(migrationContent).toContain('group_id UUID DEFAULT NULL');
 	});
 
 	it('should set default visibility to public', () => {
-		const migrationPath = resolve(process.cwd(), 'supabase/migrations/20260122_events_schema.sql');
+		const migrationPath = resolve(
+			process.cwd(),
+			'supabase/archive/migrations_v1/20260122_events_schema.sql'
+		);
 		const migrationContent = readFileSync(migrationPath, 'utf-8');
 
 		expect(migrationContent).toContain("visibility event_visibility NOT NULL DEFAULT 'public'");
 	});
 
 	it('should allow capacity to be NULL for unlimited events', () => {
-		const migrationPath = resolve(process.cwd(), 'supabase/migrations/20260122_events_schema.sql');
+		const migrationPath = resolve(
+			process.cwd(),
+			'supabase/archive/migrations_v1/20260122_events_schema.sql'
+		);
 		const migrationContent = readFileSync(migrationPath, 'utf-8');
 
 		expect(migrationContent).toContain(
@@ -267,7 +279,10 @@ describe('Events Schema Business Rules', () => {
 });
 
 describe('Events Schema Acceptance Criteria', () => {
-	const migrationPath = resolve(process.cwd(), 'supabase/migrations/20260122_events_schema.sql');
+	const migrationPath = resolve(
+		process.cwd(),
+		'supabase/archive/migrations_v1/20260122_events_schema.sql'
+	);
 	const migrationContent = readFileSync(migrationPath, 'utf-8');
 
 	it('AC: events table with required fields', () => {

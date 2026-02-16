@@ -12,7 +12,7 @@ import { resolve } from 'path';
 describe('Initial Users Schema Migration', () => {
 	const migrationPath = resolve(
 		process.cwd(),
-		'supabase/migrations/20260122_initial_users_schema.sql'
+		'supabase/archive/migrations_v1/20260122_initial_users_schema.sql'
 	);
 	let migrationContent: string;
 
@@ -149,7 +149,7 @@ describe('Initial Users Schema Migration', () => {
 describe('Database Schema Best Practices', () => {
 	const migrationPath = resolve(
 		process.cwd(),
-		'supabase/migrations/20260122_initial_users_schema.sql'
+		'supabase/archive/migrations_v1/20260122_initial_users_schema.sql'
 	);
 	let migrationContent: string;
 

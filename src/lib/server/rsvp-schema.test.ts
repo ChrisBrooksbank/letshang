@@ -10,7 +10,10 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 describe('RSVP Schema Migration', () => {
-	const migrationPath = resolve(process.cwd(), 'supabase/migrations/20260122_rsvp_schema.sql');
+	const migrationPath = resolve(
+		process.cwd(),
+		'supabase/archive/migrations_v1/20260122_rsvp_schema.sql'
+	);
 	let migrationContent: string;
 
 	try {
@@ -268,7 +271,7 @@ describe('RSVP Schema Migration', () => {
 describe('Hybrid Event Attendance Mode Migration', () => {
 	const migrationPath = resolve(
 		process.cwd(),
-		'supabase/migrations/20260125_hybrid_attendance_mode.sql'
+		'supabase/archive/migrations_v1/20260125_hybrid_attendance_mode.sql'
 	);
 	let migrationContent: string;
 

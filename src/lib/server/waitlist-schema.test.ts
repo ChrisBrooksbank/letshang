@@ -10,7 +10,10 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 describe('Waitlist Schema Migration', () => {
-	const migrationPath = resolve(process.cwd(), 'supabase/migrations/20260125_waitlist_system.sql');
+	const migrationPath = resolve(
+		process.cwd(),
+		'supabase/archive/migrations_v1/20260125_waitlist_system.sql'
+	);
 	let migrationContent: string;
 
 	try {
