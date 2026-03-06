@@ -1,0 +1,117 @@
+{
+	"id": "6993af8426ba7818b45ce39f",
+	"site_id": "d2ebf296-e203-4b1a-8328-2bc5dc1c3080",
+	"build_id": "6993af8426ba7818b45ce39d",
+	"state": "error",
+	"name": "letshang42",
+	"url": "http://letshang42.netlify.app",
+	"ssl_url": "https://letshang42.netlify.app",
+	"admin_url": "https://app.netlify.com/projects/letshang42",
+	"deploy_url": "http://master--letshang42.netlify.app",
+	"deploy_ssl_url": "https://master--letshang42.netlify.app",
+	"created_at": "2026-02-17T00:00:04.092Z",
+	"updated_at": "2026-02-17T00:00:46.019Z",
+	"user_id": "696d66aa7faafc8e5eda0485",
+	"error_message": "Failed during stage 'building site': Build script returned non-zero exit code: 2",
+	"required": [],
+	"required_functions": null,
+	"commit_ref": "e1b4370f7179c31ffb7dfd94c0627a85b2a46b74",
+	"review_id": null,
+	"branch": "master",
+	"commit_url": "https://github.com/ChrisBrooksbank/letshang/commit/e1b4370f7179c31ffb7dfd94c0627a85b2a46b74",
+	"skipped": null,
+	"locked": null,
+	"title": null,
+	"commit_message": null,
+	"review_url": null,
+	"published_at": null,
+	"context": "production",
+	"deploy_time": null,
+	"available_functions": [],
+	"screenshot_url": null,
+	"committer": null,
+	"skipped_log": null,
+	"manual_deploy": false,
+	"plugin_state": "none",
+	"lighthouse_plugin_scores": null,
+	"links": {
+		"permalink": "https://6993af8426ba7818b45ce39f--letshang42.netlify.app",
+		"alias": "https://letshang42.netlify.app",
+		"branch": null
+	},
+	"framework": "svelte-kit",
+	"entry_path": null,
+	"views_count": null,
+	"function_schedules": [],
+	"public_repo": true,
+	"pending_review_reason": null,
+	"lighthouse": null,
+	"edge_functions_present": null,
+	"expires_at": null,
+	"blobs_region": "us-east-2",
+	"deploy_validations_report": {
+		"id": "6993afad718d0c1a27faa3da",
+		"deploy_id": "6993af8426ba7818b45ce39f",
+		"secret_scan_result": {
+			"scannedFilesCount": 897,
+			"secretsScanMatches": [
+				{
+					"file": ".netlify/server/chunks/public.js",
+					"lineNumber": 1,
+					"key": "PUBLIC_SUPABASE_ANON_KEY",
+					"enhancedMatch": false
+				},
+				{
+					"file": ".netlify/server/chunks/public.js",
+					"lineNumber": 2,
+					"key": "PUBLIC_SUPABASE_URL",
+					"enhancedMatch": false
+				},
+				{
+					"file": ".svelte-kit/output/server/chunks/public.js",
+					"lineNumber": 1,
+					"key": "PUBLIC_SUPABASE_ANON_KEY",
+					"enhancedMatch": false
+				},
+				{
+					"file": ".svelte-kit/output/server/chunks/public.js",
+					"lineNumber": 2,
+					"key": "PUBLIC_SUPABASE_URL",
+					"enhancedMatch": false
+				},
+				{
+					"file": "build/_app/immutable/nodes/0.0Ewqt5B8.js",
+					"lineNumber": 62,
+					"key": "PUBLIC_SUPABASE_ANON_KEY",
+					"enhancedMatch": false
+				},
+				{
+					"file": "build/_app/immutable/nodes/0.0Ewqt5B8.js",
+					"lineNumber": 62,
+					"key": "PUBLIC_SUPABASE_URL",
+					"enhancedMatch": false
+				},
+				{
+					"file": ".svelte-kit/output/client/_app/immutable/nodes/0.0Ewqt5B8.js",
+					"lineNumber": 62,
+					"key": "PUBLIC_SUPABASE_ANON_KEY",
+					"enhancedMatch": false
+				},
+				{
+					"file": ".svelte-kit/output/client/_app/immutable/nodes/0.0Ewqt5B8.js",
+					"lineNumber": 62,
+					"key": "PUBLIC_SUPABASE_URL",
+					"enhancedMatch": false
+				}
+			],
+			"enhancedSecretsScanMatches": []
+		}
+	},
+	"strict_contributor_verification_failure": false,
+	"agent_runner_id": null,
+	"skew_protection_token": "29f496579d36204de49f67dcd0a8d61e0a340b93ee4c6c84dc9aca01b07f61dc363939336166383432366261373831386234356365333966",
+	"summary": {
+		"status": "unavailable",
+		"messages": []
+	}
+}

@@ -26,7 +26,8 @@
 		{ href: '/search', label: 'Search', icon: '🔍' },
 		{ href: '/categories', label: 'Browse', icon: '📂' },
 		{ href: '/notifications', label: 'Alerts', icon: '🔔', badge: true },
-		{ href: '/profile', label: 'Profile', icon: '👤' }
+		{ href: '/profile', label: 'Profile', icon: '👤' },
+		{ href: '/logout', label: 'Logout', icon: '🚪' }
 	];
 
 	// Check if route is active
