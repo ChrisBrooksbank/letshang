@@ -1,10 +1,12 @@
 import { error, redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { supabase } from '$lib/server/supabase';
 import { joinRequestSchema } from '$lib/schemas/groups';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = locals.session;
+	// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+	const supabase = locals.supabase as unknown as SupabaseClient;
 	const groupId = params.id;
 
 	if (!groupId) {
@@ -102,6 +104,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 export const actions: Actions = {
 	join: async ({ params, locals, request }) => {
 		const session = locals.session;
+		// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+		const supabase = locals.supabase as unknown as SupabaseClient;
 
 		if (!session?.user) {
 			throw redirect(303, `/login?redirect=/groups/${params.id}`);

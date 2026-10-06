@@ -20,7 +20,7 @@ describe('GET /events/[id]/ical', () => {
 
 	it('should return 401 if not authenticated', async () => {
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: null };
+		const locals = { supabase: supabase, session: null };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -37,7 +37,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -71,7 +71,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -117,7 +117,7 @@ describe('GET /events/[id]/ical', () => {
 			.mockReturnValueOnce({ select: mockMembershipSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -158,7 +158,7 @@ describe('GET /events/[id]/ical', () => {
 			.mockReturnValueOnce({ select: mockMembershipSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -188,7 +188,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -222,7 +222,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'creator-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'creator-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -262,7 +262,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -302,7 +302,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -340,7 +340,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 

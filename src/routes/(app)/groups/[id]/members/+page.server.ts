@@ -1,6 +1,5 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { supabase } from '$lib/server/supabase';
 import {
 	updateMemberRoleSchema,
 	removeMemberSchema,
@@ -10,6 +9,8 @@ import {
 	type GroupMemberRole
 } from '$lib/schemas/group-members';
 import { joinRequestResponseSchema } from '$lib/schemas/groups';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '$lib/server/supabase';
 
 /**
  * Helper function to log member management actions
@@ -22,7 +23,8 @@ async function logMemberAction(
 	reason?: string,
 	metadata?: Record<string, unknown>
 ) {
-	await supabase.from('group_member_actions_log').insert({
+	// RLS only lets the service role write the audit log
+	await supabaseAdmin.from('group_member_actions_log').insert({
 		group_id: groupId,
 		target_user_id: targetUserId,
 		performed_by_user_id: performedByUserId,
@@ -60,6 +62,8 @@ type PendingRequestWithUser = {
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = locals.session;
+	// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+	const supabase = locals.supabase as unknown as SupabaseClient;
 	const groupId = params.id;
 
 	if (!session?.user) {
@@ -217,6 +221,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 export const actions: Actions = {
 	updateRole: async ({ params, locals, request }) => {
 		const session = locals.session;
+		// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+		const supabase = locals.supabase as unknown as SupabaseClient;
 
 		if (!session?.user) {
 			throw redirect(303, `/login?redirect=/groups/${params.id}/members`);
@@ -328,6 +334,8 @@ export const actions: Actions = {
 
 	removeMember: async ({ params, locals, request }) => {
 		const session = locals.session;
+		// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+		const supabase = locals.supabase as unknown as SupabaseClient;
 
 		if (!session?.user) {
 			throw redirect(303, `/login?redirect=/groups/${params.id}/members`);
@@ -439,6 +447,8 @@ export const actions: Actions = {
 
 	banMember: async ({ params, locals, request }) => {
 		const session = locals.session;
+		// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+		const supabase = locals.supabase as unknown as SupabaseClient;
 
 		if (!session?.user) {
 			throw redirect(303, `/login?redirect=/groups/${params.id}/members`);
@@ -540,6 +550,8 @@ export const actions: Actions = {
 
 	approveRequest: async ({ params, locals, request }) => {
 		const session = locals.session;
+		// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+		const supabase = locals.supabase as unknown as SupabaseClient;
 
 		if (!session?.user) {
 			throw redirect(303, `/login?redirect=/groups/${params.id}/members`);
@@ -621,6 +633,8 @@ export const actions: Actions = {
 
 	denyRequest: async ({ params, locals, request }) => {
 		const session = locals.session;
+		// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+		const supabase = locals.supabase as unknown as SupabaseClient;
 
 		if (!session?.user) {
 			throw redirect(303, `/login?redirect=/groups/${params.id}/members`);

@@ -6,11 +6,13 @@
 
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { supabase } from '$lib/server/supabase';
 import { generateICalEvent, generateICalFilename, type ICalEvent } from '$lib/utils/ical';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const GET: RequestHandler = async ({ params, locals, url }) => {
 	const session = locals.session;
+	// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+	const supabase = locals.supabase as unknown as SupabaseClient;
 	if (!session?.user) {
 		throw error(401, 'Unauthorized');
 	}

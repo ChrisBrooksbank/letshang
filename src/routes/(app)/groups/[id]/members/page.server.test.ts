@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock Supabase client - must be declared before imports
-vi.mock('$lib/server/supabase', () => ({
-	supabase: {
-		from: vi.fn()
-	}
-}));
+// The same mock backs both clients: routes use locals.supabase, audit logging uses supabaseAdmin
+vi.mock('$lib/server/supabase', () => {
+	const client = { from: vi.fn() };
+	return { supabase: client, supabaseAdmin: client };
+});
 
 import { actions } from './+page.server';
 import { supabase } from '$lib/server/supabase';
@@ -71,7 +71,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_ORGANIZER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_ORGANIZER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', TEST_PENDING_ID);
@@ -103,7 +103,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				})
 			});
 
-			const locals = { session: { user: { id: TEST_MEMBER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_MEMBER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', TEST_PENDING_ID);
@@ -144,7 +144,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				})
 			});
 
-			const locals = { session: { user: { id: TEST_ORGANIZER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_ORGANIZER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', '550e8400-e29b-41d4-a716-999999999999');
@@ -159,7 +159,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 		});
 
 		it('should redirect to login if user is not authenticated', async () => {
-			const locals = { session: null };
+			const locals = { supabase: mockSupabase, session: null };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', TEST_PENDING_ID);
@@ -215,7 +215,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_ORGANIZER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_ORGANIZER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', TEST_PENDING_ID);
@@ -269,7 +269,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_ORGANIZER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_ORGANIZER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', TEST_PENDING_ID);
@@ -301,7 +301,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				})
 			});
 
-			const locals = { session: { user: { id: TEST_EVENT_ORG_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_EVENT_ORG_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', TEST_PENDING_ID);
@@ -355,7 +355,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_ORGANIZER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_ORGANIZER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', TEST_PENDING_ID);
@@ -423,7 +423,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_ORGANIZER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_ORGANIZER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', MEMBER_RECORD_ID);
@@ -439,7 +439,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 		});
 
 		it('should reject ban without reason', async () => {
-			const locals = { session: { user: { id: TEST_ORGANIZER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_ORGANIZER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', TEST_MEMBER_ID);
@@ -491,7 +491,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				})
 			});
 
-			const locals = { session: { user: { id: CO_ORG_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: CO_ORG_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', MEMBER_RECORD_ID);
@@ -542,7 +542,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				})
 			});
 
-			const locals = { session: { user: { id: TEST_ORGANIZER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_ORGANIZER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', MEMBER_RECORD_ID);
@@ -577,7 +577,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				})
 			});
 
-			const locals = { session: { user: { id: TEST_MEMBER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_MEMBER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', OTHER_MEMBER_ID);
@@ -638,7 +638,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_ORGANIZER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_ORGANIZER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', MEMBER_RECORD_ID);
@@ -706,7 +706,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_ORGANIZER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_ORGANIZER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', MEMBER_RECORD_ID);
@@ -771,7 +771,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: ASSISTANT_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: ASSISTANT_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', MEMBER_RECORD_ID);
@@ -786,7 +786,7 @@ describe('Group Members Page Server - Join Request Actions', () => {
 		});
 
 		it('should validate reason length (max 500 chars)', async () => {
-			const locals = { session: { user: { id: TEST_ORGANIZER_ID } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_ORGANIZER_ID } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('memberId', TEST_MEMBER_ID);
