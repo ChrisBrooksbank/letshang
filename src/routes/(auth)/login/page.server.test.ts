@@ -42,12 +42,51 @@ describe('login page server', () => {
 			await expect(
 				// Partial mock for testing
 				load({
+					url: new URL('http://localhost/login'),
 					locals: mockLocals
 				} as never)
 			).rejects.toMatchObject({
 				status: 303,
 				location: '/dashboard'
 			});
+		});
+
+		it('should honor a same-origin redirect param if already logged in', async () => {
+			const mockLocals = {
+				supabase: {
+					auth: {
+						getSession: vi.fn().mockResolvedValue({
+							data: { session: { user: { id: 'user-123' } } }
+						})
+					}
+				}
+			};
+
+			await expect(
+				load({
+					locals: mockLocals,
+					url: new URL('http://localhost/login?redirect=/groups/abc')
+				} as never)
+			).rejects.toMatchObject({ status: 303, location: '/groups/abc' });
+		});
+
+		it('should ignore an off-site redirect param', async () => {
+			const mockLocals = {
+				supabase: {
+					auth: {
+						getSession: vi.fn().mockResolvedValue({
+							data: { session: { user: { id: 'user-123' } } }
+						})
+					}
+				}
+			};
+
+			await expect(
+				load({
+					locals: mockLocals,
+					url: new URL('http://localhost/login?redirect=//evil.example')
+				} as never)
+			).rejects.toMatchObject({ status: 303, location: '/dashboard' });
 		});
 
 		it('should return form when not logged in', async () => {
@@ -67,7 +106,10 @@ describe('login page server', () => {
 			vi.mocked(superValidate).mockResolvedValue(mockForm as never);
 
 			// Partial mock for testing
-			const result = await load({ locals: mockLocals } as never);
+			const result = await load({
+				locals: mockLocals,
+				url: new URL('http://localhost/login')
+			} as never);
 
 			expect(result).toEqual({ form: mockForm });
 			expect(superValidate).toHaveBeenCalled();
@@ -96,6 +138,7 @@ describe('login page server', () => {
 			// Partial mock for testing
 			await actions.default({
 				request: mockRequest,
+				url: new URL('http://localhost/login'),
 				locals: {},
 				cookies: { set: vi.fn() }
 			} as never);
@@ -129,6 +172,7 @@ describe('login page server', () => {
 			// Partial mock for testing
 			await actions.default({
 				request: mockRequest,
+				url: new URL('http://localhost/login'),
 				locals: { supabase: mockSupabase },
 				cookies: { set: vi.fn() }
 			} as never);
@@ -172,6 +216,7 @@ describe('login page server', () => {
 			// Partial mock for testing
 			await actions.default({
 				request: mockRequest,
+				url: new URL('http://localhost/login'),
 				locals: { supabase: mockSupabase },
 				cookies: { set: vi.fn() }
 			} as never);
@@ -226,6 +271,7 @@ describe('login page server', () => {
 				// Partial mock for testing
 				actions.default({
 					request: mockRequest,
+					url: new URL('http://localhost/login'),
 					locals: { supabase: mockSupabase },
 					cookies: mockCookies
 				} as never)
@@ -278,6 +324,7 @@ describe('login page server', () => {
 				// Partial mock for testing
 				actions.default({
 					request: mockRequest,
+					url: new URL('http://localhost/login'),
 					locals: { supabase: mockSupabase },
 					cookies: mockCookies
 				} as never)
@@ -333,6 +380,7 @@ describe('login page server', () => {
 				// Partial mock for testing
 				actions.default({
 					request: mockRequest,
+					url: new URL('http://localhost/login'),
 					locals: { supabase: mockSupabase },
 					cookies: mockCookies
 				} as never)
@@ -376,6 +424,7 @@ describe('login page server', () => {
 			// Partial mock for testing
 			await actions.default({
 				request: mockRequest,
+				url: new URL('http://localhost/login'),
 				locals: { supabase: mockSupabase },
 				cookies: { set: vi.fn() }
 			} as never);

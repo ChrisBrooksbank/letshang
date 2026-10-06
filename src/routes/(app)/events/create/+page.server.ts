@@ -19,15 +19,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.from('group_members')
 		.select('group_id, groups!inner(id, name)')
 		.eq('user_id', session.data.session.user.id)
-		.eq('status', 'active')
-		.order('groups.name');
+		.eq('status', 'active');
 
-	// Transform the data to a simpler format
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const groups = (userGroups || []).map((membership: any) => ({
-		id: membership.groups.id,
-		name: membership.groups.name
-	}));
+	// Transform the data to a simpler format, sorted by group name
+	// (sorting by an embedded table's column isn't expressible as order('groups.name'))
+	const groups = ((userGroups || []) as Array<{ groups: { id: string; name: string } }>)
+		.map((membership) => ({
+			id: membership.groups.id,
+			name: membership.groups.name
+		}))
+		.sort((a, b) => a.name.localeCompare(b.name));
 
 	// Initialize empty form
 	const form = await superValidate(null, zod4(eventCreationSchema));
@@ -92,6 +93,29 @@ export const actions: Actions = {
 			coverImageUrl?: string | null;
 		};
 
+		// Only active members may post events into a group
+		if (groupId) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const { data: membership } = await (locals.supabase as any)
+				.from('group_members')
+				.select('id')
+				.eq('group_id', groupId)
+				.eq('user_id', session.data.session.user.id)
+				.eq('status', 'active')
+				.maybeSingle();
+
+			if (!membership) {
+				return fail(403, {
+					form: {
+						...form,
+						errors: {
+							_errors: ['You must be an active member of the group to create events in it.']
+						}
+					}
+				});
+			}
+		}
+
 		// Calculate end time if duration is provided instead
 		let calculatedEndTime = endTime;
 		if (!endTime && durationMinutes) {
@@ -118,8 +142,8 @@ export const actions: Actions = {
 				end_time: calculatedEndTime || null,
 				venue_name: venueName || null,
 				venue_address: venueAddress || null,
-				venue_lat: venueLat || null,
-				venue_lng: venueLng || null,
+				venue_lat: venueLat ?? null,
+				venue_lng: venueLng ?? null,
 				video_link: videoLink || null,
 				capacity: capacity || null,
 				format_tags: formatTags || [],

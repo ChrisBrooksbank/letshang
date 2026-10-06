@@ -3,12 +3,13 @@ import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { loginSchema } from '$lib/schemas/auth';
 import type { Actions, PageServerLoad } from './$types';
+import { safeRedirectPath } from '$lib/utils/safe-redirect';
 
-export const load: PageServerLoad = async ({ locals }) => {
-	// If already logged in, redirect to dashboard
+export const load: PageServerLoad = async ({ locals, url }) => {
+	// If already logged in, go where they were headed (or the dashboard)
 	const session = await locals.supabase.auth.getSession();
 	if (session.data.session) {
-		throw redirect(303, '/dashboard');
+		throw redirect(303, safeRedirectPath(url.searchParams.get('redirect')));
 	}
 
 	// Initialize the form with the schema
@@ -17,7 +18,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-	default: async ({ request, locals, cookies }) => {
+	default: async ({ request, locals, cookies, url }) => {
 		const form = await superValidate(request, zod4(loginSchema));
 
 		// Validate form data
@@ -86,7 +87,7 @@ export const actions: Actions = {
 			});
 		}
 
-		// Successful login - redirect to dashboard
-		throw redirect(303, '/dashboard');
+		// Successful login - back to the page that sent them here, else the dashboard
+		throw redirect(303, safeRedirectPath(url.searchParams.get('redirect')));
 	}
 };
