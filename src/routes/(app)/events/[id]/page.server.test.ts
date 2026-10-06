@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { load, actions } from './+page.server';
 import { supabase } from '$lib/server/supabase';
 
-vi.mock('$lib/server/supabase', () => ({
-	supabase: {
-		from: vi.fn()
-	}
-}));
+// The same mock backs both clients: routes use locals.supabase, waitlist promotion uses supabaseAdmin
+vi.mock('$lib/server/supabase', () => {
+	const client = { from: vi.fn() };
+	return { supabase: client, supabaseAdmin: client };
+});
 
 describe('Event Detail Page Server', () => {
 	beforeEach(() => {
@@ -81,6 +81,7 @@ describe('Event Detail Page Server', () => {
 			const result = await load({
 				params: { id: 'event-123' },
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -147,6 +148,7 @@ describe('Event Detail Page Server', () => {
 			const result = await load({
 				params: { id: 'event-123' },
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -180,6 +182,7 @@ describe('Event Detail Page Server', () => {
 				load({
 					params: { id: 'nonexistent' },
 					locals: {
+						supabase: supabase,
 						session: {
 							user: { id: 'user-123' }
 						}
@@ -192,7 +195,7 @@ describe('Event Detail Page Server', () => {
 			await expect(
 				load({
 					params: { id: 'event-123' },
-					locals: { session: null }
+					locals: { supabase: supabase, session: null }
 				} as any)
 			).rejects.toThrow();
 		});
@@ -243,6 +246,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -306,6 +310,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -323,6 +328,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -340,7 +346,7 @@ describe('Event Detail Page Server', () => {
 
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
-				locals: { session: null },
+				locals: { supabase: supabase, session: null },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -391,6 +397,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -435,6 +442,7 @@ describe('Event Detail Page Server', () => {
 
 			const result = await actions.cancelRsvp({
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -447,7 +455,7 @@ describe('Event Detail Page Server', () => {
 
 		it('should require authentication', async () => {
 			const result = await actions.cancelRsvp({
-				locals: { session: null },
+				locals: { supabase: supabase, session: null },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -486,6 +494,7 @@ describe('Event Detail Page Server', () => {
 
 			const result = await actions.cancelRsvp({
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -522,6 +531,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -578,6 +588,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -633,6 +644,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -667,6 +679,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -723,6 +736,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -777,6 +791,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -838,6 +853,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -904,6 +920,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -967,6 +984,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -992,32 +1010,6 @@ describe('Event Detail Page Server', () => {
 				})
 			});
 
-			// Mock RSVP count (5 going)
-			mockFrom.mockReturnValueOnce({
-				select: vi.fn().mockReturnValue({
-					eq: vi.fn().mockReturnValue({
-						eq: vi.fn().mockResolvedValue({
-							data: [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }, { id: '5' }],
-							error: null
-						})
-					})
-				})
-			});
-
-			// Mock user current RSVP check
-			mockFrom.mockReturnValueOnce({
-				select: vi.fn().mockReturnValue({
-					eq: vi.fn().mockReturnValue({
-						eq: vi.fn().mockReturnValue({
-							single: vi.fn().mockResolvedValue({
-								data: null,
-								error: null
-							})
-						})
-					})
-				})
-			});
-
 			// Mock existing RSVP check
 			mockFrom.mockReturnValueOnce({
 				select: vi.fn().mockReturnValue({
@@ -1027,6 +1019,18 @@ describe('Event Detail Page Server', () => {
 								data: null,
 								error: null
 							})
+						})
+					})
+				})
+			});
+
+			// Mock RSVP count (5 going)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockResolvedValue({
+							data: [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }, { id: '5' }],
+							error: null
 						})
 					})
 				})
@@ -1047,6 +1051,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -1072,6 +1077,20 @@ describe('Event Detail Page Server', () => {
 				})
 			});
 
+			// Mock existing RSVP check
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({
+								data: { id: 'rsvp-123', status: 'interested' },
+								error: null
+							})
+						})
+					})
+				})
+			});
+
 			// Mock RSVP count (10 going - at capacity)
 			mockFrom.mockReturnValueOnce({
 				select: vi.fn().mockReturnValue({
@@ -1079,20 +1098,6 @@ describe('Event Detail Page Server', () => {
 						eq: vi.fn().mockResolvedValue({
 							data: Array(10).fill({ id: 'rsvp' }),
 							error: null
-						})
-					})
-				})
-			});
-
-			// Mock user current RSVP check (user is not going)
-			mockFrom.mockReturnValueOnce({
-				select: vi.fn().mockReturnValue({
-					eq: vi.fn().mockReturnValue({
-						eq: vi.fn().mockReturnValue({
-							single: vi.fn().mockResolvedValue({
-								data: { status: 'interested' },
-								error: null
-							})
 						})
 					})
 				})
@@ -1108,20 +1113,6 @@ describe('Event Detail Page Server', () => {
 									data: [],
 									error: null
 								})
-							})
-						})
-					})
-				})
-			});
-
-			// Mock existing RSVP check
-			mockFrom.mockReturnValueOnce({
-				select: vi.fn().mockReturnValue({
-					eq: vi.fn().mockReturnValue({
-						eq: vi.fn().mockReturnValue({
-							single: vi.fn().mockResolvedValue({
-								data: { id: 'rsvp-123', status: 'interested' },
-								error: null
 							})
 						})
 					})
@@ -1145,6 +1136,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -1175,32 +1167,6 @@ describe('Event Detail Page Server', () => {
 				})
 			});
 
-			// Mock RSVP count (10 going - at capacity)
-			mockFrom.mockReturnValueOnce({
-				select: vi.fn().mockReturnValue({
-					eq: vi.fn().mockReturnValue({
-						eq: vi.fn().mockResolvedValue({
-							data: Array(10).fill({ id: 'rsvp' }),
-							error: null
-						})
-					})
-				})
-			});
-
-			// Mock user current RSVP check (user is already going)
-			mockFrom.mockReturnValueOnce({
-				select: vi.fn().mockReturnValue({
-					eq: vi.fn().mockReturnValue({
-						eq: vi.fn().mockReturnValue({
-							single: vi.fn().mockResolvedValue({
-								data: { status: 'going' },
-								error: null
-							})
-						})
-					})
-				})
-			});
-
 			// Mock existing RSVP check
 			mockFrom.mockReturnValueOnce({
 				select: vi.fn().mockReturnValue({
@@ -1210,6 +1176,18 @@ describe('Event Detail Page Server', () => {
 								data: { id: 'rsvp-123', status: 'going' },
 								error: null
 							})
+						})
+					})
+				})
+			});
+
+			// Mock RSVP count (10 going - at capacity)
+			mockFrom.mockReturnValueOnce({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						eq: vi.fn().mockResolvedValue({
+							data: Array(10).fill({ id: 'rsvp' }),
+							error: null
 						})
 					})
 				})
@@ -1232,6 +1210,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -1286,6 +1265,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -1340,6 +1320,7 @@ describe('Event Detail Page Server', () => {
 			const result = await actions.rsvp({
 				request: { formData: async () => formData } as any,
 				locals: {
+					supabase: supabase,
 					session: {
 						user: { id: 'user-123' }
 					}
@@ -1368,19 +1349,7 @@ describe('Event Detail Page Server', () => {
 					})
 				});
 
-				// Mock RSVP count (5 going - at capacity)
-				mockFrom.mockReturnValueOnce({
-					select: vi.fn().mockReturnValue({
-						eq: vi.fn().mockReturnValue({
-							eq: vi.fn().mockResolvedValue({
-								data: Array(5).fill({ id: 'rsvp' }),
-								error: null
-							})
-						})
-					})
-				});
-
-				// Mock user current RSVP check (no existing RSVP)
+				// Mock existing RSVP check for insert
 				mockFrom.mockReturnValueOnce({
 					select: vi.fn().mockReturnValue({
 						eq: vi.fn().mockReturnValue({
@@ -1389,6 +1358,18 @@ describe('Event Detail Page Server', () => {
 									data: null,
 									error: null
 								})
+							})
+						})
+					})
+				});
+
+				// Mock RSVP count (5 going - at capacity)
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							eq: vi.fn().mockResolvedValue({
+								data: Array(5).fill({ id: 'rsvp' }),
+								error: null
 							})
 						})
 					})
@@ -1410,20 +1391,6 @@ describe('Event Detail Page Server', () => {
 					})
 				});
 
-				// Mock existing RSVP check for insert
-				mockFrom.mockReturnValueOnce({
-					select: vi.fn().mockReturnValue({
-						eq: vi.fn().mockReturnValue({
-							eq: vi.fn().mockReturnValue({
-								single: vi.fn().mockResolvedValue({
-									data: null,
-									error: null
-								})
-							})
-						})
-					})
-				});
-
 				// Mock insert waitlist RSVP
 				mockFrom.mockReturnValueOnce({
 					insert: vi.fn().mockResolvedValue({
@@ -1439,6 +1406,7 @@ describe('Event Detail Page Server', () => {
 				const result = await actions.rsvp({
 					request: { formData: async () => formData } as any,
 					locals: {
+						supabase: supabase,
 						session: {
 							user: { id: 'user-123' }
 						}
@@ -1469,19 +1437,7 @@ describe('Event Detail Page Server', () => {
 					})
 				});
 
-				// Mock RSVP count (3 going)
-				mockFrom.mockReturnValueOnce({
-					select: vi.fn().mockReturnValue({
-						eq: vi.fn().mockReturnValue({
-							eq: vi.fn().mockResolvedValue({
-								data: Array(3).fill({ id: 'rsvp' }),
-								error: null
-							})
-						})
-					})
-				});
-
-				// Mock user current RSVP check
+				// Mock existing RSVP check
 				mockFrom.mockReturnValueOnce({
 					select: vi.fn().mockReturnValue({
 						eq: vi.fn().mockReturnValue({
@@ -1490,6 +1446,18 @@ describe('Event Detail Page Server', () => {
 									data: null,
 									error: null
 								})
+							})
+						})
+					})
+				});
+
+				// Mock RSVP count (3 going)
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							eq: vi.fn().mockResolvedValue({
+								data: Array(3).fill({ id: 'rsvp' }),
+								error: null
 							})
 						})
 					})
@@ -1511,20 +1479,6 @@ describe('Event Detail Page Server', () => {
 					})
 				});
 
-				// Mock existing RSVP check
-				mockFrom.mockReturnValueOnce({
-					select: vi.fn().mockReturnValue({
-						eq: vi.fn().mockReturnValue({
-							eq: vi.fn().mockReturnValue({
-								single: vi.fn().mockResolvedValue({
-									data: null,
-									error: null
-								})
-							})
-						})
-					})
-				});
-
 				// Mock insert
 				mockFrom.mockReturnValueOnce({
 					insert: vi.fn().mockResolvedValue({
@@ -1540,6 +1494,7 @@ describe('Event Detail Page Server', () => {
 				const result = await actions.rsvp({
 					request: { formData: async () => formData } as any,
 					locals: {
+						supabase: supabase,
 						session: {
 							user: { id: 'user-123' }
 						}
@@ -1570,6 +1525,20 @@ describe('Event Detail Page Server', () => {
 					})
 				});
 
+				// Mock existing RSVP check (user has interested RSVP)
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							eq: vi.fn().mockReturnValue({
+								single: vi.fn().mockResolvedValue({
+									data: { id: 'rsvp-123', status: 'interested' },
+									error: null
+								})
+							})
+						})
+					})
+				});
+
 				// Mock RSVP count (2 going)
 				mockFrom.mockReturnValueOnce({
 					select: vi.fn().mockReturnValue({
@@ -1577,20 +1546,6 @@ describe('Event Detail Page Server', () => {
 							eq: vi.fn().mockResolvedValue({
 								data: Array(2).fill({ id: 'rsvp' }),
 								error: null
-							})
-						})
-					})
-				});
-
-				// Mock user current RSVP check
-				mockFrom.mockReturnValueOnce({
-					select: vi.fn().mockReturnValue({
-						eq: vi.fn().mockReturnValue({
-							eq: vi.fn().mockReturnValue({
-								single: vi.fn().mockResolvedValue({
-									data: { status: 'interested' },
-									error: null
-								})
 							})
 						})
 					})
@@ -1606,20 +1561,6 @@ describe('Event Detail Page Server', () => {
 										data: [],
 										error: null
 									})
-								})
-							})
-						})
-					})
-				});
-
-				// Mock existing RSVP check (user has interested RSVP)
-				mockFrom.mockReturnValueOnce({
-					select: vi.fn().mockReturnValue({
-						eq: vi.fn().mockReturnValue({
-							eq: vi.fn().mockReturnValue({
-								single: vi.fn().mockResolvedValue({
-									data: { id: 'rsvp-123', status: 'interested' },
-									error: null
 								})
 							})
 						})
@@ -1643,6 +1584,7 @@ describe('Event Detail Page Server', () => {
 				const result = await actions.rsvp({
 					request: { formData: async () => formData } as any,
 					locals: {
+						supabase: supabase,
 						session: {
 							user: { id: 'user-123' }
 						}
@@ -1737,6 +1679,7 @@ describe('Event Detail Page Server', () => {
 
 				const result = await actions.cancelRsvp({
 					locals: {
+						supabase: supabase,
 						session: {
 							user: { id: 'user-123' }
 						}
@@ -1809,6 +1752,7 @@ describe('Event Detail Page Server', () => {
 
 				const result = await actions.cancelRsvp({
 					locals: {
+						supabase: supabase,
 						session: {
 							user: { id: 'user-123' }
 						}
@@ -1863,6 +1807,7 @@ describe('Event Detail Page Server', () => {
 
 				const result = await actions.cancelRsvp({
 					locals: {
+						supabase: supabase,
 						session: {
 							user: { id: 'user-123' }
 						}
@@ -1905,6 +1850,7 @@ describe('Event Detail Page Server', () => {
 
 				const result = await actions.cancelRsvp({
 					locals: {
+						supabase: supabase,
 						session: {
 							user: { id: 'user-123' }
 						}
@@ -1913,6 +1859,98 @@ describe('Event Detail Page Server', () => {
 				} as any);
 
 				expect(result).toEqual({ success: true, canceled: true });
+			});
+		});
+
+		describe('Waitlist bookkeeping on RSVP changes', () => {
+			const single = (data: unknown) => ({
+				select: vi.fn().mockReturnValue({
+					eq: vi.fn().mockReturnValue({
+						single: vi.fn().mockResolvedValue({ data, error: null }),
+						eq: vi.fn().mockReturnValue({
+							single: vi.fn().mockResolvedValue({ data, error: null })
+						})
+					})
+				})
+			});
+
+			it('should keep a waitlisted user in their place when they RSVP going again', async () => {
+				const mockFrom = vi.fn();
+				mockFrom.mockReturnValueOnce(single({ event_type: 'in_person', capacity: 5 }));
+				mockFrom.mockReturnValueOnce(
+					single({ id: 'rsvp-123', status: 'waitlisted', waitlist_position: 3 })
+				);
+				(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+
+				const formData = new FormData();
+				formData.append('status', 'going');
+
+				const result = await actions.rsvp({
+					request: { formData: async () => formData } as any,
+					locals: { supabase, session: { user: { id: 'user-123' } } },
+					params: { id: 'event-123' }
+				} as any);
+
+				expect(result).toEqual({
+					success: true,
+					waitlisted: true,
+					position: 3,
+					message: "Event is at capacity. You're #3 on the waitlist!"
+				});
+				// No re-queueing writes: only the event and RSVP lookups ran
+				expect(mockFrom).toHaveBeenCalledTimes(2);
+			});
+
+			it('should promote the next waitlisted attendee when a going user switches to not going', async () => {
+				const mockFrom = vi.fn();
+				const rsvpUpdateEq = vi.fn().mockResolvedValue({ error: null });
+				const promoteEq = vi.fn().mockResolvedValue({ error: null });
+				const promoteUpdate = vi.fn().mockReturnValue({ eq: promoteEq });
+
+				mockFrom.mockReturnValueOnce(single({ event_type: 'in_person', capacity: 5 }));
+				mockFrom.mockReturnValueOnce(single({ id: 'rsvp-123', status: 'going' }));
+				mockFrom.mockReturnValueOnce({
+					update: vi.fn().mockReturnValue({ eq: rsvpUpdateEq })
+				});
+				// Promotion: capacity lookup, first in line, promote update
+				mockFrom.mockReturnValueOnce(single({ capacity: 5 }));
+				mockFrom.mockReturnValueOnce({
+					select: vi.fn().mockReturnValue({
+						eq: vi.fn().mockReturnValue({
+							eq: vi.fn().mockReturnValue({
+								order: vi.fn().mockReturnValue({
+									limit: vi.fn().mockReturnValue({
+										single: vi.fn().mockResolvedValue({
+											data: { id: 'rsvp-next', user_id: 'user-456', waitlist_position: 1 },
+											error: null
+										})
+									})
+								})
+							})
+						})
+					})
+				});
+				mockFrom.mockReturnValueOnce({ update: promoteUpdate });
+				(supabase.from as ReturnType<typeof vi.fn>).mockImplementation(mockFrom);
+				(supabase as any).rpc = vi.fn().mockResolvedValue({ error: null });
+
+				const formData = new FormData();
+				formData.append('status', 'not_going');
+
+				const result = await actions.rsvp({
+					request: { formData: async () => formData } as any,
+					locals: { supabase, session: { user: { id: 'user-123' } } },
+					params: { id: 'event-123' }
+				} as any);
+
+				expect(result).toEqual({ success: true, status: 'not_going', attendanceMode: null });
+				expect(promoteUpdate).toHaveBeenCalledWith(
+					expect.objectContaining({ status: 'going', waitlist_position: null })
+				);
+				expect(promoteEq).toHaveBeenCalledWith('id', 'rsvp-next');
+				expect((supabase as any).rpc).toHaveBeenCalledWith('reorder_waitlist', {
+					p_event_id: 'event-123'
+				});
 			});
 		});
 	});

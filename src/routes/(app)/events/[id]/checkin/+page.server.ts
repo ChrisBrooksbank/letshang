@@ -1,11 +1,13 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
-import { supabase } from '$lib/server/supabase';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = locals.session;
+	// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+	const supabase = locals.supabase as unknown as SupabaseClient;
 	if (!session?.user) {
 		throw redirect(303, '/login');
 	}
@@ -45,7 +47,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			created_at,
 			users:user_id (
 				id,
-				email,
 				display_name,
 				profile_photo_url
 			)
@@ -82,6 +83,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 export const actions: Actions = {
 	checkIn: async ({ request, locals, params }) => {
 		const session = locals.session;
+		// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+		const supabase = locals.supabase as unknown as SupabaseClient;
 		if (!session?.user) {
 			return fail(401, { error: 'Unauthorized' });
 		}
@@ -141,6 +144,8 @@ export const actions: Actions = {
 
 	uncheckIn: async ({ request, locals, params }) => {
 		const session = locals.session;
+		// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+		const supabase = locals.supabase as unknown as SupabaseClient;
 		if (!session?.user) {
 			return fail(401, { error: 'Unauthorized' });
 		}

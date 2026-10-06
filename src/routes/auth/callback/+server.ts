@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { RequestHandler } from './$types';
 import type { Database } from '$lib/types/database';
+import { safeRedirectPath } from '$lib/utils/safe-redirect';
 
 /**
  * Auth callback handler for email verification and OAuth flows
@@ -16,8 +17,8 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 	const code = url.searchParams.get('code');
 
 	// Get the next URL to redirect to after authentication
-	// Default to dashboard if not specified
-	const next = url.searchParams.get('next') ?? '/dashboard';
+	// Default to dashboard if not specified or not a same-origin path
+	const next = safeRedirectPath(url.searchParams.get('next'));
 
 	// If there's a code, exchange it for a session
 	if (code) {

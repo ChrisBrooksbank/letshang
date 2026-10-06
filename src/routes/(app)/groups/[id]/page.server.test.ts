@@ -90,7 +90,7 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_USER_ID_2 } } };
 			const params = { id: TEST_GROUP_ID };
 
 			const result: any = await load({ params, locals } as any);
@@ -110,7 +110,7 @@ describe('Group Detail Page Server', () => {
 		});
 
 		it('should throw 400 error when group ID is missing', async () => {
-			const locals = { session: null };
+			const locals = { supabase: mockSupabase, session: null };
 			const params = { id: '' };
 
 			await expect(load({ params, locals } as any)).rejects.toThrow();
@@ -125,7 +125,7 @@ describe('Group Detail Page Server', () => {
 				})
 			});
 
-			const locals = { session: null };
+			const locals = { supabase: mockSupabase, session: null };
 			const params = { id: 'non-existent' };
 
 			await expect(load({ params, locals } as any)).rejects.toThrow();
@@ -201,13 +201,93 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_USER_ID_2 } } };
 			const params = { id: TEST_GROUP_ID };
 
 			const result: any = await load({ params, locals } as any);
 
 			expect(result.userMembership).toEqual(mockMembership);
 			expect(result.isAuthenticated).toBe(true);
+			expect(result.hasPendingRequest).toBe(false);
+		});
+
+		it('should flag a pending join request', async () => {
+			const mockGroup = {
+				id: TEST_GROUP_ID,
+				name: 'Test Group',
+				group_type: 'public',
+				organizer: { id: TEST_ORGANIZER_ID, display_name: 'Organizer' }
+			};
+
+			const mockMembership = {
+				id: 'member-1',
+				group_id: TEST_GROUP_ID,
+				user_id: TEST_USER_ID_2,
+				role: 'member',
+				status: 'pending'
+			};
+
+			let callCount = 0;
+			mockSupabase.from.mockImplementation((table: string) => {
+				if (table === 'groups') {
+					return {
+						select: vi.fn().mockReturnValue({
+							eq: vi.fn().mockReturnValue({
+								single: vi.fn().mockResolvedValue({ data: mockGroup, error: null })
+							})
+						})
+					};
+				}
+				if (table === 'group_topics') {
+					return {
+						select: vi.fn().mockReturnValue({
+							eq: vi.fn().mockResolvedValue({ data: [], error: null })
+						})
+					};
+				}
+				if (table === 'group_members') {
+					callCount++;
+					if (callCount === 1) {
+						// First call for member count
+						return {
+							select: vi.fn().mockReturnValue({
+								eq: vi.fn().mockReturnValue({
+									eq: vi.fn().mockResolvedValue({ count: 5, error: null })
+								})
+							})
+						};
+					} else {
+						// Second call for user membership
+						return {
+							select: vi.fn().mockReturnValue({
+								eq: vi.fn().mockReturnValue({
+									eq: vi.fn().mockReturnValue({
+										single: vi.fn().mockResolvedValue({ data: mockMembership, error: null })
+									})
+								})
+							})
+						};
+					}
+				}
+				if (table === 'events') {
+					return {
+						select: vi.fn().mockReturnValue({
+							eq: vi.fn().mockReturnValue({
+								gte: vi.fn().mockResolvedValue({ count: 0, error: null })
+							})
+						})
+					};
+				}
+				return {};
+			});
+
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: TEST_GROUP_ID };
+
+			const result: any = await load({ params, locals } as any);
+
+			expect(result.userMembership).toEqual(mockMembership);
+			expect(result.hasPendingRequest).toBe(true);
 		});
 
 		it('should work for unauthenticated users', async () => {
@@ -256,7 +336,7 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: null };
+			const locals = { supabase: mockSupabase, session: null };
 			const params = { id: TEST_GROUP_ID };
 
 			const result: any = await load({ params, locals } as any);
@@ -291,7 +371,7 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_USER_ID_2 } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			const request = {
@@ -333,7 +413,7 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_USER_ID_2 } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('message', '');
@@ -377,7 +457,7 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_USER_ID_2 } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('message', 'I am really interested in joining this group!');
@@ -423,7 +503,7 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_USER_ID_2 } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('message', 'I want to join but this is a public group');
@@ -441,7 +521,7 @@ describe('Group Detail Page Server', () => {
 		it('should reject message longer than 500 characters', async () => {
 			const longMessage = 'a'.repeat(501);
 
-			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_USER_ID_2 } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			formData.append('message', longMessage);
@@ -457,7 +537,7 @@ describe('Group Detail Page Server', () => {
 		});
 
 		it('should redirect to login if user is not authenticated', async () => {
-			const locals = { session: null };
+			const locals = { supabase: mockSupabase, session: null };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			const request = {
@@ -491,7 +571,7 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_USER_ID_2 } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			const request = {
@@ -514,7 +594,7 @@ describe('Group Detail Page Server', () => {
 				})
 			});
 
-			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_USER_ID_2 } } };
 			const params = { id: '550e8400-e29b-41d4-a716-999999999999' };
 			const formData = new FormData();
 			const request = {
@@ -552,7 +632,7 @@ describe('Group Detail Page Server', () => {
 				return {};
 			});
 
-			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const locals = { supabase: mockSupabase, session: { user: { id: TEST_USER_ID_2 } } };
 			const params = { id: TEST_GROUP_ID };
 			const formData = new FormData();
 			const request = {

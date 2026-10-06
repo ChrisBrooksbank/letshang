@@ -87,7 +87,7 @@ describe('generateICalEvent', () => {
 		expect(ical).toContain('URL:https://letshang.app/events/event-123');
 	});
 
-	it('should include organizer with name only', () => {
+	it('should omit organizer without an email (ORGANIZER requires a cal-address)', () => {
 		const event: ICalEvent = {
 			id: 'event-123',
 			title: 'Test Event',
@@ -101,7 +101,7 @@ describe('generateICalEvent', () => {
 
 		const ical = generateICalEvent(event);
 
-		expect(ical).toContain('ORGANIZER:John Doe');
+		expect(ical).not.toContain('ORGANIZER');
 	});
 
 	it('should include organizer with name and email', () => {
@@ -119,7 +119,7 @@ describe('generateICalEvent', () => {
 
 		const ical = generateICalEvent(event);
 
-		expect(ical).toContain('ORGANIZER:CN=John Doe:mailto:john@example.com');
+		expect(ical).toContain('ORGANIZER;CN="John Doe":mailto:john@example.com');
 	});
 
 	it('should escape special characters in title', () => {
@@ -250,7 +250,7 @@ describe('generateICalEvent', () => {
 		expect(ical).toContain('DTEND:20260201T210000Z');
 		expect(ical).toContain('LOCATION:123 Main St\\, San Francisco\\, CA');
 		expect(ical).toContain('URL:https://letshang.app/events/event-123');
-		expect(ical).toContain('ORGANIZER:CN=Jane Smith:mailto:jane@example.com');
+		expect(ical).toContain('ORGANIZER;CN="Jane Smith":mailto:jane@example.com');
 		expect(ical).toContain('END:VCALENDAR');
 	});
 });

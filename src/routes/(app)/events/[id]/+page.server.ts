@@ -1,6 +1,6 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
-import { supabase } from '$lib/server/supabase';
+import { supabaseAdmin } from '$lib/server/supabase';
 import { getConfirmationStats } from '$lib/server/confirmation-ping';
 import {
 	fetchEventComments,
@@ -13,9 +13,73 @@ import {
 	commentEditSchema,
 	commentDeletionSchema
 } from '$lib/schemas/comments';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
+/**
+ * Re-number waitlist positions sequentially (1, 2, 3...) preserving order
+ */
+async function reorderWaitlist(eventId: string): Promise<void> {
+	const { error: reorderError } = await supabaseAdmin.rpc('reorder_waitlist', {
+		p_event_id: eventId
+	});
+
+	if (reorderError) {
+		// eslint-disable-next-line no-console -- Server-side logging for debugging
+		console.error('Error reordering waitlist:', reorderError);
+	}
+}
+
+/**
+ * Promote the first waitlisted attendee (FIFO) after a "going" spot frees up.
+ * Uses the admin client because it updates another user's RSVP, which RLS forbids.
+ * Failures are logged, never surfaced: the triggering RSVP change already succeeded.
+ */
+async function promoteFromWaitlist(eventId: string): Promise<void> {
+	const { data: event } = await supabaseAdmin
+		.from('events')
+		.select('capacity')
+		.eq('id', eventId)
+		.single();
+
+	if (!event?.capacity) {
+		return;
+	}
+
+	const { data: nextInLine, error: waitlistError } = await supabaseAdmin
+		.from('event_rsvps')
+		.select('id, user_id, waitlist_position')
+		.eq('event_id', eventId)
+		.eq('status', 'waitlisted')
+		.order('waitlist_position', { ascending: true })
+		.limit(1)
+		.single();
+
+	if (waitlistError || !nextInLine) {
+		return;
+	}
+
+	const { error: promoteError } = await supabaseAdmin
+		.from('event_rsvps')
+		.update({
+			status: 'going',
+			waitlist_position: null,
+			updated_at: new Date().toISOString()
+		})
+		.eq('id', nextInLine.id);
+
+	if (promoteError) {
+		// eslint-disable-next-line no-console -- Server-side logging for debugging
+		console.error('Error promoting from waitlist:', promoteError);
+		return;
+	}
+
+	await reorderWaitlist(eventId);
+}
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = locals.session;
+	// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+	const supabase = locals.supabase as unknown as SupabaseClient;
 	if (!session?.user) {
 		throw redirect(303, '/login');
 	}
@@ -91,6 +155,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 export const actions: Actions = {
 	rsvp: async ({ request, locals, params }) => {
 		const session = locals.session;
+		// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+		const supabase = locals.supabase as unknown as SupabaseClient;
 		if (!session?.user) {
 			return fail(401, { error: 'Unauthorized' });
 		}
@@ -127,6 +193,24 @@ export const actions: Actions = {
 			return fail(400, { error: 'Attendance mode is required for hybrid events' });
 		}
 
+		// Current RSVP (if any) decides waitlist placement and whether a spot is freed
+		const { data: existingRsvp } = await supabase
+			.from('event_rsvps')
+			.select('*')
+			.eq('event_id', eventId)
+			.eq('user_id', session.user.id)
+			.single();
+
+		// Already waitlisted and still wants to go: keep their place in line
+		if (status === 'going' && existingRsvp?.status === 'waitlisted') {
+			return {
+				success: true,
+				waitlisted: true,
+				position: existingRsvp.waitlist_position,
+				message: `Event is at capacity. You're #${existingRsvp.waitlist_position} on the waitlist!`
+			};
+		}
+
 		// Check capacity if user is trying to RSVP "going"
 		if (status === 'going' && event.capacity) {
 			// Count current "going" RSVPs
@@ -142,16 +226,8 @@ export const actions: Actions = {
 				return fail(500, { error: 'Failed to check event capacity' });
 			}
 
-			// Check if user already has an existing "going" RSVP
-			const { data: userCurrentRsvp } = await supabase
-				.from('event_rsvps')
-				.select('status')
-				.eq('event_id', eventId)
-				.eq('user_id', session.user.id)
-				.single();
-
 			const currentGoingCount = goingRsvps?.length || 0;
-			const userAlreadyGoing = userCurrentRsvp?.status === 'going';
+			const userAlreadyGoing = existingRsvp?.status === 'going';
 
 			// If capacity is reached and user is not already going, add to waitlist
 			if (currentGoingCount >= event.capacity && !userAlreadyGoing) {
@@ -172,14 +248,6 @@ export const actions: Actions = {
 
 				const maxPosition = waitlistRsvps?.[0]?.waitlist_position || 0;
 				const newPosition = maxPosition + 1;
-
-				// Check if RSVP exists
-				const { data: existingRsvp } = await supabase
-					.from('event_rsvps')
-					.select('*')
-					.eq('event_id', eventId)
-					.eq('user_id', session.user.id)
-					.single();
 
 				const waitlistData = {
 					status: 'waitlisted',
@@ -223,22 +291,16 @@ export const actions: Actions = {
 			}
 		}
 
-		// Check if RSVP exists
-		const { data: existingRsvp } = await supabase
-			.from('event_rsvps')
-			.select('*')
-			.eq('event_id', eventId)
-			.eq('user_id', session.user.id)
-			.single();
-
-		// Prepare RSVP data
+		// Prepare RSVP data (any non-waitlisted status leaves the waitlist)
 		const rsvpData: {
 			status: string;
 			updated_at: string;
+			waitlist_position: null;
 			attendance_mode?: 'in_person' | 'online' | null;
 		} = {
 			status,
-			updated_at: new Date().toISOString()
+			updated_at: new Date().toISOString(),
+			waitlist_position: null
 		};
 
 		// Only set attendance_mode for hybrid events when going/interested
@@ -275,11 +337,20 @@ export const actions: Actions = {
 			}
 		}
 
+		// Stepping down from "going" frees a spot; leaving the waitlist leaves a gap
+		if (existingRsvp?.status === 'going' && status !== 'going') {
+			await promoteFromWaitlist(eventId);
+		} else if (existingRsvp?.status === 'waitlisted') {
+			await reorderWaitlist(eventId);
+		}
+
 		return { success: true, status, attendanceMode };
 	},
 
 	cancelRsvp: async ({ locals, params }) => {
 		const session = locals.session;
+		// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+		const supabase = locals.supabase as unknown as SupabaseClient;
 		if (!session?.user) {
 			return fail(401, { error: 'Unauthorized' });
 		}
@@ -308,55 +379,11 @@ export const actions: Actions = {
 			return fail(500, { error: 'Failed to cancel RSVP' });
 		}
 
-		// If the user was "going", check if we need to promote from waitlist
+		// Free spot → promote; leaving the waitlist → close the gap in positions
 		if (wasGoing) {
-			// Fetch event to check capacity
-			const { data: event } = await supabase
-				.from('events')
-				.select('capacity')
-				.eq('id', eventId)
-				.single();
-
-			if (event?.capacity) {
-				// Get the first person on the waitlist (FIFO)
-				const { data: nextInLine, error: waitlistError } = await supabase
-					.from('event_rsvps')
-					.select('id, user_id, waitlist_position')
-					.eq('event_id', eventId)
-					.eq('status', 'waitlisted')
-					.order('waitlist_position', { ascending: true })
-					.limit(1)
-					.single();
-
-				if (!waitlistError && nextInLine) {
-					// Promote the first person on the waitlist to "going"
-					const { error: promoteError } = await supabase
-						.from('event_rsvps')
-						.update({
-							status: 'going',
-							waitlist_position: null,
-							updated_at: new Date().toISOString()
-						})
-						.eq('id', nextInLine.id);
-
-					if (promoteError) {
-						// eslint-disable-next-line no-console -- Server-side logging for debugging
-						console.error('Error promoting from waitlist:', promoteError);
-						// Don't fail the whole operation if promotion fails
-					} else {
-						// Update positions for remaining waitlist members
-						const { error: reorderError } = await supabase.rpc('reorder_waitlist', {
-							p_event_id: eventId
-						});
-
-						if (reorderError) {
-							// eslint-disable-next-line no-console -- Server-side logging for debugging
-							console.error('Error reordering waitlist:', reorderError);
-							// Don't fail the whole operation if reordering fails
-						}
-					}
-				}
-			}
+			await promoteFromWaitlist(eventId);
+		} else if (currentRsvp?.status === 'waitlisted') {
+			await reorderWaitlist(eventId);
 		}
 
 		return { success: true, canceled: true };

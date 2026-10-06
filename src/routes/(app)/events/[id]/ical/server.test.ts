@@ -20,7 +20,7 @@ describe('GET /events/[id]/ical', () => {
 
 	it('should return 401 if not authenticated', async () => {
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: null };
+		const locals = { supabase: supabase, session: null };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -37,7 +37,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -58,8 +58,7 @@ describe('GET /events/[id]/ical', () => {
 			creator_id: 'creator-1',
 			group_id: null,
 			profiles: {
-				display_name: 'John Doe',
-				email: 'john@example.com'
+				display_name: 'John Doe'
 			}
 		};
 
@@ -72,7 +71,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -89,7 +88,8 @@ describe('GET /events/[id]/ical', () => {
 		expect(body).toContain('DESCRIPTION:A great tech meetup');
 		expect(body).toContain('LOCATION:Tech Hub\\, 123 Main St');
 		expect(body).toContain('URL:http://localhost/events/event-1');
-		expect(body).toContain('ORGANIZER:CN=John Doe:mailto:john@example.com');
+		// public.users has no email column, so no ORGANIZER (which requires a mailto:) is emitted
+		expect(body).not.toContain('ORGANIZER');
 	});
 
 	it('should return 403 for group-only event if user not a member', async () => {
@@ -117,7 +117,7 @@ describe('GET /events/[id]/ical', () => {
 			.mockReturnValueOnce({ select: mockMembershipSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -138,8 +138,7 @@ describe('GET /events/[id]/ical', () => {
 			group_id: 'group-1',
 			creator_id: 'creator-1',
 			profiles: {
-				display_name: 'Jane Smith',
-				email: 'jane@example.com'
+				display_name: 'Jane Smith'
 			}
 		};
 
@@ -159,7 +158,7 @@ describe('GET /events/[id]/ical', () => {
 			.mockReturnValueOnce({ select: mockMembershipSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -189,7 +188,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -210,8 +209,7 @@ describe('GET /events/[id]/ical', () => {
 			creator_id: 'creator-1',
 			group_id: null,
 			profiles: {
-				display_name: 'Creator Name',
-				email: null
+				display_name: 'Creator Name'
 			}
 		};
 
@@ -224,7 +222,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'creator-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'creator-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -251,8 +249,7 @@ describe('GET /events/[id]/ical', () => {
 			creator_id: 'creator-1',
 			group_id: null,
 			profiles: {
-				display_name: 'Speaker One',
-				email: 'speaker@example.com'
+				display_name: 'Speaker One'
 			}
 		};
 
@@ -265,7 +262,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -292,8 +289,7 @@ describe('GET /events/[id]/ical', () => {
 			creator_id: 'creator-1',
 			group_id: null,
 			profiles: {
-				display_name: 'Event Organizer',
-				email: 'organizer@example.com'
+				display_name: 'Event Organizer'
 			}
 		};
 
@@ -306,7 +302,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -344,7 +340,7 @@ describe('GET /events/[id]/ical', () => {
 		vi.mocked(supabase.from).mockReturnValue({ select: mockSelect } as never);
 
 		const request = new Request('http://localhost/events/event-1/ical');
-		const locals = { session: { user: { id: 'user-1' } } };
+		const locals = { supabase: supabase, session: { user: { id: 'user-1' } } };
 		const params = { id: 'event-1' };
 		const url = new URL('http://localhost/events/event-1/ical');
 
@@ -353,6 +349,6 @@ describe('GET /events/[id]/ical', () => {
 		expect(response.status).toBe(200);
 
 		const body = await response.text();
-		expect(body).toContain('ORGANIZER:LetsHang User');
+		expect(body).not.toContain('ORGANIZER');
 	});
 });

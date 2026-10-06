@@ -1,10 +1,12 @@
 import { error, redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { supabase } from '$lib/server/supabase';
 import { joinRequestSchema } from '$lib/schemas/groups';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const session = locals.session;
+	// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+	const supabase = locals.supabase as unknown as SupabaseClient;
 	const groupId = params.id;
 
 	if (!groupId) {
@@ -17,7 +19,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.select(
 			`
 			*,
-			organizer:users!groups_organizer_id_fkey(id, display_name, avatar_url)
+			organizer:users!groups_organizer_id_fkey(id, display_name, avatar_url:profile_photo_url)
 		`
 		)
 		.eq('id', groupId)
@@ -69,10 +71,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 		userMembership = membership;
 
-		// Check for pending join request if not already a member
-		if (!membership) {
-			hasPendingRequest = membership?.status === 'pending';
-		}
+		// A pending join request is stored as a membership row with status 'pending'
+		hasPendingRequest = membership?.status === 'pending';
 	}
 
 	// Extract topics from the nested structure and ensure proper typing
@@ -104,6 +104,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 export const actions: Actions = {
 	join: async ({ params, locals, request }) => {
 		const session = locals.session;
+		// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+		const supabase = locals.supabase as unknown as SupabaseClient;
 
 		if (!session?.user) {
 			throw redirect(303, `/login?redirect=/groups/${params.id}`);

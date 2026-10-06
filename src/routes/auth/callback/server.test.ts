@@ -74,6 +74,18 @@ describe('auth callback handler', () => {
 			expect(mockExchangeCodeForSession).toHaveBeenCalledWith('test-code');
 		});
 
+		it('should not redirect off-site via the next parameter', async () => {
+			const mockUrl = new URL('http://localhost:5173/auth/callback?next=https://evil.example');
+
+			await expect(
+				GET({
+					url: mockUrl,
+					// @ts-expect-error - Partial mock for testing
+					cookies: mockCookies
+				})
+			).rejects.toMatchObject({ status: 303, location: '/dashboard' });
+		});
+
 		it('should redirect to login with error when code exchange fails', async () => {
 			const mockError = { message: 'Invalid verification code', status: 400 };
 			mockExchangeCodeForSession.mockResolvedValue({ data: {}, error: mockError });

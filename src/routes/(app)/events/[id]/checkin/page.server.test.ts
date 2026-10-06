@@ -19,6 +19,7 @@ describe('Event Check-in Page Server', () => {
 	describe('load function', () => {
 		it('should redirect to login if user is not authenticated', async () => {
 			const mockLocals = {
+				supabase: mockSupabase,
 				session: null
 			};
 
@@ -34,6 +35,7 @@ describe('Event Check-in Page Server', () => {
 
 		it('should return 404 if event not found', async () => {
 			const mockLocals = {
+				supabase: mockSupabase,
 				session: { user: { id: 'user-123' } }
 			};
 
@@ -60,6 +62,7 @@ describe('Event Check-in Page Server', () => {
 
 		it('should return 403 if user is not event creator', async () => {
 			const mockLocals = {
+				supabase: mockSupabase,
 				session: { user: { id: 'user-123' } }
 			};
 
@@ -93,6 +96,7 @@ describe('Event Check-in Page Server', () => {
 
 		it('should load event and attendees for event creator', async () => {
 			const mockLocals = {
+				supabase: mockSupabase,
 				session: { user: { id: 'user-123' } }
 			};
 
@@ -180,6 +184,7 @@ describe('Event Check-in Page Server', () => {
 
 		it('should indicate check-in is not available if event is more than 1 hour away', async () => {
 			const mockLocals = {
+				supabase: mockSupabase,
 				session: { user: { id: 'user-123' } }
 			};
 
@@ -234,6 +239,7 @@ describe('Event Check-in Page Server', () => {
 
 		it('should indicate check-in is available if event is within 1 hour', async () => {
 			const mockLocals = {
+				supabase: mockSupabase,
 				session: { user: { id: 'user-123' } }
 			};
 
@@ -288,6 +294,7 @@ describe('Event Check-in Page Server', () => {
 
 		it('should handle database errors when fetching attendees', async () => {
 			const mockLocals = {
+				supabase: mockSupabase,
 				session: { user: { id: 'user-123' } }
 			};
 
@@ -345,7 +352,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.checkIn({
 				request: mockRequest,
-				locals: { session: null },
+				locals: { supabase: mockSupabase, session: null },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -360,7 +367,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.checkIn({
 				request: mockRequest,
-				locals: { session: { user: { id: 'user-123' } } },
+				locals: { supabase: mockSupabase, session: { user: { id: 'user-123' } } },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -386,7 +393,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.checkIn({
 				request: mockRequest,
-				locals: { session: { user: { id: 'user-123' } } },
+				locals: { supabase: mockSupabase, session: { user: { id: 'user-123' } } },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -417,7 +424,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.checkIn({
 				request: mockRequest,
-				locals: { session: { user: { id: 'user-123' } } },
+				locals: { supabase: mockSupabase, session: { user: { id: 'user-123' } } },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -449,7 +456,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.checkIn({
 				request: mockRequest,
-				locals: { session: { user: { id: 'user-123' } } },
+				locals: { supabase: mockSupabase, session: { user: { id: 'user-123' } } },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -495,7 +502,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.checkIn({
 				request: mockRequest,
-				locals: { session: { user: { id: 'user-123' } } },
+				locals: { supabase: mockSupabase, session: { user: { id: 'user-123' } } },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -539,7 +546,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.checkIn({
 				request: mockRequest,
-				locals: { session: { user: { id: 'user-123' } } },
+				locals: { supabase: mockSupabase, session: { user: { id: 'user-123' } } },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -556,7 +563,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.uncheckIn({
 				request: mockRequest,
-				locals: { session: null },
+				locals: { supabase: mockSupabase, session: null },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -571,7 +578,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.uncheckIn({
 				request: mockRequest,
-				locals: { session: { user: { id: 'user-123' } } },
+				locals: { supabase: mockSupabase, session: { user: { id: 'user-123' } } },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -601,7 +608,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.uncheckIn({
 				request: mockRequest,
-				locals: { session: { user: { id: 'user-123' } } },
+				locals: { supabase: mockSupabase, session: { user: { id: 'user-123' } } },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -644,7 +651,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.uncheckIn({
 				request: mockRequest,
-				locals: { session: { user: { id: 'user-123' } } },
+				locals: { supabase: mockSupabase, session: { user: { id: 'user-123' } } },
 				params: { id: 'event-123' }
 			} as any);
 
@@ -687,7 +694,7 @@ describe('Event Check-in Page Server', () => {
 
 			const result = await actions.uncheckIn({
 				request: mockRequest,
-				locals: { session: { user: { id: 'user-123' } } },
+				locals: { supabase: mockSupabase, session: { user: { id: 'user-123' } } },
 				params: { id: 'event-123' }
 			} as any);
 

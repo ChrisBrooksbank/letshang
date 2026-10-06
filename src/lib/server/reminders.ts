@@ -97,6 +97,7 @@ export async function sendReminderEmail(
 		// Build email content
 		const emailData = buildReminderEmailData(
 			{
+				id: event.id,
 				title: event.title,
 				description: event.description,
 				start_time: event.start_time,

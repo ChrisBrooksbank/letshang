@@ -22,6 +22,7 @@ vi.mock('sveltekit-superforms/adapters', () => ({
 // Import after mocks are set up
 import { load, actions } from './+page.server';
 import { superValidate } from 'sveltekit-superforms';
+import { fail } from '@sveltejs/kit';
 
 describe('Event Creation Page Server', () => {
 	beforeEach(() => {
@@ -55,7 +56,7 @@ describe('Event Creation Page Server', () => {
 		it('should return form when user is authenticated', async () => {
 			const mockSelect = vi.fn().mockReturnThis();
 			const mockEq = vi.fn().mockReturnThis();
-			const mockOrder = vi.fn().mockResolvedValue({
+			const mockGroupsResult = vi.fn().mockResolvedValue({
 				data: [],
 				error: null
 			});
@@ -76,9 +77,7 @@ describe('Event Creation Page Server', () => {
 			});
 
 			mockEq.mockReturnValue({
-				eq: vi.fn().mockReturnValue({
-					order: mockOrder
-				})
+				eq: mockGroupsResult
 			});
 
 			const mockLocals = {
@@ -98,18 +97,18 @@ describe('Event Creation Page Server', () => {
 		it('should return user groups when authenticated', async () => {
 			const mockGroups = [
 				{
-					group_id: 'group-1',
-					groups: { id: 'group-1', name: 'Test Group 1' }
-				},
-				{
 					group_id: 'group-2',
 					groups: { id: 'group-2', name: 'Test Group 2' }
+				},
+				{
+					group_id: 'group-1',
+					groups: { id: 'group-1', name: 'Test Group 1' }
 				}
 			];
 
 			const mockSelect = vi.fn().mockReturnThis();
 			const mockEq = vi.fn().mockReturnThis();
-			const mockOrder = vi.fn().mockResolvedValue({
+			const mockGroupsResult = vi.fn().mockResolvedValue({
 				data: mockGroups,
 				error: null
 			});
@@ -130,9 +129,7 @@ describe('Event Creation Page Server', () => {
 			});
 
 			mockEq.mockReturnValue({
-				eq: vi.fn().mockReturnValue({
-					order: mockOrder
-				})
+				eq: mockGroupsResult
 			});
 
 			const mockLocals = {
@@ -501,6 +498,7 @@ describe('Event Creation Page Server', () => {
 		});
 
 		it('should create event with group_id when provided', async () => {
+			const groupMembership: { id: string } | null = { id: 'membership-1' };
 			const mockInsert = vi.fn().mockReturnThis();
 			const mockSelect = vi.fn().mockReturnThis();
 			const mockSingle = vi.fn().mockResolvedValue({
@@ -518,9 +516,24 @@ describe('Event Creation Page Server', () => {
 						}
 					})
 				},
-				from: vi.fn().mockReturnValue({
-					insert: mockInsert
-				})
+				from: vi.fn((table: string) =>
+					table === 'group_members'
+						? {
+								select: () => ({
+									eq: () => ({
+										eq: () => ({
+											eq: () => ({
+												maybeSingle: vi.fn().mockResolvedValue({
+													data: groupMembership,
+													error: null
+												})
+											})
+										})
+									})
+								})
+							}
+						: { insert: mockInsert }
+				)
 			};
 
 			mockInsert.mockReturnValue({
@@ -571,6 +584,85 @@ describe('Event Creation Page Server', () => {
 					creator_id: 'user-123'
 				})
 			);
+		});
+
+		it('should reject creating an event in a group the user is not a member of', async () => {
+			const groupMembership: { id: string } | null = null;
+			const mockInsert = vi.fn().mockReturnThis();
+			const mockSelect = vi.fn().mockReturnThis();
+			const mockSingle = vi.fn().mockResolvedValue({
+				data: { id: 'test-event-id' },
+				error: null
+			});
+
+			const mockSupabase = {
+				auth: {
+					getSession: vi.fn().mockResolvedValue({
+						data: {
+							session: {
+								user: { id: 'user-123' }
+							}
+						}
+					})
+				},
+				from: vi.fn((table: string) =>
+					table === 'group_members'
+						? {
+								select: () => ({
+									eq: () => ({
+										eq: () => ({
+											eq: () => ({
+												maybeSingle: vi.fn().mockResolvedValue({
+													data: groupMembership,
+													error: null
+												})
+											})
+										})
+									})
+								})
+							}
+						: { insert: mockInsert }
+				)
+			};
+
+			mockInsert.mockReturnValue({
+				select: mockSelect
+			});
+
+			mockSelect.mockReturnValue({
+				single: mockSingle
+			});
+
+			const mockLocals = {
+				supabase: mockSupabase
+			};
+
+			const mockForm = {
+				valid: true,
+				data: {
+					title: 'Group Event',
+					description: 'A group event',
+					eventType: 'online',
+					startTime: '2024-12-31T12:00:00.000Z',
+					durationMinutes: 60,
+					groupId: 'group-123'
+				}
+			};
+
+			vi.mocked(superValidate).mockResolvedValue(mockForm as never);
+
+			const mockRequest = new Request('http://localhost', {
+				method: 'POST',
+				body: new FormData()
+			});
+
+			await actions.default({
+				request: mockRequest,
+				locals: mockLocals
+			} as never);
+
+			expect(fail).toHaveBeenCalledWith(403, expect.anything());
+			expect(mockInsert).not.toHaveBeenCalled();
 		});
 
 		it('should create standalone event when groupId is null', async () => {

@@ -6,11 +6,13 @@
 
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { supabase } from '$lib/server/supabase';
 import { generateICalEvent, generateICalFilename, type ICalEvent } from '$lib/utils/ical';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const GET: RequestHandler = async ({ params, locals, url }) => {
 	const session = locals.session;
+	// Request-scoped client carries the user's JWT so RLS (auth.uid()) applies
+	const supabase = locals.supabase as unknown as SupabaseClient;
 	if (!session?.user) {
 		throw error(401, 'Unauthorized');
 	}
@@ -24,8 +26,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			`
 			*,
 			profiles:creator_id (
-				display_name,
-				email
+				display_name
 			)
 		`
 		)
@@ -66,8 +67,8 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 	const eventUrl = `${url.origin}/events/${event.id}`;
 
 	// Build organizer info
+	// Email lives in auth.users and isn't exposed on public.users, so only the name is included
 	const organizerName = event.profiles?.display_name || 'LetsHang User';
-	const organizerEmail = event.profiles?.email || undefined;
 
 	// Prepare iCal event data
 	const iCalEvent: ICalEvent = {
@@ -79,8 +80,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		location,
 		url: eventUrl,
 		organizer: {
-			name: organizerName,
-			email: organizerEmail
+			name: organizerName
 		}
 	};
 
