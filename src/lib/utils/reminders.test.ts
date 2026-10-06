@@ -272,6 +272,7 @@ describe('Reminder Utilities', () => {
 
 	describe('buildReminderEmailData', () => {
 		const mockEvent = {
+			id: 'event-456',
 			title: 'Coffee Meetup',
 			description: 'Join us for coffee and conversation',
 			start_time: '2026-02-01T14:00:00.000Z',
@@ -376,8 +377,8 @@ describe('Reminder Utilities', () => {
 		it('should include correct event URL structure', () => {
 			const result = buildReminderEmailData(mockEvent, mockUser, 'seven_days');
 
-			expect(result.eventUrl).toContain('/events/');
-			expect(result.eventUrl).toContain(mockUser.id);
+			expect(result.eventUrl).toBe('/events/event-456');
+			expect(result.eventUrl).not.toContain(mockUser.id);
 		});
 	});
 });

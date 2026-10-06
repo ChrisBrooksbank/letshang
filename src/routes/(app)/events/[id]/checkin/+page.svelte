@@ -20,7 +20,7 @@
 		if (Array.isArray(users) && users.length > 0) {
 			return users[0];
 		}
-		return users as { id: string; email: string; display_name: string; profile_photo_url: string };
+		return users as { id: string; display_name: string; profile_photo_url: string };
 	}
 
 	// Filter attendees by search query
@@ -30,9 +30,8 @@
 		const query = searchQuery.toLowerCase();
 		const user = getUserData(attendee.users);
 		const displayName = user?.display_name?.toLowerCase() || '';
-		const email = user?.email?.toLowerCase() || '';
 
-		return displayName.includes(query) || email.includes(query);
+		return displayName.includes(query);
 	});
 
 	// Split attendees into checked-in and not checked-in
@@ -147,7 +146,7 @@
 					type="text"
 					id="search"
 					bind:value={searchQuery}
-					placeholder="Search by name or email..."
+					placeholder="Search by name..."
 					class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[44px]"
 				/>
 			</div>
@@ -206,7 +205,6 @@
 										<p class="font-medium text-gray-900">
 											{user?.display_name || 'Anonymous'}
 										</p>
-										<p class="text-sm text-gray-500">{user?.email}</p>
 									</div>
 								</div>
 								<form
@@ -281,7 +279,6 @@
 										<p class="font-medium text-gray-900">
 											{user?.display_name || 'Anonymous'}
 										</p>
-										<p class="text-sm text-gray-500">{user?.email}</p>
 										{#if attendee.checked_in_at}
 											<p class="text-xs text-green-700 mt-1">
 												Checked in at {formatCheckInTime(attendee.checked_in_at)}

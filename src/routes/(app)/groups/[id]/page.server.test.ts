@@ -208,6 +208,86 @@ describe('Group Detail Page Server', () => {
 
 			expect(result.userMembership).toEqual(mockMembership);
 			expect(result.isAuthenticated).toBe(true);
+			expect(result.hasPendingRequest).toBe(false);
+		});
+
+		it('should flag a pending join request', async () => {
+			const mockGroup = {
+				id: TEST_GROUP_ID,
+				name: 'Test Group',
+				group_type: 'public',
+				organizer: { id: TEST_ORGANIZER_ID, display_name: 'Organizer' }
+			};
+
+			const mockMembership = {
+				id: 'member-1',
+				group_id: TEST_GROUP_ID,
+				user_id: TEST_USER_ID_2,
+				role: 'member',
+				status: 'pending'
+			};
+
+			let callCount = 0;
+			mockSupabase.from.mockImplementation((table: string) => {
+				if (table === 'groups') {
+					return {
+						select: vi.fn().mockReturnValue({
+							eq: vi.fn().mockReturnValue({
+								single: vi.fn().mockResolvedValue({ data: mockGroup, error: null })
+							})
+						})
+					};
+				}
+				if (table === 'group_topics') {
+					return {
+						select: vi.fn().mockReturnValue({
+							eq: vi.fn().mockResolvedValue({ data: [], error: null })
+						})
+					};
+				}
+				if (table === 'group_members') {
+					callCount++;
+					if (callCount === 1) {
+						// First call for member count
+						return {
+							select: vi.fn().mockReturnValue({
+								eq: vi.fn().mockReturnValue({
+									eq: vi.fn().mockResolvedValue({ count: 5, error: null })
+								})
+							})
+						};
+					} else {
+						// Second call for user membership
+						return {
+							select: vi.fn().mockReturnValue({
+								eq: vi.fn().mockReturnValue({
+									eq: vi.fn().mockReturnValue({
+										single: vi.fn().mockResolvedValue({ data: mockMembership, error: null })
+									})
+								})
+							})
+						};
+					}
+				}
+				if (table === 'events') {
+					return {
+						select: vi.fn().mockReturnValue({
+							eq: vi.fn().mockReturnValue({
+								gte: vi.fn().mockResolvedValue({ count: 0, error: null })
+							})
+						})
+					};
+				}
+				return {};
+			});
+
+			const locals = { session: { user: { id: TEST_USER_ID_2 } } };
+			const params = { id: TEST_GROUP_ID };
+
+			const result: any = await load({ params, locals } as any);
+
+			expect(result.userMembership).toEqual(mockMembership);
+			expect(result.hasPendingRequest).toBe(true);
 		});
 
 		it('should work for unauthenticated users', async () => {

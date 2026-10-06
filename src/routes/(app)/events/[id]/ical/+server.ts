@@ -24,8 +24,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			`
 			*,
 			profiles:creator_id (
-				display_name,
-				email
+				display_name
 			)
 		`
 		)
@@ -66,8 +65,8 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 	const eventUrl = `${url.origin}/events/${event.id}`;
 
 	// Build organizer info
+	// Email lives in auth.users and isn't exposed on public.users, so only the name is included
 	const organizerName = event.profiles?.display_name || 'LetsHang User';
-	const organizerEmail = event.profiles?.email || undefined;
 
 	// Prepare iCal event data
 	const iCalEvent: ICalEvent = {
@@ -79,8 +78,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		location,
 		url: eventUrl,
 		organizer: {
-			name: organizerName,
-			email: organizerEmail
+			name: organizerName
 		}
 	};
 

@@ -162,6 +162,7 @@ export function formatReminderInfo(reminder: Tables<'event_reminders'>): {
  */
 export function buildReminderEmailData(
 	event: {
+		id: string;
 		title: string;
 		description: string | null;
 		start_time: string;
@@ -223,8 +224,7 @@ export function buildReminderEmailData(
 		venueName: event.venue_name,
 		venueAddress: event.venue_address,
 		videoLink: event.video_link,
-		// TODO: Replace with actual event URL when event detail page route is finalized
-		eventUrl: `/events/${user.id}`, // Placeholder - will be event.id
+		eventUrl: `/events/${event.id}`,
 		mapUrl
 	};
 }

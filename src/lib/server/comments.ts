@@ -92,7 +92,7 @@ export async function fetchEventComments(
 				users!inner (
 					id,
 					display_name,
-					avatar_url
+					avatar_url:profile_photo_url
 				)
 			`
 			)
@@ -213,7 +213,7 @@ export async function createComment(
 				users!inner (
 					id,
 					display_name,
-					avatar_url
+					avatar_url:profile_photo_url
 				)
 			`
 			)
@@ -303,7 +303,7 @@ export async function editComment(
 				users!inner (
 					id,
 					display_name,
-					avatar_url
+					avatar_url:profile_photo_url
 				)
 			`
 			)

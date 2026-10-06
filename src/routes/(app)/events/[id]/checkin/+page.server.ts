@@ -45,7 +45,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			created_at,
 			users:user_id (
 				id,
-				email,
 				display_name,
 				profile_photo_url
 			)

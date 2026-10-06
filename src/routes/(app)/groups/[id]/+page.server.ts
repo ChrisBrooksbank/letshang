@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.select(
 			`
 			*,
-			organizer:users!groups_organizer_id_fkey(id, display_name, avatar_url)
+			organizer:users!groups_organizer_id_fkey(id, display_name, avatar_url:profile_photo_url)
 		`
 		)
 		.eq('id', groupId)
@@ -69,10 +69,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 		userMembership = membership;
 
-		// Check for pending join request if not already a member
-		if (!membership) {
-			hasPendingRequest = membership?.status === 'pending';
-		}
+		// A pending join request is stored as a membership row with status 'pending'
+		hasPendingRequest = membership?.status === 'pending';
 	}
 
 	// Extract topics from the nested structure and ensure proper typing

@@ -42,6 +42,13 @@ function escapeICalText(text: string): string {
 }
 
 /**
+ * Quote a parameter value per RFC 5545 (DQUOTE is not allowed inside, so it is dropped)
+ */
+function quoteICalParam(value: string): string {
+	return `"${value.replace(/["\r\n]/g, '')}"`;
+}
+
+/**
  * Fold long lines to 75 characters per RFC 5545
  */
 function foldLine(line: string): string {
@@ -104,11 +111,11 @@ export function generateICalEvent(event: ICalEvent): string {
 		lines.push(`URL:${event.url}`);
 	}
 
-	if (event.organizer) {
-		const organizerValue = event.organizer.email
-			? `CN=${escapeICalText(event.organizer.name)}:mailto:${event.organizer.email}`
-			: escapeICalText(event.organizer.name);
-		lines.push(`ORGANIZER:${organizerValue}`);
+	// ORGANIZER's value must be a cal-address (mailto: URI); the name goes in the CN parameter
+	if (event.organizer?.email) {
+		lines.push(
+			`ORGANIZER;CN=${quoteICalParam(event.organizer.name)}:mailto:${event.organizer.email}`
+		);
 	}
 
 	lines.push('END:VEVENT', 'END:VCALENDAR');
