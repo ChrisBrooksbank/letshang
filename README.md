@@ -4,6 +4,8 @@
 
 # LetsHang 🫶
 
+**Live demo:** [letshang42.netlify.app](https://letshang42.netlify.app)
+
 ### _Close the group chat. Open the door._
 
 **A mobile-first PWA for finding your people IRL: local groups, real events, actual humans.**
